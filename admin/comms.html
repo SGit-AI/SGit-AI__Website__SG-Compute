@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Comms: tasks &amp; requests · sg-compute.sgit.ai</title>
+<meta name="description" content="The working channel between the project lead and the site agent, in public: what is done, what is queued, and the open requests that need an answer from a person rather than from the tree.">
+<link rel="canonical" href="https://sg-compute.sgit.ai/admin/comms.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="sg-compute.sgit.ai">
+<meta property="og:url" content="https://sg-compute.sgit.ai/admin/comms.html">
+<meta property="og:title" content="Comms: tasks &amp; requests · sg-compute.sgit.ai">
+<meta property="og:description" content="The working channel between the project lead and the site agent, in public: what is done, what is queued, and the open requests that need an answer from a person rather than from the tree.">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">sg-compute<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai — the parent project: the vault layer and the shipped CLI this compute platform provisions for">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">audit draft</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history">v0.1.0</a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../what-it-is/index.html">The platform<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../what-it-is/index.html">What it is: two ephemeral layers</a>
+      <a class="sl" href="../specs/index.html">The spec catalogue</a>
+      <a class="sl" href="../agents/index.html">The machine surface</a>
+      <a class="sl" href="../security/index.html">Isolation &amp; the one trade-off</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../why/index.html">The argument<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../why/index.html">A serverless environment for agents</a>
+      <a class="sl" href="../numbers/index.html">The measured numbers</a>
+      <a class="sl" href="../rename/index.html">The rename</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../shipped/index.html">The audit<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../shipped/index.html">What ships, and what does not</a>
+      <a class="sl" href="../roadmap/index.html">Build order &amp; open questions</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../documents/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../documents/index.html">The documents</a>
+      <a class="sl" href="../data/specs.json">The catalogue as JSON</a>
+      <a class="sl" href="../llms.txt">llms.txt</a>
+      <a class="sl" href="../llms-full.txt">llms-full.txt</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl here" href="../admin/comms.html">Comms: tasks &amp; requests</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Admin &amp; engineering</a>
+      <a class="sl" href="../network/index.html">The network</a>
+      <a class="sl" href="../about/participant.html">Where we lose</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__SG-Compute">★ GitHub</a>
+  <script src="../assets/nav.js" defer></script>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">sg-compute.sgit.ai</a> / <a href="index.html">admin</a> / comms</div>
+<h1>Comms: tasks &amp; requests</h1>
+<p class="lead">The working channel between the project lead and the agent building this site, kept in public and updated every release. Requests going the other way — things the site needs and cannot work out from the tree — are at the bottom, and one of them blocks a claim on the front page.</p>
+
+<h2 id="tasks">Tasks</h2>
+<div class="tablewrap">
+  <table>
+    <thead><tr><th>#</th><th>Task</th><th>State</th></tr></thead>
+    <tbody>
+      <tr><td>T1</td><td>CI pipeline: validate → auto-tag → deploy, matching the sibling sites</td><td class="verdict"><span class="tstat t-done">done</span></td></tr>
+      <tr><td>T2</td><td>Extend the leak check for a live-infrastructure source: account id, hostnames, stack FQDNs, EC2/AMI ids</td><td class="verdict"><span class="tstat t-done">done</span></td></tr>
+      <tr><td>T3</td><td>Generate <code>specs/</code> from machine-readable data, with a CI drift check</td><td class="verdict"><span class="tstat t-done">done</span></td></tr>
+      <tr><td>T4</td><td>Cross-check every derived total against the survey's own summary blocks; fail the build on disagreement</td><td class="verdict"><span class="tstat t-done">done</span></td></tr>
+      <tr><td>T5</td><td>The seven pages in the brief's build order, plus <code>/security/</code> and <code>/network/</code></td><td class="verdict"><span class="tstat t-done">done</span></td></tr>
+      <tr><td>T6</td><td>Publish the source documents verbatim, with the two redaction-list documents redacted under their own rule</td><td class="verdict"><span class="tstat t-done">done</span></td></tr>
+      <tr><td>T7</td><td><code>llms-full.txt</code> — the thing pki.sgit.ai lacks</td><td class="verdict"><span class="tstat t-done">done</span></td></tr>
+      <tr><td>T8</td><td>Per-page <code>.md</code> twins beyond <code>index.md</code></td><td class="verdict"><span class="tstat t-open">queued</span></td></tr>
+      <tr><td>T9</td><td>Wire the spec generator to the platform repository directly, so the catalogue is read from <code>manifest.py</code> rather than from a dated survey</td><td class="verdict"><span class="tstat t-open">queued</span></td></tr>
+      <tr><td>T10</td><td>A Wardley map of the substrate spectrum, for <a href="https://wardley-maps.sgit.ai">wardley-maps.sgit.ai</a></td><td class="verdict"><span class="tstat t-open">queued</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="requests">Requests — these need an answer from a person</h2>
+<div class="tablewrap">
+  <table>
+    <thead><tr><th>#</th><th>Request</th><th>State</th></tr></thead>
+    <tbody>
+      <tr><td><b>R1</b></td><td><b>The brief pack's catalogue JSON is missing the per-spec array its own README advertises.</b> <code>specs__catalogue.json</code> is described as <em>“the full catalogue — LOC, capability, boot time, stability, family, <code>create_node</code> support”</em> and ships with counts and totals but no <code>specs</code> array. The rows were transcribed from <a href="../documents/the-spec-system.html">document 04 section 1</a> instead, and every derived total is cross-checked against the JSON's own summary blocks — they agree. Worth fixing at source so the next consumer does not have to transcribe a markdown table.</td><td class="verdict"><span class="tstat t-need">for the Librarian</span></td></tr>
+      <tr><td><b>R2</b></td><td><b>The pack disagrees with itself on the stable/experimental split.</b> Document 00 section 7 says <em>“8 STABLE, 8 EXPERIMENTAL”</em>; document 04 section 1 and the catalogue JSON both say <b>9 stable, 7 experimental</b>, and the per-spec rows compute 9/7. The site publishes 9/7 and states its working. One line to correct.</td><td class="verdict"><span class="tstat t-need">for the Librarian</span></td></tr>
+      <tr><td><b>R3</b></td><td><b>Is the platform still being developed?</b> No commit since 24 July 2026. <a href="../roadmap/index.html#q8">Q8</a> is published unresolved and the site deliberately makes no active-development claim, but this is the one open question the tree cannot answer. Paused, finished, or between phases?</td><td class="verdict"><span class="tstat t-need">for the lead</span></td></tr>
+      <tr><td><b>R4</b></td><td><b>Confirm the domain decision.</b> The site states, on the front page and in <a href="../network/index.html#domains">/network/</a>, that <code>sgit.ai</code> is documentation and <code>sgraph.ai</code> is running infrastructure, and it has encoded that as the single exception in the leak tripwire. That is the pack's recommendation rather than a ratified decision — it should be ratified or reversed rather than left as a site's assumption.</td><td class="verdict"><span class="tstat t-need">for the lead</span></td></tr>
+      <tr><td><b>R5</b></td><td><b>Q6, the EC2 tag.</b> <a href="../security/index.html#tag">Published as a known trade-off with a named mitigation.</a> The site says a stated decision either way is fine and silence is not — which puts the decision on this list.</td><td class="verdict"><span class="tstat t-need">for the lead</span></td></tr>
+      <tr><td>R6</td><td><b>One <code>docker images</code> line</b> closes G5 and lets the site publish an image size instead of an empty cell.</td><td class="verdict"><span class="tstat t-open">low priority</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="notes">Notes from the build</h2>
+<ul>
+  <li><b>The site's own rule caught something immediately.</b> The derived-total cross-check in <code>gen_specs.py</code> was written expecting to be redundant; it is what confirmed the family LOC totals, the browser share and the 9/7 split all reconcile — and it is what makes R2 a documentation error rather than a data error.</li>
+  <li><b>Two source documents could not be published verbatim.</b> Documents 07 and 10 are the redaction list, so between them they named every live address the site was told to strip. <a href="../documents/index.html#redaction">They are published redacted under their own rule</a>, and the same list is now in the release gate.</li>
+  <li><b>No word of this site was written from the platform's README.</b> Per the pack's instruction, and because <a href="../shipped/index.html#stale">the README describes a repository that does not exist</a>.</li>
+</ul>
+
+<div class="pagenav">
+  <a href="index.html">← How this site is built</a>
+  <a href="versions.html">Release history →</a>
+</div>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">sg-compute<span>.sgit.ai</span></div>
+    <p>An ephemeral compute platform with sixteen ready-to-launch workload specs — measured from the tree, audit and all. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. All site content CC BY 4.0; the platform's own source is Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a> — the parent project and the vault layer this provisions for · <a href="https://open-source.sgit.ai">↗ open-source.sgit.ai</a> · <a href="https://wardley-maps.sgit.ai">↗ wardley-maps.sgit.ai</a> · <a href="https://risks.sgit.ai">↗ risks.sgit.ai</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="domainnote"><b>sg-compute.sgit.ai</b> is documentation. <b>sg-compute.sgraph.ai</b> is a live Route 53 zone serving per-node DNS. Same label, different TLD, stated <a href="../network/index.html#domains" style="display:inline;padding:0">deliberately</a>.</p>
+    <p class="partnote">⚠ Participant disclosure: published by the sgit project, which builds the platform this site documents and audits. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html">v0.1.0</a> · <a href="../admin/index.html">engineering</a></p>
+  </div>
+  <div>
+    <h4>The platform</h4>
+    <a href="../what-it-is/index.html">What it is</a>
+    <a href="../specs/index.html">The spec catalogue</a>
+    <a href="../agents/index.html">The machine surface</a>
+    <a href="../security/index.html">Isolation &amp; trade-offs</a>
+  </div>
+  <div>
+    <h4>The argument</h4>
+    <a href="../why/index.html">Serverless for agents</a>
+    <a href="../numbers/index.html">The measured numbers</a>
+    <a href="../rename/index.html">The rename</a>
+  </div>
+  <div>
+    <h4>The audit</h4>
+    <a href="../shipped/index.html">&#8594; What ships, and what does not</a>
+    <a href="../roadmap/index.html">Build order &amp; open questions</a>
+    <a href="../documents/index.html">The documents</a>
+    <a href="../about/participant.html">Where we lose</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../admin/comms.html">Comms: tasks &amp; requests</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../network/index.html">The network</a>
+    <a href="../llms.txt">llms.txt</a>
+    <a href="../llms-full.txt">llms-full.txt</a>
+  </div>
+</div></footer>
+
+</body>
+</html>

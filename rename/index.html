@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The rename — architecturally done, textually 40% done · sg-compute.sgit.ai</title>
+<meta name="description" content="Nine acceptance criteria from the 30 April naming brief, scored against the tree: 3 done, 2 partial, 4 not done, plus one deliberate improvement. The four-character guard bug, the full breakage list, the sequencing that does not orphan live nodes, and the domain collision.">
+<link rel="canonical" href="https://sg-compute.sgit.ai/rename/index.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="sg-compute.sgit.ai">
+<meta property="og:url" content="https://sg-compute.sgit.ai/rename/index.html">
+<meta property="og:title" content="The rename: nine acceptance criteria, scored against the tree">
+<meta property="og:description" content="Nine acceptance criteria from the 30 April naming brief, scored against the tree: 3 done, 2 partial, 4 not done, plus one deliberate improvement. The four-character guard bug, the full breakage list, the sequencing that does not orphan live nodes, and the domain collision.">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">sg-compute<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai — the parent project: the vault layer and the shipped CLI this compute platform provisions for">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">audit draft</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history">v0.1.0</a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../what-it-is/index.html">The platform<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../what-it-is/index.html">What it is: two ephemeral layers</a>
+      <a class="sl" href="../specs/index.html">The spec catalogue</a>
+      <a class="sl" href="../agents/index.html">The machine surface</a>
+      <a class="sl" href="../security/index.html">Isolation &amp; the one trade-off</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../why/index.html">The argument<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../why/index.html">A serverless environment for agents</a>
+      <a class="sl" href="../numbers/index.html">The measured numbers</a>
+      <a class="sl here" href="../rename/index.html">The rename</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../shipped/index.html">The audit<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../shipped/index.html">What ships, and what does not</a>
+      <a class="sl" href="../roadmap/index.html">Build order &amp; open questions</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../documents/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../documents/index.html">The documents</a>
+      <a class="sl" href="../data/specs.json">The catalogue as JSON</a>
+      <a class="sl" href="../llms.txt">llms.txt</a>
+      <a class="sl" href="../llms-full.txt">llms-full.txt</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../admin/comms.html">Comms: tasks &amp; requests</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Admin &amp; engineering</a>
+      <a class="sl" href="../network/index.html">The network</a>
+      <a class="sl" href="../about/participant.html">Where we lose</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__SG-Compute">★ GitHub</a>
+  <script src="../assets/nav.js" defer></script>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">sg-compute.sgit.ai</a> / rename</div>
+<h1>The rename</h1>
+<p class="lead">Publishing a migration is unusual for a product site and right for this one: the repository is public, the old name is everywhere in it, and a reader hits the mismatch within a minute. <b>Headline: architecturally done, textually about 40% done.</b></p>
+
+<div class="evbox">
+  <span class="evtag">the number that settles it</span>
+  <p><b>~71.5% of the new codebase is not browser code.</b> Playwright is <a href="../specs/playwright.html">1 of 16 registered specs</a> and 16.8% of spec code. Including the legacy CLI package — 71,182 lines of AWS, IAM, credentials, sentinel and TUI code, all generic — the browser-specific share of the whole 217k-line repository falls to about <b>14%</b>.</p>
+</div>
+
+<p>The 30 April 2026 naming brief said it first, and better:</p>
+<blockquote class="challenge">“The project is called ‘SP’ (SGraph Playwright), which is wrong: <b>Playwright is just one of many components now.</b>”<br><br>“The overall product is sometimes called ‘ephemeral EC2,’ which is <b>too narrow: it is bigger than EC2.</b>”<br><br>“<b>Now is the right time to fix this.</b> We are in the middle of a refactoring. The code, the CLI, the API, and the UI can all be renamed together.”</blockquote>
+<p>That was four months ago.</p>
+
+<h2 id="guard">⚠ The guard that has been hiding it</h2>
+<p><code>tests/ci/test_no_legacy_imports.py</code> exists to stop the new tree importing from the legacy one. Its regex:</p>
+<pre class="shell">r'from\s+sgraph_ai_service_playwright<span class="r">[^_]</span>|import\s+sgraph_ai_service_playwright<span class="r">[^_]</span>'
+</pre>
+<p><code>[^_]</code> requires a <b>non-underscore</b> after the package stem. The real package is <code>sgraph_ai_service_playwright__cli</code> — <b>double</b> underscore. Verified by running both patterns over the tree:</p>
+<pre class="shell">GUARD regex   : <span class="g">0 files</span>    -> test PASSES <span class="d">(vacuously)</span>
+REAL imports  : <span class="r">69 files</span>, 228 import lines
+FIXED regex   : <span class="r">69 files</span>   -> test FAILS, as intended
+</pre>
+<p>The 228 break down as <code>__cli.aws</code> 126, <code>__cli.credentials</code> 71, <code>__cli.tui</code> 23, plus a handful in <code>osx</code>, <code>observability</code>, <code>firefox</code>, <code>neko</code> and <code>sentinel</code>. And the dependency runs <b>both ways</b> — the legacy package imports <code>sg_compute</code> 72 times. The guard's own docstring says <em>“BV2.7 broke the cycle.”</em> <b>The cycle is not broken.</b></p>
+<p>There is a second tell in the same file. Its allowlist exempts a path called <code>…/Local__Docker__SGraph_AI__Service__Playwright.py</code> — <b>a class named after the old service, living inside the new tree</b>. The rename has not reached the class names.</p>
+<div class="note"><p><b>Deleting four characters turns this test red.</b> It is <a href="../roadmap/index.html#fixes">fix F1</a>, and it should happen before anyone claims the tree is clean.</p></div>
+
+<h2 id="criteria">The nine acceptance criteria, scored</h2>
+<p>From the 30 April brief, verified against the tree.</p>
+<div class="tablewrap">
+  <table>
+    <thead><tr><th>#</th><th>Criterion</th><th></th><th>Evidence</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>No “SP” / “SGraph Playwright” references remain</td><td class="verdict"><span class="opt-verdict opt-no">no</span></td><td><code>sp</code> and <code>sp-cli</code> are live <code>pyproject.toml</code> entry points; the legacy CLI package is 71,182 lines</td></tr>
+      <tr><td>2</td><td>CLI uses <code>sg-compute node/pod/stack</code></td><td class="verdict"><span class="opt-verdict opt-part">partial</span></td><td>The binary exists, but only <code>sg nodes</code> is wired in. <b><code>Cli__Compute</code> — the taxonomy-correct aggregator — exists and is not an entry point</b>, reachable only through a script</td></tr>
+      <tr><td>3</td><td>API uses <code>/nodes /pods /stacks /specs</code></td><td class="verdict"><span class="opt-verdict opt-yes">done</span></td><td>All four route classes exist and are mounted</td></tr>
+      <tr><td>4</td><td>Frontend nav shows Nodes/Specs/Stacks/Settings</td><td class="verdict"><span class="opt-verdict opt-yes">done</span></td><td>Compute · Nodes · Stacks · Specs · Settings · API</td></tr>
+      <tr><td>5</td><td>Specs stored as JSON with a <code>spec.json</code></td><td class="verdict"><span class="opt-verdict opt-yes">better</span></td><td><b>Deliberate deviation, and better than asked for</b>: typed <code>manifest.py</code> with a schema class. <a href="../specs/index.html#mechanisms">The mechanism →</a></td></tr>
+      <tr><td>6</td><td>“Stack” reserved for multi-node only</td><td class="verdict"><span class="opt-verdict opt-no">no</span></td><td>Every per-spec CLI help string still says <em>“Ephemeral X EC2 stacks”</em> for a single instance — <b>13 occurrences in one file</b></td></tr>
+      <tr><td>7</td><td>≥ 6 specs defined</td><td class="verdict"><span class="opt-verdict opt-yes">done</span></td><td><a href="../specs/index.html">16 registered</a></td></tr>
+      <tr><td>8</td><td>Folder structure matches the taxonomy</td><td class="verdict"><span class="opt-verdict opt-part">partial</span></td><td><code>sg_compute/{core,cli,control_plane,platforms}</code> and <code>sg_compute_specs/</code> match; the frontend directory does not</td></tr>
+      <tr><td>9</td><td>Old naming gone from user-facing surfaces</td><td class="verdict"><span class="opt-verdict opt-no">no</span></td><td><code>service_name='sg-playwright'</code>, <code>SG_PLAYWRIGHT__*</code>, the image names, the PyPI name</td></tr>
+    </tbody>
+  </table>
+</div>
+<p><b>Score: 3 done, 2 partial, 4 not done — plus one deliberate improvement over spec.</b></p>
+<p>Criterion 6 is the cheapest and most visible win. The brief was explicit: <em>“<b>Reserve ‘stack’ for this. Do not use it for single nodes.</b>”</em> Thirteen help strings in one file violate it — and, per <a href="../shipped/index.html#stacks">the ledger</a>, there is no multi-node orchestration for the word to describe anyway.</p>
+
+<h2 id="counts">Where the names are, counted</h2>
+<div class="tablewrap">
+  <table>
+    <thead><tr><th>Name</th><th style="text-align:right">Files containing it</th></tr></thead>
+    <tbody>
+      <tr><td><code>sgraph_ai_service_playwright</code></td><td style="text-align:right">5,140</td></tr>
+      <tr><td><code>sg-playwright</code></td><td style="text-align:right">5,008</td></tr>
+      <tr><td><code>sg_compute</code></td><td style="text-align:right">3,013</td></tr>
+      <tr><td><code>SG/Compute</code></td><td style="text-align:right">815</td></tr>
+      <tr><td><code>sg-compute</code></td><td style="text-align:right">557</td></tr>
+      <tr><td>the old repository name</td><td style="text-align:right">114</td></tr>
+      <tr><td>the old PyPI name</td><td style="text-align:right">14</td></tr>
+    </tbody>
+  </table>
+</div>
+<p>Runtime self-identification is still Playwright: <code>Capability__Detector</code> sets <code>service_name = 'sg-playwright'</code>. Environment variables are <b>21 distinct <code>SG_PLAYWRIGHT__*</code></b> against <b>2 <code>SG_COMPUTE__*</code></b>.</p>
+
+<h2 id="breaks">What a rename would actually break</h2>
+<div class="tablewrap">
+  <table>
+    <thead><tr><th>Surface</th><th>Current</th><th>Breaks?</th></tr></thead>
+    <tbody>
+      <tr><td>Repository name</td><td>the old name</td><td>114 files reference it</td></tr>
+      <tr><td><b>PyPI package</b></td><td>the old name</td><td class="verdict"><span class="opt-verdict opt-no">yes</span> — a published name. Needs a new package plus a deprecation shim</td></tr>
+      <tr><td><b>Docker images</b></td><td><code>diniscruz/sg-playwright</code>, <code>-vnc</code>, <code>sg-host-control</code></td><td class="verdict"><span class="opt-verdict opt-no">yes</span> — 124 + 19 references including CI, user-data and compose. <b>Running nodes pull by name</b></td></tr>
+      <tr><td>Legacy package directory</td><td>the old package</td><td>228 imports across 69 files</td></tr>
+      <tr><td>Frontend directory</td><td>the old name</td><td>Static mount paths, and a packaging guard</td></tr>
+      <tr><td><b>Environment variables</b></td><td><code>SG_PLAYWRIGHT__*</code> (21)</td><td class="verdict"><span class="opt-verdict opt-no">yes</span> — <b>baked into the env file on every running node.</b> A rename orphans live infrastructure</td></tr>
+      <tr><td>Runtime identity</td><td><code>service_name = 'sg-playwright'</code></td><td>Consumers key off <code>/health/info</code></td></tr>
+      <tr><td>CLI aliases</td><td><code>sp</code>, <code>sp-cli</code></td><td>Documented as <em>“legacy, kept for backward compat”</em></td></tr>
+      <tr><td>DNS zone</td><td>the live per-node zone (128 refs)</td><td><a href="#domain">§ the domain collision</a></td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="warnbox"><p><b>One thing is already broken.</b> <code>bake-ami.yml</code> invokes a binary called <code>sg-play</code> sixteen times, and <code>sg-play</code> is defined nowhere. <a href="../shipped/index.html#ami">That entire workflow is dead</a> — which also means the AMI bake pipeline cited as a maturity signal is not runnable as written.</p></div>
+
+<h2 id="sequence">The sequencing — because a big-bang rename orphans live nodes</h2>
+<div class="ladder">
+  <div class="cap"><span class="capnum">1</span><h3>Fix the guard first</h3><p>Four characters. The legacy dependency becomes visible and measurable, and every step after this one can be checked rather than believed.</p></div>
+  <div class="cap"><span class="capnum">2</span><h3>Fix <code>sg-play</code></h3><p>One line. A dead workflow hiding a whole pipeline.</p></div>
+  <div class="cap"><span class="capnum">3</span><h3>Add aliases before removing names</h3><p>Publish the new PyPI package and Docker tags alongside the old. Make <code>service_name</code> configurable. Accept both environment-variable prefixes, with the old one warning.</p></div>
+  <div class="cap"><span class="capnum">4</span><h3>Break the cycle</h3><p>228 imports, mostly <code>aws</code>, <code>credentials</code> and <code>tui</code>. <b>This is the real work</b>, and it is what blocks a clean package boundary.</p></div>
+  <div class="cap"><span class="capnum">5</span><h3>Rename the repository — last</h3><p>When nothing points at the old name that is not aliased.</p></div>
+</div>
+
+<h2 id="domain">⚠ The domain collision</h2>
+<p>The site you are reading is <b><code>sg-compute.sgit.ai</code></b>. <b><code>sg-compute.sgraph.ai</code> is a live Route 53 zone</b>, used for per-node DNS as <code>&lt;stack-name&gt;.sg-compute.&lt;zone&gt;</code>, and it appears <b>128 times</b> in the platform's code and tests, including in code defaults and test assertions.</p>
+<p>Same label, different TLD. That is workable, and it is also the kind of thing that produces a support question every week forever. The two options were: claim the distinction explicitly, or move the node DNS and touch 128 references and every running node.</p>
+<div class="note"><p><b>The decision is the first one, and it is stated rather than left to be discovered.</b> <code>sgit.ai</code> is documentation; <code>sgraph.ai</code> is running infrastructure. <a href="../network/index.html#domains">Where it could still bite, and what would change the answer →</a></p></div>
+
+<h2 id="unused">Three good ideas from the naming brief, currently unused</h2>
+<ul>
+  <li><b>The recursion.</b> <em>“The Ephemeral Compute control plane should be able to run inside Ephemeral Compute… This is recursion, but it is also practical.”</em> <a href="../why/index.html#recursion">The most quotable unbuilt idea in the corpus →</a></li>
+  <li><b>The simulated marketplace.</b> <em>“This is the simulated AWS Marketplace: a catalogue of pre-configured, ready-to-launch environments.”</em> <a href="../specs/index.html">Sixteen specs with typed manifests, stability ratings and boot times is exactly that catalogue →</a></li>
+  <li><b>It is bigger than EC2.</b> Still true, and still not reflected in a <code>Platform</code> abstraction with one implementation. <a href="../roadmap/index.html#q3">Q3.</a></li>
+</ul>
+
+<div class="pagenav">
+  <a href="../numbers/index.html">← The measured numbers</a>
+  <a href="../shipped/index.html">What ships, and what does not →</a>
+</div>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">sg-compute<span>.sgit.ai</span></div>
+    <p>An ephemeral compute platform with sixteen ready-to-launch workload specs — measured from the tree, audit and all. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. All site content CC BY 4.0; the platform's own source is Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a> — the parent project and the vault layer this provisions for · <a href="https://open-source.sgit.ai">↗ open-source.sgit.ai</a> · <a href="https://wardley-maps.sgit.ai">↗ wardley-maps.sgit.ai</a> · <a href="https://risks.sgit.ai">↗ risks.sgit.ai</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="domainnote"><b>sg-compute.sgit.ai</b> is documentation. <b>sg-compute.sgraph.ai</b> is a live Route 53 zone serving per-node DNS. Same label, different TLD, stated <a href="../network/index.html#domains" style="display:inline;padding:0">deliberately</a>.</p>
+    <p class="partnote">⚠ Participant disclosure: published by the sgit project, which builds the platform this site documents and audits. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html">v0.1.0</a> · <a href="../admin/index.html">engineering</a></p>
+  </div>
+  <div>
+    <h4>The platform</h4>
+    <a href="../what-it-is/index.html">What it is</a>
+    <a href="../specs/index.html">The spec catalogue</a>
+    <a href="../agents/index.html">The machine surface</a>
+    <a href="../security/index.html">Isolation &amp; trade-offs</a>
+  </div>
+  <div>
+    <h4>The argument</h4>
+    <a href="../why/index.html">Serverless for agents</a>
+    <a href="../numbers/index.html">The measured numbers</a>
+    <a href="../rename/index.html">The rename</a>
+  </div>
+  <div>
+    <h4>The audit</h4>
+    <a href="../shipped/index.html">&#8594; What ships, and what does not</a>
+    <a href="../roadmap/index.html">Build order &amp; open questions</a>
+    <a href="../documents/index.html">The documents</a>
+    <a href="../about/participant.html">Where we lose</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../admin/comms.html">Comms: tasks &amp; requests</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../network/index.html">The network</a>
+    <a href="../llms.txt">llms.txt</a>
+    <a href="../llms-full.txt">llms-full.txt</a>
+  </div>
+</div></footer>
+
+</body>
+</html>

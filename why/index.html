@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A serverless environment for agents · sg-compute.sgit.ai</title>
+<meta name="description" content="“We are competing for the agent-deployment market.” The definitional move that lets an EC2 instance with a one-hour self-terminate count as serverless, the trade stated honestly against Lambda, the cold-start ladder against the measured benchmarks, and the best unbuilt idea in the corpus.">
+<link rel="canonical" href="https://sg-compute.sgit.ai/why/index.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="sg-compute.sgit.ai">
+<meta property="og:url" content="https://sg-compute.sgit.ai/why/index.html">
+<meta property="og:title" content="We are not competing with Vercel. We are competing for the agent-deployment market">
+<meta property="og:description" content="“We are competing for the agent-deployment market.” The definitional move that lets an EC2 instance with a one-hour self-terminate count as serverless, the trade stated honestly against Lambda, the cold-start ladder against the measured benchmarks, and the best unbuilt idea in the corpus.">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">sg-compute<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai — the parent project: the vault layer and the shipped CLI this compute platform provisions for">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">audit draft</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history">v0.1.0</a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../what-it-is/index.html">The platform<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../what-it-is/index.html">What it is: two ephemeral layers</a>
+      <a class="sl" href="../specs/index.html">The spec catalogue</a>
+      <a class="sl" href="../agents/index.html">The machine surface</a>
+      <a class="sl" href="../security/index.html">Isolation &amp; the one trade-off</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../why/index.html">The argument<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl here" href="../why/index.html">A serverless environment for agents</a>
+      <a class="sl" href="../numbers/index.html">The measured numbers</a>
+      <a class="sl" href="../rename/index.html">The rename</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../shipped/index.html">The audit<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../shipped/index.html">What ships, and what does not</a>
+      <a class="sl" href="../roadmap/index.html">Build order &amp; open questions</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../documents/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../documents/index.html">The documents</a>
+      <a class="sl" href="../data/specs.json">The catalogue as JSON</a>
+      <a class="sl" href="../llms.txt">llms.txt</a>
+      <a class="sl" href="../llms-full.txt">llms-full.txt</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../admin/comms.html">Comms: tasks &amp; requests</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Admin &amp; engineering</a>
+      <a class="sl" href="../network/index.html">The network</a>
+      <a class="sl" href="../about/participant.html">Where we lose</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__SG-Compute">★ GitHub</a>
+  <script src="../assets/nav.js" defer></script>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">sg-compute.sgit.ai</a> / why</div>
+<h1>A serverless environment for agents</h1>
+<p class="lead">This is the argument, and it is the strongest writing in the platform's corpus — 23 briefs and roughly 53,000 words, mostly between 30 April and 16 May 2026. It is also the part with the least code behind it, which is worth saying at the top rather than at the bottom.</p>
+
+<h2 id="position">The positioning, in its own words</h2>
+<blockquote class="challenge">“<b>A serverless environment for agents, with the isolation, observability, and substrate control that agent workloads actually need.</b>”</blockquote>
+<p>And the market it is explicitly <em>not</em> in:</p>
+<blockquote class="challenge">“We are <b>not</b> competing for the generic developer-platform market (Vercel, Cloudflare Workers, Lambda)… <b>We are competing for the agent-deployment market.</b>”</blockquote>
+<p>That is a sharper position than most infrastructure projects manage, and it is defensible because the workload genuinely differs. Agent runs last seconds to minutes rather than milliseconds. They need a real filesystem and, often, a real browser. They care more about isolation and substrate control than about the last 400 milliseconds of cold start.</p>
+
+<h2 id="definition">The definitional move, made explicitly</h2>
+<p>The whole argument rests on one definition, and it is worth stating rather than assuming, because it is doing real work:</p>
+<blockquote class="challenge">“<b>Serverless = no servers running when there is no traffic, with a defined cost to start serving traffic and ongoing per-invocation cost while traffic is served.</b>”</blockquote>
+<p>Note what that does <em>not</em> say. Nothing about functions. Nothing about managed runtimes. Nothing about a vendor's execution model. That is the move that lets <b>an EC2 instance which terminates itself after an hour</b> count as serverless — and it is a fair move, but it should be made in the open, because a reader who arrives with Lambda's definition in mind will otherwise think a sleight of hand has occurred.</p>
+
+<h2 id="trade">The trade, stated honestly</h2>
+<blockquote class="challenge">“The trade-off Lambda makes is ‘less control, smaller startup tax, fully managed.’ Our composition makes a different trade: <b>more control, slightly longer first-call cold-start, broader workload range, and per-substrate optimisation.</b>”</blockquote>
+<p>And the sharper version of the same point:</p>
+<blockquote class="challenge">“<b>Lambda's 100ms cold-start is impressive but irrelevant for most agentic workloads</b> (which run for seconds or minutes anyway).”</blockquote>
+<p>Then the claim the whole comparison leans on:</p>
+<blockquote class="challenge">“<b>Containers do not have this problem.</b> A single container can serve hundreds of parallel requests trivially. The cold-start is paid <b>once per container, not once per request</b>.” … “<b>the workhorse substrate is a container, not a function.</b>”</blockquote>
+<div class="warnbox">
+  <p><b>That claim is argued and never measured.</b> There are no load tests anywhere in the repository. It is stated here as a <em>design expectation</em>, not a benchmark.</p>
+  <p>It is also the claim most likely to be wrong in an interesting way, because every browser request launches a fresh Chromium <em>process</em>: the concurrency ceiling here is memory, not the web framework. <a href="../roadmap/index.html#q2">Q2, published unresolved.</a></p>
+</div>
+
+<h2 id="ladder">The cold-start ladder, against its own benchmark</h2>
+<p>The corpus's most useful single table — and the site's chance to check it, because the same repository contains 24 real boot measurements.</p>
+<div class="tablewrap">
+  <table>
+    <thead><tr><th>Substrate</th><th>Claimed cold start</th><th>Status in the tree</th></tr></thead>
+    <tbody>
+      <tr><td>EC2 cold</td><td>30–60 s</td><td class="verdict"><span class="opt-verdict opt-yes">implemented</span></td></tr>
+      <tr><td><b>EC2 from warm pool</b></td><td><b>5–15 s</b></td><td class="verdict"><span class="opt-verdict opt-no">not implemented</span></td></tr>
+      <tr><td>Fargate cold</td><td>10–30 s</td><td class="verdict"><span class="opt-verdict opt-part">partial — an experiment</span></td></tr>
+      <tr><td>Container on a running EC2</td><td>1–5 s</td><td class="verdict"><span class="opt-verdict opt-yes">implemented</span></td></tr>
+      <tr><td>Cached-image restart</td><td>100–500 ms</td><td class="verdict"><span class="dim">—</span></td></tr>
+      <tr><td>Firecracker snapshot restore</td><td>&lt; 50 ms</td><td class="verdict"><span class="opt-verdict opt-part">future</span></td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="note">
+  <p><b>The measured reality beats the ladder's own top implemented rung.</b> Twenty-four real runs put EC2 cold start at <b>~16 seconds</b>, not 30–60. The ladder is pessimistic against its own benchmark — and the warm-pool rung it promises 5–15 seconds from <a href="../shipped/index.html#warm">does not exist</a>. <a href="../numbers/index.html#boot">The measurements, with the seven that failed →</a></p>
+</div>
+
+<h2 id="fifty">The 50-second number, and what it buys</h2>
+<blockquote class="challenge">“<b>The 50-second end-to-end provisioning is the number that matters most.</b> It is not as fast as Lambda (sub-second cold start), not as fast as Fargate (10–30s), but it gives a dedicated EC2 instance per-vault with full control, isolation, and a stable DNS name.” … “the ‘click and you have a dedicated environment’ pattern (<b>where 50s is a fair trade for the isolation</b>).”</blockquote>
+<p>That is the product claim in one sentence, and it is honest about what it is trading. The instance itself is up in ~16 seconds; <b>the other 34 are provisioning, DNS and health-checking</b>, which is where anyone wanting the number down would have to look.</p>
+
+<h2 id="workloads">The workload classes — and the catalogue is the same argument told twice</h2>
+<p>The serverless brief names seven: <b>vault apps, agents, AppSec mini-tools, demo environments, CI workloads, multi-region testing, and security scanners in Nitro Enclaves.</b></p>
+<p>Look at that list next to <a href="../specs/index.html#families">the spec families</a> and the join is obvious — vault specs, browser specs, LLM specs, observability specs. <b>The workload list and the spec list are the same argument told twice.</b> So each class links to the spec that serves it, and the ones with no spec are the roadmap:</p>
+<div class="tablewrap">
+  <table>
+    <thead><tr><th>Workload class</th><th>Served by</th></tr></thead>
+    <tbody>
+      <tr><td>Vault apps</td><td><a href="../specs/vault_app.html">vault_app</a>, <a href="../specs/vault_publish.html">vault_publish</a></td></tr>
+      <tr><td>Agents</td><td><a href="../specs/local_claude.html">local_claude</a>, <a href="../specs/docker.html">docker</a></td></tr>
+      <tr><td>AppSec mini-tools</td><td><a href="../specs/docker.html">docker</a>, <a href="../specs/podman.html">podman</a>, <a href="../specs/mitmproxy.html">mitmproxy</a></td></tr>
+      <tr><td>Demo environments</td><td><a href="../specs/vnc.html">vnc</a>, <a href="../specs/neko.html">neko</a>, <a href="../specs/open_design.html">open_design</a></td></tr>
+      <tr><td>CI workloads</td><td><a href="../specs/playwright.html">playwright</a>, <a href="../specs/firefox.html">firefox</a></td></tr>
+      <tr><td>Multi-region testing</td><td><a href="../specs/content_proxy.html">content_proxy</a>, <a href="../specs/mitmproxy.html">mitmproxy</a></td></tr>
+      <tr><td>Security scanners in Nitro Enclaves</td><td class="verdict"><span class="opt-verdict opt-no">no spec — research only</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="recursion">The best unbuilt idea in the corpus</h2>
+<blockquote class="challenge">“<b>We do not need a serverless ‘control plane’ running 24/7.</b> The control plane is one specific role that can spin up itself on demand, do its work, and shut down. <b>The DNS layer is the always-on piece</b> (cheap; effectively free); everything else is on-demand.”</blockquote>
+<p>And from the naming brief, four months earlier and in fewer words:</p>
+<blockquote class="challenge">“An interesting property: <b>the Ephemeral Compute control plane should be able to run inside Ephemeral Compute</b>… This is recursion, but it is also practical.”</blockquote>
+<p><b>Nobody has built it.</b> It follows directly from the architecture, and a platform that can host its own control plane is a much stronger claim than one that cannot. Whether it <em>should</em> be built is <a href="../roadmap/index.html#q1">Q1</a> — a control plane that must exist in order to start itself has a bootstrap problem, and the honest answer is probably the one the serverless brief already describes: the DNS layer plus one small always-on waker, everything else ephemeral.</p>
+
+<h2 id="bets">Three adjacent bets</h2>
+<div class="ladder">
+  <div class="cap"><span class="capnum">1</span><h3>Nitro Enclaves — the confidential-compute tier</h3>
+    <p>3,480 words, 15 May 2026. It carries the best customer sentence in the whole corpus:</p>
+    <p><em>“Run your security scan against your private repository. The scanner code is open source. The enclave's attestation proves it is the exact code you can inspect. <b>We cannot see your code, even though it ran on our infrastructure.</b>”</em></p>
+    <span class="from">That is the zero-knowledge argument the rest of the estate is built on, extended to compute — and it is the thing that would distinguish this from every generic runner. <b>No spec, no code.</b></span></div>
+  <div class="cap"><span class="capnum">2</span><h3>Firecracker — with a fact that changed the economics</h3>
+    <p>3,222 words plus 2,607 of research, 15 May 2026.</p>
+    <p><em>“<b>AWS nested-virt support on C8i/M8i/R8i (Feb 2026) collapsed Firecracker entry cost from $3+/hour to ~$0.09/hour.</b>”</em></p>
+    <span class="from">The bottom rung of the cold-start ladder — sub-50ms snapshot restore — stops being theoretical when the entry cost drops 30×. <b>Still research.</b> And fifteen months old, so the market has moved.</span></div>
+  <div class="cap"><span class="capnum">3</span><h3>AgentCore — layering rather than competing</h3>
+    <p>2,980 words, 15 May 2026. Where SG/Compute sits on top of Bedrock rather than against it. Worth publishing as positioning, and worth re-checking before anyone acts on it: this material is fifteen months old and that market in particular has not stood still.</p></div>
+</div>
+
+<h2 id="honest">The sentence that belongs with all of it</h2>
+<blockquote class="challenge">“<b>The composition is not built yet, but the gap is integration, not new invention.</b>”</blockquote>
+<p>Fifteen months later that is still the right sentence, and <a href="../shipped/index.html">the audit</a> says exactly why: the pieces are real, and warm pools, multi-node stacks, non-EC2 platforms and the artefact sinks are the integration that has not happened.</p>
+
+<div class="pagenav">
+  <a href="../specs/index.html">← The spec catalogue</a>
+  <a href="../numbers/index.html">The measured numbers →</a>
+</div>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">sg-compute<span>.sgit.ai</span></div>
+    <p>An ephemeral compute platform with sixteen ready-to-launch workload specs — measured from the tree, audit and all. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. All site content CC BY 4.0; the platform's own source is Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a> — the parent project and the vault layer this provisions for · <a href="https://open-source.sgit.ai">↗ open-source.sgit.ai</a> · <a href="https://wardley-maps.sgit.ai">↗ wardley-maps.sgit.ai</a> · <a href="https://risks.sgit.ai">↗ risks.sgit.ai</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="domainnote"><b>sg-compute.sgit.ai</b> is documentation. <b>sg-compute.sgraph.ai</b> is a live Route 53 zone serving per-node DNS. Same label, different TLD, stated <a href="../network/index.html#domains" style="display:inline;padding:0">deliberately</a>.</p>
+    <p class="partnote">⚠ Participant disclosure: published by the sgit project, which builds the platform this site documents and audits. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html">v0.1.0</a> · <a href="../admin/index.html">engineering</a></p>
+  </div>
+  <div>
+    <h4>The platform</h4>
+    <a href="../what-it-is/index.html">What it is</a>
+    <a href="../specs/index.html">The spec catalogue</a>
+    <a href="../agents/index.html">The machine surface</a>
+    <a href="../security/index.html">Isolation &amp; trade-offs</a>
+  </div>
+  <div>
+    <h4>The argument</h4>
+    <a href="../why/index.html">Serverless for agents</a>
+    <a href="../numbers/index.html">The measured numbers</a>
+    <a href="../rename/index.html">The rename</a>
+  </div>
+  <div>
+    <h4>The audit</h4>
+    <a href="../shipped/index.html">&#8594; What ships, and what does not</a>
+    <a href="../roadmap/index.html">Build order &amp; open questions</a>
+    <a href="../documents/index.html">The documents</a>
+    <a href="../about/participant.html">Where we lose</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../admin/comms.html">Comms: tasks &amp; requests</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../network/index.html">The network</a>
+    <a href="../llms.txt">llms.txt</a>
+    <a href="../llms-full.txt">llms-full.txt</a>
+  </div>
+</div></footer>
+
+</body>
+</html>

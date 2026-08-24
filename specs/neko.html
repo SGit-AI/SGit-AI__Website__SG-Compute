@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>neko — a workload spec · sg-compute.sgit.ai</title>
+<meta name="description" content="neko: STABLE, 120s typical boot, 1,180 lines, family browser. Generated from the spec catalogue surveyed 2026-08-24.">
+<link rel="canonical" href="https://sg-compute.sgit.ai/specs/neko.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="sg-compute.sgit.ai">
+<meta property="og:url" content="https://sg-compute.sgit.ai/specs/neko.html">
+<meta property="og:title" content="neko — a workload spec · sg-compute.sgit.ai">
+<meta property="og:description" content="neko: STABLE, 120s typical boot, 1,180 lines, family browser. Generated from the spec catalogue surveyed 2026-08-24.">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">sg-compute<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai — the parent project: the vault layer and the shipped CLI this compute platform provisions for">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">audit draft</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history">v0.1.0</a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl here" href="../what-it-is/index.html">The platform<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../what-it-is/index.html">What it is: two ephemeral layers</a>
+      <a class="sl" href="../specs/index.html">The spec catalogue</a>
+      <a class="sl" href="../agents/index.html">The machine surface</a>
+      <a class="sl" href="../security/index.html">Isolation &amp; the one trade-off</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../why/index.html">The argument<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../why/index.html">A serverless environment for agents</a>
+      <a class="sl" href="../numbers/index.html">The measured numbers</a>
+      <a class="sl" href="../rename/index.html">The rename</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../shipped/index.html">The audit<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../shipped/index.html">What ships, and what does not</a>
+      <a class="sl" href="../roadmap/index.html">Build order &amp; open questions</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../documents/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../documents/index.html">The documents</a>
+      <a class="sl" href="../data/specs.json">The catalogue as JSON</a>
+      <a class="sl" href="../llms.txt">llms.txt</a>
+      <a class="sl" href="../llms-full.txt">llms-full.txt</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../admin/comms.html">Comms: tasks &amp; requests</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Admin &amp; engineering</a>
+      <a class="sl" href="../network/index.html">The network</a>
+      <a class="sl" href="../about/participant.html">Where we lose</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__SG-Compute">★ GitHub</a>
+  <script src="../assets/nav.js" defer></script>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">sg-compute.sgit.ai</a> / <a href="index.html">specs</a> / neko</div>
+<h1><code style="font-size:.8em">neko</code></h1>
+<p class="lead">A browser you can embed in an iframe and share — the collaborative end of the browser family.</p>
+
+<div class="docmeta">
+  <div class="k">Stability</div><div class="v"><span class="opt-verdict opt-yes">stable</span></div>
+  <div class="k">Capabilities</div><div class="v"><code>iframe-embed</code></div>
+  <div class="k">Typical boot</div><div class="v">120s <span class="dim small">— <code>boot_seconds_typical</code>, from the manifest</span></div>
+  <div class="k">Size</div><div class="v">1,180 lines <span class="dim small">— 1.9% of spec code</span></div>
+  <div class="k">Family</div><div class="v"><a href="index.html#f-browser">browser</a> <span class="dim small">— alongside <a href="playwright.html">playwright</a>, <a href="content_proxy.html">content_proxy</a>, <a href="firefox.html">firefox</a>, <a href="vnc.html">vnc</a></span></div>
+  <div class="k">create_node</div><div class="v"><span class="opt-verdict opt-no">no</span></div>
+  <div class="k">Measured</div><div class="v">2026-08-24, against repo v0.2.71</div>
+</div>
+
+<div class="warnbox">
+  <p><b><code>create_node</code> does not cover neko.</b> <code>EC2__Platform._service_for</code> raises <code>NotImplementedError</code> for everything but <code>docker</code>, <code>podman</code> and <code>vnc</code>. This spec creates nodes through its own CLI and service path, not the control-plane API. The generated CLI verbs below are real; the uniform API is not, for this spec.</p>
+</div>
+<h2 id="cli">The CLI, which nobody wrote</h2>
+<p>Per-spec CLIs are <b>generated, not written</b>. <code>Spec__CLI__Builder</code> registers the same verb set for every registered spec, so <code>neko</code> gets its command surface from the same code that gives every other spec theirs:</p>
+<pre class="shell"><span class="d"># the uniform verb set, for every registered spec</span>
+list · info · create · wait · health · connect · exec · delete · ami list|bake · cert
+
+<span class="d"># so, for this one</span>
+sg neko <span class="cy">create</span> <span class="d">--max-hours 1</span>
+sg neko <span class="cy">wait</span>
+sg neko <span class="cy">health</span>
+sg neko <span class="cy">delete</span>
+</pre>
+<p class="dim small">This is the strongest single argument that the thing is a platform rather than a service: adding a spec costs a manifest, a route class and a service — the CLI comes free. <a href="index.html#mechanisms">The three mechanisms →</a></p>
+
+<h2 id="lifecycle">What a node of this spec does</h2>
+<p>Every spec rides the same node lifecycle: a per-node API key minted and written to SSM <em>before</em> launch, composed user-data sections, EC2 tags as the registry, a two-phase health poll, then teardown. <b>Teardown means terminate, not stop</b> — <code>systemd-run --on-active</code> paired with <code>InstanceInitiatedShutdownBehavior=terminate</code>, on a default one-hour timer.</p>
+<p><a href="../what-it-is/index.html#layer2">The full node lifecycle, step by step →</a></p>
+
+<div class="pagenav">
+  <a href="index.html">← The catalogue</a>
+  <a href="../shipped/index.html">What ships, and what does not →</a>
+</div>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">sg-compute<span>.sgit.ai</span></div>
+    <p>An ephemeral compute platform with sixteen ready-to-launch workload specs — measured from the tree, audit and all. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. All site content CC BY 4.0; the platform's own source is Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a> — the parent project and the vault layer this provisions for · <a href="https://open-source.sgit.ai">↗ open-source.sgit.ai</a> · <a href="https://wardley-maps.sgit.ai">↗ wardley-maps.sgit.ai</a> · <a href="https://risks.sgit.ai">↗ risks.sgit.ai</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="domainnote"><b>sg-compute.sgit.ai</b> is documentation. <b>sg-compute.sgraph.ai</b> is a live Route 53 zone serving per-node DNS. Same label, different TLD, stated <a href="../network/index.html#domains" style="display:inline;padding:0">deliberately</a>.</p>
+    <p class="partnote">⚠ Participant disclosure: published by the sgit project, which builds the platform this site documents and audits. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html">v0.1.0</a> · <a href="../admin/index.html">engineering</a></p>
+  </div>
+  <div>
+    <h4>The platform</h4>
+    <a href="../what-it-is/index.html">What it is</a>
+    <a href="../specs/index.html">The spec catalogue</a>
+    <a href="../agents/index.html">The machine surface</a>
+    <a href="../security/index.html">Isolation &amp; trade-offs</a>
+  </div>
+  <div>
+    <h4>The argument</h4>
+    <a href="../why/index.html">Serverless for agents</a>
+    <a href="../numbers/index.html">The measured numbers</a>
+    <a href="../rename/index.html">The rename</a>
+  </div>
+  <div>
+    <h4>The audit</h4>
+    <a href="../shipped/index.html">&#8594; What ships, and what does not</a>
+    <a href="../roadmap/index.html">Build order &amp; open questions</a>
+    <a href="../documents/index.html">The documents</a>
+    <a href="../about/participant.html">Where we lose</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../admin/comms.html">Comms: tasks &amp; requests</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../network/index.html">The network</a>
+    <a href="../llms.txt">llms.txt</a>
+    <a href="../llms-full.txt">llms-full.txt</a>
+  </div>
+</div></footer>
+
+</body>
+</html>

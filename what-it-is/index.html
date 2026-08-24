@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>What it actually is — two ephemeral layers · sg-compute.sgit.ai</title>
+<meta name="description" content="The per-request browser teardown and the per-node EC2 teardown are different things, and conflating them is the most common misreading of this platform. Both lifecycles in full, plus sessions, the watchdog that calls os._exit(2), the isolation boundaries and how artefacts come back.">
+<link rel="canonical" href="https://sg-compute.sgit.ai/what-it-is/index.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="sg-compute.sgit.ai">
+<meta property="og:url" content="https://sg-compute.sgit.ai/what-it-is/index.html">
+<meta property="og:title" content="Two ephemeral layers, and why conflating them is the common misreading">
+<meta property="og:description" content="The per-request browser teardown and the per-node EC2 teardown are different things, and conflating them is the most common misreading of this platform. Both lifecycles in full, plus sessions, the watchdog that calls os._exit(2), the isolation boundaries and how artefacts come back.">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">sg-compute<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai — the parent project: the vault layer and the shipped CLI this compute platform provisions for">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">audit draft</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history">v0.1.0</a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl here" href="../what-it-is/index.html">The platform<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl here" href="../what-it-is/index.html">What it is: two ephemeral layers</a>
+      <a class="sl" href="../specs/index.html">The spec catalogue</a>
+      <a class="sl" href="../agents/index.html">The machine surface</a>
+      <a class="sl" href="../security/index.html">Isolation &amp; the one trade-off</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../why/index.html">The argument<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../why/index.html">A serverless environment for agents</a>
+      <a class="sl" href="../numbers/index.html">The measured numbers</a>
+      <a class="sl" href="../rename/index.html">The rename</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../shipped/index.html">The audit<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../shipped/index.html">What ships, and what does not</a>
+      <a class="sl" href="../roadmap/index.html">Build order &amp; open questions</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../documents/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../documents/index.html">The documents</a>
+      <a class="sl" href="../data/specs.json">The catalogue as JSON</a>
+      <a class="sl" href="../llms.txt">llms.txt</a>
+      <a class="sl" href="../llms-full.txt">llms-full.txt</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../admin/comms.html">Comms: tasks &amp; requests</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Admin &amp; engineering</a>
+      <a class="sl" href="../network/index.html">The network</a>
+      <a class="sl" href="../about/participant.html">Where we lose</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__SG-Compute">★ GitHub</a>
+  <script src="../assets/nav.js" defer></script>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">sg-compute.sgit.ai</a> / what it is</div>
+<h1>What it actually is</h1>
+<p class="lead">SG/Compute launches an isolated environment, runs the declared work, and destroys it. That happens at <b>two different scales with two different lifetimes</b>, and almost every first reading of this platform collapses them into one. Separating them is the most useful thing this page can do.</p>
+
+<div class="layers">
+  <div class="layer">
+    <div class="lnum">Layer 1 · per HTTP request</div>
+    <h3>An ephemeral browser</h3>
+    <p>Lives for one request. Fresh Playwright runtime, fresh Chromium, fresh context, torn down before the response returns.</p>
+    <span class="unit">milliseconds to seconds</span>
+  </div>
+  <div class="layer l2">
+    <div class="lnum">Layer 2 · per node</div>
+    <h3>An ephemeral EC2 instance</h3>
+    <p>Lives for a workload. Minted key, composed user-data, health-polled, then self-terminates on a timer it was launched with.</p>
+    <span class="unit">one hour by default</span>
+  </div>
+</div>
+
+<h2 id="layer1">Layer 1 — the browser, per request</h2>
+<p>From the source, verbatim:</p>
+<blockquote class="challenge">“Layer-3 multi-step execution. <b>Stateless by design: every call launches a fresh <code>sync_playwright</code> + Chromium, runs the declared step list, and tears both down in <code>try/finally</code> before returning.</b>”</blockquote>
+<p>And, separately: <em>“Each call to <code>launch()</code> starts a fresh <code>sync_playwright()</code> Node subprocess <b>AND</b> a fresh Browser”</em> — so there is zero cross-request state, not merely a cleared one.</p>
+<p>What makes that an architectural rule rather than a convention is that it has a mechanism behind it. <code>Page__Factory</code> is the single sanctioned path to a <code>Page</code>, and <b>a CI guard fails the build if any raw <code>browser.new_context(</code> appears anywhere else</b>. That is rarer than it should be: most codebases state this rule in a style guide and then discover the exceptions in production.</p>
+
+<h3>The request lifecycle</h3>
+<pre class="shell">parse steps
+  -> <span class="cy">reject duplicate ids</span>
+  -> validate
+  -> <span class="g">launch fresh Chromium</span>
+  -> new context + page
+  -> apply credentials
+  -> iterate steps against a deadline   <span class="d"># remaining steps marked SKIPPED on halt</span>
+  -> derive <span class="g">COMPLETED</span> / <span class="r">FAILED</span> / <span class="y">PARTIAL</span>
+  -> <span class="cy">try/finally ALWAYS tears down</span>
+  -> return, with a full timings block
+</pre>
+<p>Note the deadline behaviour: a halt does not discard the run. Steps that did not execute are returned marked <code>SKIPPED</code>, and the overall status distinguishes a partial run from a failed one. That distinction is what makes the surface usable by an agent that has to decide whether to retry.</p>
+
+<h2 id="sessions">Sessions — the exception to statelessness, and why it exists</h2>
+<p>Statelessness is the default, not a religion. A held session gets <b>one dedicated OS thread</b>, owning the Playwright runtime, browser and page for the session's whole life. The rationale is a real bug, documented in the source:</p>
+<blockquote class="challenge">“Playwright's sync API is greenlet-based… Calling <code>page.goto</code> / <code>page.locator(...)</code> from a <b>DIFFERENT</b> thread leads to undefined behaviour (deadlocks, silent hangs, or ‘navigate failed’ with no <code>error_message</code> — <b>the exact symptom <code>session_act</code> was hitting in CI</b>).”</blockquote>
+<p>So thread affinity is not an implementation detail that leaked into the design; it <em>is</em> the design, and it was paid for.</p>
+<div class="tablewrap">
+  <table>
+    <thead><tr><th>Surface</th><th>Default TTL</th><th>Refreshed by</th></tr></thead>
+    <tbody>
+      <tr><td><code>POST /session/open</code></td><td>300,000 ms — 5 minutes</td><td rowspan="2">every access refreshes the <b>full</b> TTL</td></tr>
+      <tr><td><code>POST /desktop/browser</code></td><td>3,600,000 ms — 1 hour</td></tr>
+    </tbody>
+  </table>
+</div>
+<p>Both are capped at <code>capabilities.max_session_lifetime_ms</code>. Expiry is swept <b>lazily</b> — at the start of every registry operation and from service setup — so any request to any endpoint sweeps idle sessions and <b>there is no background thread</b>. Teardown runs on the worker thread, for the same Playwright affinity reason. The idle cost, from the source: <em>“the worker blocks on <code>queue.get()</code> — <b>0% CPU, ~few KB of RAM.</b>”</em></p>
+<div class="note"><p>That design is genuinely elegant and it has never been documented publicly before this page. It is also the reason the concurrency question in <a href="../roadmap/index.html#q2">Q2</a> is open rather than answered: the ceiling here is memory and browser processes, not the web framework.</p></div>
+
+<h2 id="watchdog">The watchdog — the best engineering story in the repository</h2>
+<p><code>Request__Watchdog</code> runs a daemon thread. If any in-flight request exceeds <code>max_request_ms</code>, it calls:</p>
+<pre class="shell">os._exit(<span class="r">2</span>)
+</pre>
+<p>Not a graceful shutdown. Not an exception. The process dies.</p>
+<p>The interesting part is the reasoning, which is in the source rather than in a design document. <b><code>time.sleep</code> releases the GIL</b>, so the watchdog keeps ticking even through a main-thread deadlock — which is precisely the state you need to recover from. And <b><code>os._exit</code> bypasses cleanup, <code>finally</code> blocks and GIL contention</b>, which is exactly what a graceful shutdown cannot do from inside a deadlock: it would queue behind the thing that is stuck. The Lambda Web Adapter sees the process die, and AWS hands the next invocation a fresh container.</p>
+<p>It was written against a real production deadlock. A platform that publishes the failure and the mechanism reads very differently from one that publishes a feature list.</p>
+
+<h2 id="layer2">Layer 2 — the EC2 node</h2>
+<p><code>sg_compute/platforms/Platform.py</code> is the abstraction — <code>create_node</code>, <code>list_nodes</code>, <code>get_node</code>, <code>delete_node</code> — carrying <code>name: str = '' # 'ec2' | 'k8s' | 'gcp' | 'local'</code>. <b>Only <code>EC2__Platform</code> exists.</b> Whether that comment describes an abstraction or an aspiration is <a href="../roadmap/index.html#q3">Q3</a>, published unresolved.</p>
+<div class="ladder">
+  <div class="cap"><span class="capnum">1</span><h3>Request</h3><p><code>POST /api/nodes</code>, or <code>sg &lt;spec&gt; create</code>.</p></div>
+  <div class="cap"><span class="capnum">2</span><h3>Key mint</h3><p><code>api_key = secrets.token_urlsafe(32)</code>, commented <em>“per-node random key; never reused”</em>, written to SSM <b>before launch</b> so cloud-init can read it. <a href="../security/index.html#tag">And also written to an EC2 tag — the one trade-off this site publishes</a>.</p></div>
+  <div class="cap"><span class="capnum">3</span><h3>Provision</h3><p><code>run_instances</code> with composed user-data sections: <code>Base</code>, <code>Docker</code>, <code>Sidecar</code>, <code>Nginx</code>, <code>Env__File</code>, <code>GPU_Verify</code>, <code>NVIDIA_Container_Toolkit</code>, <code>Ollama</code>, <code>VLLM</code>, <code>SGit_Venv</code>, <code>Claude_Code__Firstboot</code>, <code>Shutdown</code>. A spec composes the sections it needs; nothing is templated by hand.</p></div>
+  <div class="cap"><span class="capnum">4</span><h3>Address</h3><p><b>The EC2 tags are the registry.</b> <code>sg:stack-name</code> and <code>sg:purpose</code>; instance states map <code>running→READY</code>, <code>pending→BOOTING</code>, <code>shutting-down|stopping→TERMINATING</code>. There is no separate database to fall out of sync.</p></div>
+  <div class="cap"><span class="capnum">5</span><h3>Wait</h3><p><code>Health__Poller</code>, two-phase: EC2 reports <code>running</code>, <em>then</em> an HTTP probe succeeds. A node is not ready because AWS says it started.</p></div>
+  <div class="cap"><span class="capnum">6</span><h3>Execute</h3><p>Pods managed over the host-control sidecar; <code>Sidecar__Client</code> sends <code>{'X-API-Key': self.api_key}</code>. The sidecar's port is unreachable from outside the instance.</p></div>
+  <div class="cap"><span class="capnum">7</span><h3>Teardown — three independent paths</h3><p>The timer, an explicit <code>delete</code>, and idle reconciliation. Below.</p></div>
+</div>
+
+<h3 id="teardown">Teardown is the part worth publishing</h3>
+<pre class="shell">systemd-run --on-active={seconds}s /sbin/shutdown -h now
+</pre>
+<p>paired with <code>InstanceInitiatedShutdownBehavior=terminate</code>. <b>Halt means terminate, not stop</b> — the instance does not linger in a stopped state accruing EBS charges and waiting for someone to notice it.</p>
+<ul>
+  <li><b>Default <code>max_hours = 1</code></b> across every spec. <code>vault_app</code> supports fractional values (<code>0.1</code> = six minutes); <code>max_hours=0</code> disables the timer entirely.</li>
+  <li><b>Explicit <code>delete</code></b>, at any time.</li>
+  <li><b>Idle reconciliation</b> — <code>SG_Edge__Fleet__Reconciler</code> with <code>IDLE_TEARDOWN_THRESHOLD = 3</code>: three consecutive zero-vault idle checks at a five-minute cadence, so roughly fifteen minutes.</li>
+</ul>
+<p>And a detail that shows the code was written by someone who had been bitten: on spot instances the shutdown flag is deliberately skipped, with the reasoning inline — <em>“spot non-hibernation instances always terminate on OS shutdown; skip the flag (it's silently ignored).”</em></p>
+
+<h2 id="artefacts">How artefacts come back — correct the likely assumption</h2>
+<p><code>Enum__Artefact__Sink</code> declares four sinks: <code>VAULT</code>, <code>INLINE</code>, <code>LOCAL_FILE</code>, <code>S3</code>. The default is <code>INLINE</code>.</p>
+<div class="warnbox">
+  <p><b>Only <code>INLINE</code> and <code>LOCAL_FILE</code> are implemented.</b> Both <code>write_bytes_to_vault</code> and <code>write_bytes_to_s3</code> raise <code>NotImplementedError</code>.</p>
+  <p>So today you get base64 in the JSON body (20 MB cap — a source comment notes that a 64 KB default was rejecting real screenshot PNGs), raw PNG bytes from <code>POST /browser/screenshot</code>, or a local file path in development. <b>No S3. No presigned URLs. No vault writes.</b></p>
+</div>
+<p>The gap matters more than it looks, because <a href="../specs/vault_publish.html">two specs exist whose declared capability is literally <code>vault-writes</code></a>. The capability is real at the spec layer and missing at the platform layer — <a href="../roadmap/index.html#q4">Q4</a>.</p>
+
+<h2 id="isolation">Isolation boundaries</h2>
+<p>Each row is a boundary with a named mechanism, not a policy statement.</p>
+<div class="tablewrap">
+  <table>
+    <thead><tr><th>Boundary</th><th>Mechanism</th></tr></thead>
+    <tbody>
+      <tr><td>Job ↔ job, same node</td><td>Fresh Playwright subprocess + fresh Browser + fresh BrowserContext per request, <code>try/finally</code> teardown</td></tr>
+      <tr><td>Session ↔ session</td><td>Dedicated OS thread, own browser process, registry keyed by <code>Session_Id</code></td></tr>
+      <tr><td>Node ↔ node</td><td>Separate EC2 instances, per-node security group, <b>per-node API key, never reused</b></td></tr>
+      <tr><td>Untrusted JavaScript</td><td><code>JS__Expression__Allowlist</code> — <b>deny by default, exact match</b>. <code>evaluate</code> is rejected until an operator populates the allowlist</td></tr>
+      <tr><td>Network</td><td>Browser traffic through the mitmproxy sidecar; <em>“isolation is Docker network”</em>; the sidecar's <code>:8080</code> is unreachable from outside the EC2 instance</td></tr>
+      <tr><td>Cookies</td><td><code>SET_COOKIE</code> applies to the per-request context — <em>“stateless — the context is fresh per request and discarded after; no session persistence”</em></td></tr>
+    </tbody>
+  </table>
+</div>
+<p><a href="../security/index.html">The boundaries in full, the one deliberate exception to deny-by-default, and the trade-off the code itself comments on →</a></p>
+
+<div class="pagenav">
+  <a href="../index.html">← Front page</a>
+  <a href="../specs/index.html">The spec catalogue →</a>
+</div>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">sg-compute<span>.sgit.ai</span></div>
+    <p>An ephemeral compute platform with sixteen ready-to-launch workload specs — measured from the tree, audit and all. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. All site content CC BY 4.0; the platform's own source is Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a> — the parent project and the vault layer this provisions for · <a href="https://open-source.sgit.ai">↗ open-source.sgit.ai</a> · <a href="https://wardley-maps.sgit.ai">↗ wardley-maps.sgit.ai</a> · <a href="https://risks.sgit.ai">↗ risks.sgit.ai</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="domainnote"><b>sg-compute.sgit.ai</b> is documentation. <b>sg-compute.sgraph.ai</b> is a live Route 53 zone serving per-node DNS. Same label, different TLD, stated <a href="../network/index.html#domains" style="display:inline;padding:0">deliberately</a>.</p>
+    <p class="partnote">⚠ Participant disclosure: published by the sgit project, which builds the platform this site documents and audits. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html">v0.1.0</a> · <a href="../admin/index.html">engineering</a></p>
+  </div>
+  <div>
+    <h4>The platform</h4>
+    <a href="../what-it-is/index.html">What it is</a>
+    <a href="../specs/index.html">The spec catalogue</a>
+    <a href="../agents/index.html">The machine surface</a>
+    <a href="../security/index.html">Isolation &amp; trade-offs</a>
+  </div>
+  <div>
+    <h4>The argument</h4>
+    <a href="../why/index.html">Serverless for agents</a>
+    <a href="../numbers/index.html">The measured numbers</a>
+    <a href="../rename/index.html">The rename</a>
+  </div>
+  <div>
+    <h4>The audit</h4>
+    <a href="../shipped/index.html">&#8594; What ships, and what does not</a>
+    <a href="../roadmap/index.html">Build order &amp; open questions</a>
+    <a href="../documents/index.html">The documents</a>
+    <a href="../about/participant.html">Where we lose</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../admin/comms.html">Comms: tasks &amp; requests</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../network/index.html">The network</a>
+    <a href="../llms.txt">llms.txt</a>
+    <a href="../llms-full.txt">llms-full.txt</a>
+  </div>
+</div></footer>
+
+</body>
+</html>

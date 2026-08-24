@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The network, and the domain decision · sg-compute.sgit.ai</title>
+<meta name="description" content="Where this site sits among the sgit.ai sites and what each boundary is, plus the stated decision on sg-compute.sgit.ai versus the live sg-compute.sgraph.ai zone: same label, different TLD, claimed rather than moved.">
+<link rel="canonical" href="https://sg-compute.sgit.ai/network/index.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="sg-compute.sgit.ai">
+<meta property="og:url" content="https://sg-compute.sgit.ai/network/index.html">
+<meta property="og:title" content="The network — and why sg-compute.sgit.ai and sg-compute.sgraph.ai are both correct">
+<meta property="og:description" content="Where this site sits among the sgit.ai sites and what each boundary is, plus the stated decision on sg-compute.sgit.ai versus the live sg-compute.sgraph.ai zone: same label, different TLD, claimed rather than moved.">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">sg-compute<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai — the parent project: the vault layer and the shipped CLI this compute platform provisions for">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">audit draft</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history">v0.1.0</a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../what-it-is/index.html">The platform<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../what-it-is/index.html">What it is: two ephemeral layers</a>
+      <a class="sl" href="../specs/index.html">The spec catalogue</a>
+      <a class="sl" href="../agents/index.html">The machine surface</a>
+      <a class="sl" href="../security/index.html">Isolation &amp; the one trade-off</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../why/index.html">The argument<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../why/index.html">A serverless environment for agents</a>
+      <a class="sl" href="../numbers/index.html">The measured numbers</a>
+      <a class="sl" href="../rename/index.html">The rename</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../shipped/index.html">The audit<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../shipped/index.html">What ships, and what does not</a>
+      <a class="sl" href="../roadmap/index.html">Build order &amp; open questions</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../documents/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../documents/index.html">The documents</a>
+      <a class="sl" href="../data/specs.json">The catalogue as JSON</a>
+      <a class="sl" href="../llms.txt">llms.txt</a>
+      <a class="sl" href="../llms-full.txt">llms-full.txt</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../admin/comms.html">Comms: tasks &amp; requests</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Admin &amp; engineering</a>
+      <a class="sl here" href="../network/index.html">The network</a>
+      <a class="sl" href="../about/participant.html">Where we lose</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__SG-Compute">★ GitHub</a>
+  <script src="../assets/nav.js" defer></script>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">sg-compute.sgit.ai</a> / network</div>
+<h1>The network</h1>
+<p class="lead">This site is one of several that carry one argument between them. Each row below names what the other site owns and what the boundary with this one actually is — because a network of sites that all describe each other in general terms is a network of dead links waiting to happen.</p>
+
+<div class="tablewrap">
+  <table>
+    <thead><tr><th>Site</th><th>Owns</th><th>The boundary with this site</th></tr></thead>
+    <tbody>
+      <tr><td><a href="https://sgit.ai"><b>sgit.ai</b></a></td><td>The vault product, the catalogue, the demos, the shipped CLI</td><td><b>The <code>/pw</code> reverse proxy is vendored into a vault image and is in neither repository.</b> Whoever documents the production auth path is documenting a component they cannot see — <a href="../agents/index.html#auth">the correction is here</a>. Needs coordinating</td></tr>
+      <tr><td><a href="https://open-source.sgit.ai">open-source.sgit.ai</a></td><td>The open-source position</td><td>Apache-2.0, the PyPI packages, and <em>“somebody has to be the villagers”</em>. This platform <b>is</b> that argument made concrete — and <a href="../numbers/index.html#authors">61% of its commits are by Claude</a>, which is the uncomfortable half of the same conversation</td></tr>
+      <tr><td><a href="https://wardley-maps.sgit.ai">wardley-maps.sgit.ai</a></td><td>Mapping</td><td><a href="../why/index.html#ladder">The cold-start ladder</a> is a de-facto evolution axis, and the substrate spectrum is a map waiting to be drawn</td></tr>
+      <tr><td><a href="https://risks.sgit.ai">risks.sgit.ai</a></td><td>Risk</td><td><a href="../security/index.html#tag">The EC2-tag trade-off</a> is a worked example of an accepted risk with a named acceptor and a named mitigation</td></tr>
+      <tr><td><a href="https://nhi.sgit.ai">nhi.sgit.ai</a> · <a href="https://sentinel.sgit.ai">sentinel.sgit.ai</a></td><td>Non-human identity, sentinel</td><td>The per-node key, the JS allowlist and least-privilege-by-declaration are all NHI subject matter</td></tr>
+      <tr><td><a href="https://pki.sgit.ai">pki.sgit.ai</a></td><td>Key registries for agents</td><td>The house pattern this site was built from, and the question of who a per-node key belongs to</td></tr>
+      <tr><td><a href="https://standards.sgit.ai">standards.sgit.ai</a></td><td>Instruments</td><td>Nitro Enclave attestation is an evidence artefact — <a href="../why/index.html#bets">still research</a>. Light link</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="domains">⚠ The domain decision</h2>
+<p>This will be the question this site is asked most often, so it is stated here and repeated in the footer of every page rather than left to be discovered.</p>
+<div class="layers">
+  <div class="layer">
+    <div class="lnum">documentation</div>
+    <h3><code>sg-compute.sgit.ai</code></h3>
+    <p>This site. Static pages on GitHub Pages. It documents and audits the platform; it runs none of it. Nothing here is an endpoint.</p>
+    <span class="unit">a website</span>
+  </div>
+  <div class="layer l2">
+    <div class="lnum">running infrastructure</div>
+    <h3><code>sg-compute.sgraph.ai</code></h3>
+    <p>A <b>live Route 53 zone</b>, serving per-node DNS as <code>&lt;stack-name&gt;.sg-compute.&lt;zone&gt;</code>. Referenced <b>128 times</b> in the platform's code and tests, including in code defaults and test assertions.</p>
+    <span class="unit">a DNS zone with real hosts under it</span>
+  </div>
+</div>
+<p><b>Same label, different TLD.</b> The two options were:</p>
+<ol>
+  <li><b>Claim the distinction explicitly</b> — <code>sgit.ai</code> is documentation, <code>sgraph.ai</code> is running infrastructure — and say so on the front page and here.</li>
+  <li><b>Move the node DNS</b> to <code>sgit.ai</code> as well, which touches 128 references, every test assertion that names the zone, and every running node.</li>
+</ol>
+<div class="note"><p><b>The decision is option 1</b>, on cost. It is a stated decision rather than a convention that happened, and <a href="../roadmap/index.html#q7">it is published as Q7 with the case for revisiting it</a>: the argument against it is not technical, it is that a support question arriving every week forever eventually costs more than a migration.</p></div>
+<p>One consequence worth naming: because the zone name is the <em>subject</em> of a published decision, it is the single deliberate exception in <a href="../admin/index.html#leak">this site's leak tripwire</a>, which otherwise bans every live hostname from the tree. Per-node FQDNs under that zone stay banned.</p>
+
+<h2 id="licence">Licence</h2>
+<p>Every page of this site, the <a href="../documents/index.html">source documents</a>, <a href="../llms.txt">llms.txt</a> and <a href="../llms-full.txt">llms-full.txt</a> are released under <b>CC BY 4.0</b>. Attribution: Dinis Cruz, with AI co-authorship (Claude, Anthropic).</p>
+<p><b>The platform's own source code is Apache-2.0.</b> Where this site quotes source, it is quoting Apache-2.0 code — that notice is retained and the snippets do not carry this site's licence.</p>
+
+<div class="pagenav">
+  <a href="../security/index.html">← Isolation &amp; the one trade-off</a>
+  <a href="../about/participant.html">Where we lose →</a>
+</div>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">sg-compute<span>.sgit.ai</span></div>
+    <p>An ephemeral compute platform with sixteen ready-to-launch workload specs — measured from the tree, audit and all. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. All site content CC BY 4.0; the platform's own source is Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a> — the parent project and the vault layer this provisions for · <a href="https://open-source.sgit.ai">↗ open-source.sgit.ai</a> · <a href="https://wardley-maps.sgit.ai">↗ wardley-maps.sgit.ai</a> · <a href="https://risks.sgit.ai">↗ risks.sgit.ai</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="domainnote"><b>sg-compute.sgit.ai</b> is documentation. <b>sg-compute.sgraph.ai</b> is a live Route 53 zone serving per-node DNS. Same label, different TLD, stated <a href="../network/index.html#domains" style="display:inline;padding:0">deliberately</a>.</p>
+    <p class="partnote">⚠ Participant disclosure: published by the sgit project, which builds the platform this site documents and audits. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html">v0.1.0</a> · <a href="../admin/index.html">engineering</a></p>
+  </div>
+  <div>
+    <h4>The platform</h4>
+    <a href="../what-it-is/index.html">What it is</a>
+    <a href="../specs/index.html">The spec catalogue</a>
+    <a href="../agents/index.html">The machine surface</a>
+    <a href="../security/index.html">Isolation &amp; trade-offs</a>
+  </div>
+  <div>
+    <h4>The argument</h4>
+    <a href="../why/index.html">Serverless for agents</a>
+    <a href="../numbers/index.html">The measured numbers</a>
+    <a href="../rename/index.html">The rename</a>
+  </div>
+  <div>
+    <h4>The audit</h4>
+    <a href="../shipped/index.html">&#8594; What ships, and what does not</a>
+    <a href="../roadmap/index.html">Build order &amp; open questions</a>
+    <a href="../documents/index.html">The documents</a>
+    <a href="../about/participant.html">Where we lose</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../admin/comms.html">Comms: tasks &amp; requests</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../network/index.html">The network</a>
+    <a href="../llms.txt">llms.txt</a>
+    <a href="../llms-full.txt">llms-full.txt</a>
+  </div>
+</div></footer>
+
+</body>
+</html>

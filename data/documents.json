@@ -1,0 +1,104 @@
+{
+  "schema": "sg-compute-site-documents/v1",
+  "pack": "sg-compute.sgit.ai brief pack v0.33.62, 24 August 2026",
+  "attribution": "Dinis Cruz, via the SG/Send Librarian, with AI co-authorship (Claude, Anthropic)",
+  "licence": "CC BY 4.0",
+  "documents": [
+    {
+      "file": "00__brief.md",
+      "page": "brief.html",
+      "title": "The brief",
+      "blurb": "The commission, the rename verdict with the number that settles it, the one-character bug, what “very mature” measures out at, the honesty constraint, and the build order this site was written against.",
+      "kind": "brief",
+      "words": 1702
+    },
+    {
+      "file": "01__what-it-is.md",
+      "page": "what-it-is.html",
+      "title": "What it actually is",
+      "blurb": "The two ephemeral layers the site must not conflate, sessions and the thread-affinity bug behind them, the watchdog, both API surfaces, the auth-model correction, the isolation table, and how artefacts come back.",
+      "kind": "source",
+      "words": 1542
+    },
+    {
+      "file": "02__the-rename.md",
+      "page": "the-rename.html",
+      "title": "The rename",
+      "blurb": "Nine acceptance criteria scored against the tree, the guard that could not match what it guarded, the full breakage list, the recommended sequencing, and the domain collision.",
+      "kind": "source",
+      "words": 1298
+    },
+    {
+      "file": "03__maturity-audit.md",
+      "page": "maturity-audit.html",
+      "title": "The maturity audit",
+      "blurb": "Where the maturity is real — tests, history, CI/CD, documentation, operational hardening — and the four specific places the claim is overstated. Ends with the paragraph this site publishes verbatim.",
+      "kind": "source",
+      "words": 1381
+    },
+    {
+      "file": "04__the-spec-system.md",
+      "page": "the-spec-system.html",
+      "title": "The spec system",
+      "blurb": "One abstraction, sixteen implementations, three generalisation mechanisms, the entry-point path for third-party specs, and why the family view carries the argument the alphabetical list does not.",
+      "kind": "source",
+      "words": 1364
+    },
+    {
+      "file": "05__the-serverless-argument.md",
+      "page": "serverless-argument.html",
+      "title": "The serverless argument",
+      "blurb": "“We are competing for the agent-deployment market.” The positioning, the trade stated honestly, the cold-start ladder against the measured benchmarks, the 50-second number, the recursion, and what can and cannot be said about cost.",
+      "kind": "source",
+      "words": 1473
+    },
+    {
+      "file": "06__site-architecture.md",
+      "page": "site-architecture.html",
+      "title": "The site architecture",
+      "blurb": "The house pattern, the one rule no sibling site needs, the page-by-page plan, what is generated versus written, and the naming conventions. This document is the specification this site was built to.",
+      "kind": "brief",
+      "words": 875
+    },
+    {
+      "file": "07__boundaries-and-security.md",
+      "page": "boundaries-and-security.html",
+      "title": "Boundaries, redaction and the disclosure",
+      "blurb": "What was checked and is clean, what must be redacted, what must not be published at all, how to publish the one security note, and the network boundaries. Published redacted under its own rule.",
+      "kind": "source",
+      "words": 1179
+    },
+    {
+      "file": "08__gaps-and-open-questions.md",
+      "page": "gaps-and-open-questions.html",
+      "title": "Gaps and open questions",
+      "blurb": "The five-day fix list that changes what this site can honestly say, eight build-fresh items, eight open questions published unresolved, seven honest tensions, and the loose ends worth an hour each.",
+      "kind": "source",
+      "words": 1438
+    },
+    {
+      "file": "09__pack-readme.md",
+      "page": "pack-readme.html",
+      "title": "The pack README",
+      "blurb": "The reading order, the one-character bug as the opening move, the four things to know before writing, what /shipped/ has to say, and the house pattern.",
+      "kind": "brief",
+      "words": 1109
+    },
+    {
+      "file": "10__licence-and-redaction.md",
+      "page": "licence-and-redaction.html",
+      "title": "Licence and redaction rules",
+      "blurb": "CC BY 4.0 for the site, Apache-2.0 for the code it quotes, the redaction list that is not advisory, what was verified clean, and the accuracy rule: code wins. Published redacted under its own rule.",
+      "kind": "licence",
+      "words": 796
+    },
+    {
+      "file": "11__source-manifest.csv",
+      "page": null,
+      "title": "The source manifest",
+      "blurb": "Thirty-seven rows: every source the pack drew on, tiered 0–3, with the proposed page, the publishability verdict and why each one matters. Every path was verified on disk.",
+      "kind": "data",
+      "words": 1087
+    }
+  ]
+}

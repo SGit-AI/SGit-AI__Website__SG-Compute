@@ -1,0 +1,384 @@
+{
+  "schema": "sg-compute-spec-catalogue/v1",
+  "surveyed": "2026-08-24",
+  "repo_version": "v0.2.71",
+  "source": "sg_compute_specs/*/manifest.py, measured from the tree at /root/sg-playwright",
+  "specs_source": "Transcribed from 04__the-spec-system.md section 1, which measured every row from sg_compute_specs/*/manifest.py in the source tree. The brief pack's own catalogue JSON advertised this array and shipped without it; see admin/comms.html R1. Every derived total on the site is computed from these rows by admin/build/gen_specs.py and cross-checked against the counts and loc blocks below - a disagreement fails the build.",
+  "specs": [
+    {
+      "spec_id": "vault_publish",
+      "registered": true,
+      "loc": 11682,
+      "capabilities": [
+        "vault-writes",
+        "subdomain-routing"
+      ],
+      "boot_seconds_typical": 45,
+      "stability": "EXPERIMENTAL",
+      "family": "vault",
+      "create_node": false,
+      "note": "The largest spec in the tree. Publishes vault content and routes it on a subdomain — one of the two specs whose declared capability is literally vault-writes, while the platform's own generic vault artefact sink still raises NotImplementedError."
+    },
+    {
+      "spec_id": "playwright",
+      "registered": true,
+      "loc": 10180,
+      "capabilities": [
+        "browser-automation"
+      ],
+      "boot_seconds_typical": 30,
+      "stability": "STABLE",
+      "family": "browser",
+      "create_node": false,
+      "note": "The spec the repository is named after, and 1 of 16. A stateless browser data plane: every call launches a fresh Playwright subprocess and Chromium, runs the declared steps, and tears both down in try/finally before returning."
+    },
+    {
+      "spec_id": "sg_edge",
+      "registered": false,
+      "loc": 9108,
+      "capabilities": [],
+      "boot_seconds_typical": null,
+      "stability": null,
+      "family": "infra",
+      "create_node": false,
+      "note": "The second-largest directory in the spec tree and the one the registry cannot see: it has no manifest.py, so Spec__Loader never finds it. Either register it or move it out of sg_compute_specs/ — leaving the largest unregistered thing inside the spec tree is confusing for anyone reading the catalogue."
+    },
+    {
+      "spec_id": "vault_app",
+      "registered": true,
+      "loc": 8261,
+      "capabilities": [
+        "vault-writes"
+      ],
+      "boot_seconds_typical": 45,
+      "stability": "EXPERIMENTAL",
+      "family": "vault",
+      "create_node": false,
+      "note": "Runs a vault as an application. The one spec that supports fractional teardown (max_hours = 0.1, six minutes) and defaults to spot instances."
+    },
+    {
+      "spec_id": "content_proxy",
+      "registered": true,
+      "loc": 4971,
+      "capabilities": [
+        "mitm-proxy"
+      ],
+      "boot_seconds_typical": 600,
+      "stability": "EXPERIMENTAL",
+      "family": "browser",
+      "create_node": false,
+      "note": "A content-inspecting proxy in front of the browser. Ten-minute typical boot — joint slowest in the catalogue with docker."
+    },
+    {
+      "spec_id": "firefox",
+      "registered": true,
+      "loc": 1992,
+      "capabilities": [
+        "mitm-proxy"
+      ],
+      "boot_seconds_typical": 90,
+      "stability": "EXPERIMENTAL",
+      "family": "browser",
+      "create_node": false,
+      "note": "A second browser engine behind the same proxy surface."
+    },
+    {
+      "spec_id": "vnc",
+      "registered": true,
+      "loc": 1876,
+      "capabilities": [
+        "mitm-proxy"
+      ],
+      "boot_seconds_typical": 120,
+      "stability": "STABLE",
+      "family": "browser",
+      "create_node": true,
+      "note": "A headed browser on an X display, reachable over VNC. One of only three specs create_node can provision through the control-plane API."
+    },
+    {
+      "spec_id": "docker",
+      "registered": true,
+      "loc": 1558,
+      "capabilities": [
+        "container-runtime"
+      ],
+      "boot_seconds_typical": 600,
+      "stability": "STABLE",
+      "family": "runtime",
+      "create_node": true,
+      "note": "A general container runtime node. One of the three specs create_node supports."
+    },
+    {
+      "spec_id": "local_claude",
+      "registered": true,
+      "loc": 1498,
+      "capabilities": [
+        "llm-inference"
+      ],
+      "boot_seconds_typical": 180,
+      "stability": "EXPERIMENTAL",
+      "family": "llm",
+      "create_node": false,
+      "note": "A node that runs Claude Code locally against a workspace, provisioned by the Claude_Code__Firstboot user-data section."
+    },
+    {
+      "spec_id": "mitmproxy",
+      "registered": true,
+      "loc": 1448,
+      "capabilities": [
+        "mitm-proxy"
+      ],
+      "boot_seconds_typical": 15,
+      "stability": "STABLE",
+      "family": "network",
+      "create_node": false,
+      "note": "The fastest spec in the catalogue at 15 seconds typical, and the sidecar the browser specs route through: isolation is the Docker network, and the sidecar's :8080 is unreachable from outside the EC2 node."
+    },
+    {
+      "spec_id": "elastic",
+      "registered": true,
+      "loc": 1372,
+      "capabilities": [
+        "metrics"
+      ],
+      "boot_seconds_typical": 180,
+      "stability": "STABLE",
+      "family": "observability",
+      "create_node": false,
+      "note": "An Elasticsearch node for the observability family."
+    },
+    {
+      "spec_id": "prometheus",
+      "registered": true,
+      "loc": 1311,
+      "capabilities": [
+        "metrics"
+      ],
+      "boot_seconds_typical": 120,
+      "stability": "STABLE",
+      "family": "observability",
+      "create_node": false,
+      "note": "Prometheus, paired with the /metrics endpoint every data-plane node already exposes."
+    },
+    {
+      "spec_id": "opensearch",
+      "registered": true,
+      "loc": 1221,
+      "capabilities": [
+        "metrics"
+      ],
+      "boot_seconds_typical": 180,
+      "stability": "STABLE",
+      "family": "observability",
+      "create_node": false,
+      "note": "OpenSearch, the third of the observability family and a remote-write target for the observability service."
+    },
+    {
+      "spec_id": "podman",
+      "registered": true,
+      "loc": 1199,
+      "capabilities": [
+        "container-runtime"
+      ],
+      "boot_seconds_typical": 120,
+      "stability": "STABLE",
+      "family": "runtime",
+      "create_node": true,
+      "note": "A rootless container runtime alongside docker. One of the three specs create_node supports."
+    },
+    {
+      "spec_id": "neko",
+      "registered": true,
+      "loc": 1180,
+      "capabilities": [
+        "iframe-embed"
+      ],
+      "boot_seconds_typical": 120,
+      "stability": "STABLE",
+      "family": "browser",
+      "create_node": false,
+      "note": "A browser you can embed in an iframe and share — the collaborative end of the browser family."
+    },
+    {
+      "spec_id": "ollama",
+      "registered": true,
+      "loc": 939,
+      "capabilities": [
+        "llm-inference"
+      ],
+      "boot_seconds_typical": 120,
+      "stability": "EXPERIMENTAL",
+      "family": "llm",
+      "create_node": false,
+      "note": "Local model inference, provisioned by the Ollama and NVIDIA_Container_Toolkit user-data sections on a GPU instance."
+    },
+    {
+      "spec_id": "open_design",
+      "registered": true,
+      "loc": 773,
+      "capabilities": [
+        "design-tool"
+      ],
+      "boot_seconds_typical": 480,
+      "stability": "EXPERIMENTAL",
+      "family": "tool",
+      "create_node": false,
+      "note": "A design tool node, and the smallest spec in the catalogue — which is the point: a spec costs a manifest, a route class and a service."
+    }
+  ],
+  "counts": {
+    "total_dirs": 17,
+    "registered": 16,
+    "stable": 9,
+    "experimental": 7,
+    "browser_family": 5,
+    "create_node_supported": 3
+  },
+  "loc": {
+    "generic_core_sg_compute": 10416,
+    "browser_specs": 20199,
+    "non_browser_specs": 40370,
+    "legacy_cli": 71182,
+    "repo_total_python": 217266,
+    "non_browser_share_of_new_code": "56.9%",
+    "browser_share_of_new_code": "28.5%",
+    "note": "Playwright is 1 of 16 registered specs and 17% of spec LOC. Including legacy __cli, browser-specific code is ~14% of the whole repo."
+  },
+  "manifest_schema": {
+    "class": "Schema__Spec__Manifest__Entry",
+    "fields": [
+      "spec_id",
+      "display_name",
+      "icon",
+      "version",
+      "stability",
+      "boot_seconds_typical",
+      "capabilities",
+      "nav_group",
+      "extends",
+      "soon",
+      "create_endpoint_path"
+    ],
+    "quote": "Single source of truth. Every spec's manifest.py exposes MANIFEST."
+  },
+  "generalisation_mechanisms": [
+    {
+      "name": "manifest.py per spec",
+      "what": "typed Schema__Spec__Manifest__Entry — the registry"
+    },
+    {
+      "name": "Spec__Routes__Loader",
+      "what": "convention-based route discovery: spec_id 'docker' -> sg_compute_specs.docker.api.routes.Routes__Docker__Stack. 'Specs without a route class are silently skipped.'"
+    },
+    {
+      "name": "Spec__CLI__Builder",
+      "what": "generates the same 10 verbs for every spec: list, info, create, wait, health, connect, exec, delete, ami list|bake, cert"
+    },
+    {
+      "name": "Spec__Loader entry points",
+      "what": "PEP 621 entry-point discovery, group 'sg_compute.specs' — third-party specs architecturally supported, untested in the wild"
+    }
+  ],
+  "not_the_mechanism": {
+    "artefact": "capabilities.json",
+    "why": "Frozen at v0.1.29 while the repo is at v0.2.71 (42 minor versions). COPY'd into the image and served at /admin/capabilities. The repo's own docs say not to read it: 'The UI reads GET /health/capabilities (the live Schema__Service__Capabilities, populated by Capability__Detector) — never the stale capabilities.json.'",
+    "live_mechanism": "Capability__Detector, which detects the deployment target from env vars (laptop | ci | claude_web | container | lambda) and builds capabilities at runtime"
+  },
+  "boot_benchmarks": {
+    "source": "utils/ec2_boot_bench/ec2_boot_bench_results.csv — 24 real runs, eu-west-2, 11 May 2026, time to SSM-ready",
+    "note": "INSTANCE IDs AND AMI IDs MUST BE STRIPPED BEFORE PUBLISHING. Publish the timings.",
+    "runs": [
+      {
+        "instance_type": "t3.micro",
+        "purchase": "on-demand",
+        "seconds": "16.4-16.5"
+      },
+      {
+        "instance_type": "c5.large",
+        "purchase": "on-demand",
+        "seconds": "16.2-16.3"
+      },
+      {
+        "instance_type": "g5.xlarge",
+        "purchase": "on-demand",
+        "seconds": "18.2-18.7",
+        "ami": "A"
+      },
+      {
+        "instance_type": "g5.xlarge",
+        "purchase": "spot",
+        "seconds": "20.5-20.6"
+      },
+      {
+        "instance_type": "g5.xlarge",
+        "purchase": "on-demand",
+        "seconds": "38.5-69.5",
+        "ami": "B",
+        "note": "different AMI — 2-4x slower"
+      }
+    ],
+    "failures": "7 recorded InsufficientInstanceCapacity failures for g5.xlarge across both AZs. Honest, publishable evidence that spot GPU capacity is not guaranteed."
+  },
+  "cold_start_ladder": {
+    "source": "v0.27.45 serverless brief",
+    "rungs": [
+      {
+        "substrate": "EC2 cold",
+        "time": "30-60s"
+      },
+      {
+        "substrate": "EC2 from warm pool",
+        "time": "5-15s",
+        "status": "NOT IMPLEMENTED"
+      },
+      {
+        "substrate": "Fargate cold",
+        "time": "10-30s"
+      },
+      {
+        "substrate": "container on running EC2",
+        "time": "1-5s"
+      },
+      {
+        "substrate": "cached-image restart",
+        "time": "100-500ms"
+      },
+      {
+        "substrate": "Firecracker snapshot restore",
+        "time": "<50ms",
+        "status": "FUTURE"
+      }
+    ]
+  },
+  "images": [
+    {
+      "name": "diniscruz/sg-playwright",
+      "base": "mcr.microsoft.com/playwright/python:v1.58.0-noble",
+      "port": 8000,
+      "cmd": "python3 -m sg_compute_specs.playwright.core.fast_api.lambda_handler"
+    },
+    {
+      "name": "diniscruz/sg-playwright-vnc",
+      "base": "the above, by digest",
+      "ports": [
+        8000,
+        6080
+      ],
+      "adds": "Xvfb, openbox, x11vnc, novnc, websockify, supervisord"
+    },
+    {
+      "name": "diniscruz/sg-host-control",
+      "base": "python:3.12-alpine",
+      "role": "the pod sidecar"
+    }
+  ],
+  "image_sizes": "NOT RECORDED ANYWHERE and not derivable without a build. Do not publish a number.",
+  "not_implemented": [
+    "warm pools (specified in a 1,729-word brief, zero code)",
+    "multi-node stacks (Routes__Compute__Stacks returns a list; Cli__Compute__Stack unwired)",
+    "non-EC2 platforms ('k8s' | 'gcp' | 'local' are a comment in the Platform ABC)",
+    "artefact sinks VAULT and S3 (both raise NotImplementedError)",
+    "create_node for 13 of 16 specs (EC2__Platform._service_for covers docker, podman, vnc only)",
+    "a real cost model (the dashboard tracker is a self-declared placeholder with 5 hardcoded t3 rates)"
+  ]
+}

@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The spec catalogue — sixteen ready-to-launch environments · sg-compute.sgit.ai</title>
+<meta name="description" content="Sixteen registered workload specs with typed manifests, stability ratings and measured boot times. Playwright is 1 of 16 and 16.8% of spec code; 71.5% of the new codebase is not browser code. Generated from the catalogue data.">
+<link rel="canonical" href="https://sg-compute.sgit.ai/specs/index.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="sg-compute.sgit.ai">
+<meta property="og:url" content="https://sg-compute.sgit.ai/specs/index.html">
+<meta property="og:title" content="The simulated AWS Marketplace: sixteen ready-to-launch environments">
+<meta property="og:description" content="Sixteen registered workload specs with typed manifests, stability ratings and measured boot times. Playwright is 1 of 16 and 16.8% of spec code; 71.5% of the new codebase is not browser code. Generated from the catalogue data.">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">sg-compute<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai — the parent project: the vault layer and the shipped CLI this compute platform provisions for">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">audit draft</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history">v0.1.0</a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl here" href="../what-it-is/index.html">The platform<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../what-it-is/index.html">What it is: two ephemeral layers</a>
+      <a class="sl here" href="../specs/index.html">The spec catalogue</a>
+      <a class="sl" href="../agents/index.html">The machine surface</a>
+      <a class="sl" href="../security/index.html">Isolation &amp; the one trade-off</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../why/index.html">The argument<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../why/index.html">A serverless environment for agents</a>
+      <a class="sl" href="../numbers/index.html">The measured numbers</a>
+      <a class="sl" href="../rename/index.html">The rename</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../shipped/index.html">The audit<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../shipped/index.html">What ships, and what does not</a>
+      <a class="sl" href="../roadmap/index.html">Build order &amp; open questions</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../documents/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../documents/index.html">The documents</a>
+      <a class="sl" href="../data/specs.json">The catalogue as JSON</a>
+      <a class="sl" href="../llms.txt">llms.txt</a>
+      <a class="sl" href="../llms-full.txt">llms-full.txt</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../admin/comms.html">Comms: tasks &amp; requests</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Admin &amp; engineering</a>
+      <a class="sl" href="../network/index.html">The network</a>
+      <a class="sl" href="../about/participant.html">Where we lose</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__SG-Compute">★ GitHub</a>
+  <script src="../assets/nav.js" defer></script>
+</div></nav>
+
+<main class="doc" style="max-width:1160px">
+<div class="crumb"><a href="../index.html">sg-compute.sgit.ai</a> / specs</div>
+<h1>The catalogue: sixteen ready-to-launch environments</h1>
+<p class="lead">The 30 April naming brief called it <em>“the simulated AWS Marketplace: a catalogue of pre-configured, ready-to-launch environments.”</em> That is what this is. Seventeen directories, <b>16 registered</b> — 9 stable, 7 experimental — each a working package with a typed manifest, its own routes, service, CLI, schemas and tests. <b>This page is generated from <a href="../data/specs.json">data/specs.json</a></b> and CI fails if it drifts.</p>
+
+<div class="evbox">
+  <span class="evtag">measured</span>
+  <p>Surveyed <b>2026-08-24</b> against repo <b>v0.2.71</b>, from <code>sg_compute_specs/*/manifest.py</code>. Every total on this page is computed from the per-spec rows and cross-checked against the survey's own summary blocks — <a href="../admin/index.html#generated">a disagreement fails the build</a> rather than publishing a number nobody can reproduce.</p>
+</div>
+
+<h2 id="why">Why this page justifies the rename</h2>
+<p><b>Playwright is 1 of 16 registered specs and 16.8% of spec code.</b> Counting the generic compute core alongside the specs, <b>71.5% of the new codebase is not browser code</b>. The repository is named after one row in this table. <a href="../rename/index.html">The rename, scored against its own nine acceptance criteria →</a></p>
+
+<h2 id="families">By family — read this one first</h2>
+<p>The alphabetical list is below, but the family view is the one that carries the argument. It is a single row that makes the case:</p>
+<div class="tablewrap">
+  <table>
+    <thead><tr><th>Family</th><th>Specs</th><th style="text-align:right">Lines</th></tr></thead>
+    <tbody>
+        <tr><td><b>browser</b></td><td><a href="playwright.html">playwright</a>, <a href="content_proxy.html">content_proxy</a>, <a href="firefox.html">firefox</a>, <a href="vnc.html">vnc</a>, <a href="neko.html">neko</a></td><td style="text-align:right">20,199</td></tr>
+        <tr><td><b>vault</b></td><td><a href="vault_publish.html">vault_publish</a>, <a href="vault_app.html">vault_app</a></td><td style="text-align:right">19,943</td></tr>
+        <tr><td><b>observability</b></td><td><a href="elastic.html">elastic</a>, <a href="prometheus.html">prometheus</a>, <a href="opensearch.html">opensearch</a></td><td style="text-align:right">3,904</td></tr>
+        <tr><td><b>runtime</b></td><td><a href="docker.html">docker</a>, <a href="podman.html">podman</a></td><td style="text-align:right">2,757</td></tr>
+        <tr><td><b>llm</b></td><td><a href="local_claude.html">local_claude</a>, <a href="ollama.html">ollama</a></td><td style="text-align:right">2,437</td></tr>
+        <tr><td><b>network</b></td><td><a href="mitmproxy.html">mitmproxy</a></td><td style="text-align:right">1,448</td></tr>
+        <tr><td><b>tool</b></td><td><a href="open_design.html">open_design</a></td><td style="text-align:right">773</td></tr>
+        <tr><td><b>infra</b></td><td><a href="sg_edge.html">sg_edge</a></td><td style="text-align:right">9,108</td></tr>
+    </tbody>
+  </table>
+</div>
+<p class="dim small"><b>Vault specs are within 300 lines of browser specs.</b> That row is the clearest possible statement that this is not a browser service — and it points at the integration the rest of the estate wants. It also explains why <a href="../shipped/index.html#sinks">the artefact-sink gap</a> matters more than it looks: two specs exist whose declared capability is <code>vault-writes</code>, while the platform's own generic vault sink raises <code>NotImplementedError</code>. The capability exists at the spec layer and not at the platform layer.</p>
+
+<h3 id="f-browser">browser <span class="dim small">— 5 specs, 20,199 lines</span></h3>
+<p>Browsers and the proxies in front of them — the family the repository is named after, and 28.5% of the new codebase.</p>
+<div class="cards" style="padding:0;margin:.8rem 0 1.6rem">
+  <a class="card" href="playwright.html">
+    <div class="tag">30s typical boot · 10,180 lines</div>
+    <h3>playwright</h3>
+    <p>The spec the repository is named after, and 1 of 16. A stateless browser data plane: every call launches a fresh Playwright subprocess and Chromium, r…</p>
+    <span class="go"><span class="opt-verdict opt-yes">stable</span></span>
+  </a>
+  <a class="card" href="content_proxy.html">
+    <div class="tag">600s typical boot · 4,971 lines</div>
+    <h3>content_proxy</h3>
+    <p>A content-inspecting proxy in front of the browser. Ten-minute typical boot — joint slowest in the catalogue with docker.</p>
+    <span class="go"><span class="opt-verdict opt-part">experimental</span></span>
+  </a>
+  <a class="card" href="firefox.html">
+    <div class="tag">90s typical boot · 1,992 lines</div>
+    <h3>firefox</h3>
+    <p>A second browser engine behind the same proxy surface.</p>
+    <span class="go"><span class="opt-verdict opt-part">experimental</span></span>
+  </a>
+  <a class="card" href="vnc.html">
+    <div class="tag">120s typical boot · 1,876 lines</div>
+    <h3>vnc</h3>
+    <p>A headed browser on an X display, reachable over VNC. One of only three specs create_node can provision through the control-plane API.</p>
+    <span class="go"><span class="opt-verdict opt-yes">stable</span></span>
+  </a>
+  <a class="card" href="neko.html">
+    <div class="tag">120s typical boot · 1,180 lines</div>
+    <h3>neko</h3>
+    <p>A browser you can embed in an iframe and share — the collaborative end of the browser family.</p>
+    <span class="go"><span class="opt-verdict opt-yes">stable</span></span>
+  </a>
+</div>
+
+<h3 id="f-vault">vault <span class="dim small">— 2 specs, 19,943 lines</span></h3>
+<p>Vault publishing and vault applications. Within 300 lines of the browser family, which is the single clearest statement that this is not a browser service.</p>
+<div class="cards" style="padding:0;margin:.8rem 0 1.6rem">
+  <a class="card" href="vault_publish.html">
+    <div class="tag">45s typical boot · 11,682 lines</div>
+    <h3>vault_publish</h3>
+    <p>The largest spec in the tree. Publishes vault content and routes it on a subdomain — one of the two specs whose declared capability is literally vault…</p>
+    <span class="go"><span class="opt-verdict opt-part">experimental</span></span>
+  </a>
+  <a class="card" href="vault_app.html">
+    <div class="tag">45s typical boot · 8,261 lines</div>
+    <h3>vault_app</h3>
+    <p>Runs a vault as an application. The one spec that supports fractional teardown (max_hours = 0.1, six minutes) and defaults to spot instances.</p>
+    <span class="go"><span class="opt-verdict opt-part">experimental</span></span>
+  </a>
+</div>
+
+<h3 id="f-observability">observability <span class="dim small">— 3 specs, 3,904 lines</span></h3>
+<p>Metrics and search backends for the platform's own telemetry.</p>
+<div class="cards" style="padding:0;margin:.8rem 0 1.6rem">
+  <a class="card" href="elastic.html">
+    <div class="tag">180s typical boot · 1,372 lines</div>
+    <h3>elastic</h3>
+    <p>An Elasticsearch node for the observability family.</p>
+    <span class="go"><span class="opt-verdict opt-yes">stable</span></span>
+  </a>
+  <a class="card" href="prometheus.html">
+    <div class="tag">120s typical boot · 1,311 lines</div>
+    <h3>prometheus</h3>
+    <p>Prometheus, paired with the /metrics endpoint every data-plane node already exposes.</p>
+    <span class="go"><span class="opt-verdict opt-yes">stable</span></span>
+  </a>
+  <a class="card" href="opensearch.html">
+    <div class="tag">180s typical boot · 1,221 lines</div>
+    <h3>opensearch</h3>
+    <p>OpenSearch, the third of the observability family and a remote-write target for the observability service.</p>
+    <span class="go"><span class="opt-verdict opt-yes">stable</span></span>
+  </a>
+</div>
+
+<h3 id="f-runtime">runtime <span class="dim small">— 2 specs, 2,757 lines</span></h3>
+<p>General container runtimes — and, with vnc, the only specs the control-plane API can provision.</p>
+<div class="cards" style="padding:0;margin:.8rem 0 1.6rem">
+  <a class="card" href="docker.html">
+    <div class="tag">600s typical boot · 1,558 lines</div>
+    <h3>docker</h3>
+    <p>A general container runtime node. One of the three specs create_node supports.</p>
+    <span class="go"><span class="opt-verdict opt-yes">stable</span></span>
+  </a>
+  <a class="card" href="podman.html">
+    <div class="tag">120s typical boot · 1,199 lines</div>
+    <h3>podman</h3>
+    <p>A rootless container runtime alongside docker. One of the three specs create_node supports.</p>
+    <span class="go"><span class="opt-verdict opt-yes">stable</span></span>
+  </a>
+</div>
+
+<h3 id="f-llm">llm <span class="dim small">— 2 specs, 2,437 lines</span></h3>
+<p>Model inference, local and hosted-on-your-own-node.</p>
+<div class="cards" style="padding:0;margin:.8rem 0 1.6rem">
+  <a class="card" href="local_claude.html">
+    <div class="tag">180s typical boot · 1,498 lines</div>
+    <h3>local_claude</h3>
+    <p>A node that runs Claude Code locally against a workspace, provisioned by the Claude_Code__Firstboot user-data section.</p>
+    <span class="go"><span class="opt-verdict opt-part">experimental</span></span>
+  </a>
+  <a class="card" href="ollama.html">
+    <div class="tag">120s typical boot · 939 lines</div>
+    <h3>ollama</h3>
+    <p>Local model inference, provisioned by the Ollama and NVIDIA_Container_Toolkit user-data sections on a GPU instance.</p>
+    <span class="go"><span class="opt-verdict opt-part">experimental</span></span>
+  </a>
+</div>
+
+<h3 id="f-network">network <span class="dim small">— 1 spec, 1,448 lines</span></h3>
+<p>The proxy sidecar the browser family routes through.</p>
+<div class="cards" style="padding:0;margin:.8rem 0 1.6rem">
+  <a class="card" href="mitmproxy.html">
+    <div class="tag">15s typical boot · 1,448 lines</div>
+    <h3>mitmproxy</h3>
+    <p>The fastest spec in the catalogue at 15 seconds typical, and the sidecar the browser specs route through: isolation is the Docker network, and the sid…</p>
+    <span class="go"><span class="opt-verdict opt-yes">stable</span></span>
+  </a>
+</div>
+
+<h3 id="f-tool">tool <span class="dim small">— 1 spec, 773 lines</span></h3>
+<p>Application specs that are neither browser nor runtime.</p>
+<div class="cards" style="padding:0;margin:.8rem 0 1.6rem">
+  <a class="card" href="open_design.html">
+    <div class="tag">480s typical boot · 773 lines</div>
+    <h3>open_design</h3>
+    <p>A design tool node, and the smallest spec in the catalogue — which is the point: a spec costs a manifest, a route class and a service.</p>
+    <span class="go"><span class="opt-verdict opt-part">experimental</span></span>
+  </a>
+</div>
+
+<h3 id="f-infra">infra <span class="dim small">— 1 spec, 9,108 lines</span></h3>
+<p>Platform infrastructure that lives in the spec tree without being a registered spec.</p>
+<div class="cards" style="padding:0;margin:.8rem 0 1.6rem">
+  <a class="card" href="sg_edge.html">
+    <div class="tag">— typical boot · 9,108 lines</div>
+    <h3>sg_edge</h3>
+    <p>The second-largest directory in the spec tree and the one the registry cannot see: it has no manifest.py, so Spec__Loader never finds it. Either regis…</p>
+    <span class="go"><span class="opt-verdict opt-no">unregistered</span></span>
+  </a>
+</div>
+
+<h2 id="all">All 17, alphabetically</h2>
+<div class="tablewrap">
+  <table>
+    <thead><tr><th>Spec</th><th>Stability</th><th>Capabilities</th><th style="text-align:right">Boot</th><th style="text-align:right">Lines</th><th>Family</th><th><code>create_node</code></th></tr></thead>
+    <tbody>
+        <tr><td><a href="content_proxy.html"><b>content_proxy</b></a></td><td><span class="opt-verdict opt-part">experimental</span></td><td><code>mitm-proxy</code></td><td style="text-align:right">600s</td><td style="text-align:right">4,971</td><td>browser</td><td><span class="opt-verdict opt-no">no</span></td></tr>
+        <tr><td><a href="docker.html"><b>docker</b></a></td><td><span class="opt-verdict opt-yes">stable</span></td><td><code>container-runtime</code></td><td style="text-align:right">600s</td><td style="text-align:right">1,558</td><td>runtime</td><td><span class="opt-verdict opt-yes">yes</span></td></tr>
+        <tr><td><a href="elastic.html"><b>elastic</b></a></td><td><span class="opt-verdict opt-yes">stable</span></td><td><code>metrics</code></td><td style="text-align:right">180s</td><td style="text-align:right">1,372</td><td>observability</td><td><span class="opt-verdict opt-no">no</span></td></tr>
+        <tr><td><a href="firefox.html"><b>firefox</b></a></td><td><span class="opt-verdict opt-part">experimental</span></td><td><code>mitm-proxy</code></td><td style="text-align:right">90s</td><td style="text-align:right">1,992</td><td>browser</td><td><span class="opt-verdict opt-no">no</span></td></tr>
+        <tr><td><a href="local_claude.html"><b>local_claude</b></a></td><td><span class="opt-verdict opt-part">experimental</span></td><td><code>llm-inference</code></td><td style="text-align:right">180s</td><td style="text-align:right">1,498</td><td>llm</td><td><span class="opt-verdict opt-no">no</span></td></tr>
+        <tr><td><a href="mitmproxy.html"><b>mitmproxy</b></a></td><td><span class="opt-verdict opt-yes">stable</span></td><td><code>mitm-proxy</code></td><td style="text-align:right">15s</td><td style="text-align:right">1,448</td><td>network</td><td><span class="opt-verdict opt-no">no</span></td></tr>
+        <tr><td><a href="neko.html"><b>neko</b></a></td><td><span class="opt-verdict opt-yes">stable</span></td><td><code>iframe-embed</code></td><td style="text-align:right">120s</td><td style="text-align:right">1,180</td><td>browser</td><td><span class="opt-verdict opt-no">no</span></td></tr>
+        <tr><td><a href="ollama.html"><b>ollama</b></a></td><td><span class="opt-verdict opt-part">experimental</span></td><td><code>llm-inference</code></td><td style="text-align:right">120s</td><td style="text-align:right">939</td><td>llm</td><td><span class="opt-verdict opt-no">no</span></td></tr>
+        <tr><td><a href="open_design.html"><b>open_design</b></a></td><td><span class="opt-verdict opt-part">experimental</span></td><td><code>design-tool</code></td><td style="text-align:right">480s</td><td style="text-align:right">773</td><td>tool</td><td><span class="opt-verdict opt-no">no</span></td></tr>
+        <tr><td><a href="opensearch.html"><b>opensearch</b></a></td><td><span class="opt-verdict opt-yes">stable</span></td><td><code>metrics</code></td><td style="text-align:right">180s</td><td style="text-align:right">1,221</td><td>observability</td><td><span class="opt-verdict opt-no">no</span></td></tr>
+        <tr><td><a href="playwright.html"><b>playwright</b></a></td><td><span class="opt-verdict opt-yes">stable</span></td><td><code>browser-automation</code></td><td style="text-align:right">30s</td><td style="text-align:right">10,180</td><td>browser</td><td><span class="opt-verdict opt-no">no</span></td></tr>
+        <tr><td><a href="podman.html"><b>podman</b></a></td><td><span class="opt-verdict opt-yes">stable</span></td><td><code>container-runtime</code></td><td style="text-align:right">120s</td><td style="text-align:right">1,199</td><td>runtime</td><td><span class="opt-verdict opt-yes">yes</span></td></tr>
+        <tr><td><a href="prometheus.html"><b>prometheus</b></a></td><td><span class="opt-verdict opt-yes">stable</span></td><td><code>metrics</code></td><td style="text-align:right">120s</td><td style="text-align:right">1,311</td><td>observability</td><td><span class="opt-verdict opt-no">no</span></td></tr>
+        <tr><td><a href="sg_edge.html"><b>sg_edge</b></a></td><td><span class="opt-verdict opt-no">unregistered</span></td><td><span class="dim">— unregistered —</span></td><td style="text-align:right">—</td><td style="text-align:right">9,108</td><td>infra</td><td><span class="opt-verdict opt-no">n/a</span></td></tr>
+        <tr><td><a href="vault_app.html"><b>vault_app</b></a></td><td><span class="opt-verdict opt-part">experimental</span></td><td><code>vault-writes</code></td><td style="text-align:right">45s</td><td style="text-align:right">8,261</td><td>vault</td><td><span class="opt-verdict opt-no">no</span></td></tr>
+        <tr><td><a href="vault_publish.html"><b>vault_publish</b></a></td><td><span class="opt-verdict opt-part">experimental</span></td><td><code>vault-writes</code>, <code>subdomain-routing</code></td><td style="text-align:right">45s</td><td style="text-align:right">11,682</td><td>vault</td><td><span class="opt-verdict opt-no">no</span></td></tr>
+        <tr><td><a href="vnc.html"><b>vnc</b></a></td><td><span class="opt-verdict opt-yes">stable</span></td><td><code>mitm-proxy</code></td><td style="text-align:right">120s</td><td style="text-align:right">1,876</td><td>browser</td><td><span class="opt-verdict opt-yes">yes</span></td></tr>
+    </tbody>
+  </table>
+</div>
+<p class="dim small">Boot is <code>boot_seconds_typical</code> from each manifest — 15 seconds to 600 seconds, a 40× range, which is itself the argument for carrying it as a manifest field rather than a footnote. Spec ids are API identifiers and are not prettified.</p>
+
+<div class="warnbox">
+  <p><b>The uniform CLI is real; the uniform API is not.</b> <code>create_node</code> covers <b>3 of 16 specs</b> — <code>EC2__Platform._service_for</code> raises <code>NotImplementedError</code> for anything but <code>docker</code>, <code>podman</code> and <code>vnc</code>. The other thirteen create nodes through their own CLI and service paths, not the control-plane API. Every spec page below states this for itself.</p>
+</div>
+
+<h2 id="mechanisms">Three mechanisms, and none of them is <code>capabilities.json</code></h2>
+<p>What makes this a platform rather than a service is that adding a spec costs a manifest, a route class and a service — and the CLI comes free.</p>
+<div class="ladder">
+  <div class="cap"><span class="capnum">1</span><h3>manifest.py per spec</h3><p>typed Schema__Spec__Manifest__Entry — the registry</p></div>
+  <div class="cap"><span class="capnum">2</span><h3>Spec__Routes__Loader</h3><p>convention-based route discovery: spec_id 'docker' -&gt; sg_compute_specs.docker.api.routes.Routes__Docker__Stack. 'Specs without a route class are silently skipped.'</p></div>
+  <div class="cap"><span class="capnum">3</span><h3>Spec__CLI__Builder</h3><p>generates the same 10 verbs for every spec: list, info, create, wait, health, connect, exec, delete, ami list|bake, cert</p></div>
+  <div class="cap"><span class="capnum">4</span><h3>Spec__Loader entry points</h3><p>PEP 621 entry-point discovery, group 'sg_compute.specs' — third-party specs architecturally supported, untested in the wild</p></div>
+</div>
+
+<div class="warnbox">
+  <p><b>What is <em>not</em> the mechanism.</b> Frozen at v0.1.29 while the repo is at v0.2.71 (42 minor versions). COPY'd into the image and served at /admin/capabilities. The repo's own docs say not to read it: 'The UI reads GET /health/capabilities (the live Schema__Service__Capabilities, populated by Capability__Detector) — never the stale capabilities.json.'</p>
+  <p>The live mechanism is <b>Capability__Detector, which detects the deployment target from env vars (laptop | ci | claude_web | container | lambda) and builds capabilities at runtime</b>. The three axioms that stale file names — <b>statelessness, least-privilege-by-declaration, self-description</b> — are good, and unlike the file that names them they are actually implemented. <a href="../index.html#axioms">They are rescued onto the front page</a>.</p>
+</div>
+
+<h2 id="third-party">Specs that live in your repository</h2>
+<p><code>Spec__Loader</code> already supports <b>PEP 621 entry-point discovery</b> under the group <code>sg_compute.specs</code>, alongside the in-repo walk. A spec in your own package, declaring that entry point, joins this catalogue with no change to this repository.</p>
+<div class="note">
+  <p><b>Stated as a claim, not a feature.</b> Third-party specs are architecturally supported and <b>untested in the wild</b> — nobody outside the repository has published one. That is an invitation rather than a guarantee, and if you try it we would like to hear what broke.</p>
+</div>
+<p>One design note worth publishing because it cuts both ways: <em>“specs without a route class are silently skipped.”</em> Convenient during development; a silent-failure mode in production. A spec that loses its route class disappears from the API with no error.</p>
+
+<div class="pagenav">
+  <a href="../what-it-is/index.html">← What it actually is</a>
+  <a href="../agents/index.html">The machine surface →</a>
+</div>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">sg-compute<span>.sgit.ai</span></div>
+    <p>An ephemeral compute platform with sixteen ready-to-launch workload specs — measured from the tree, audit and all. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. All site content CC BY 4.0; the platform's own source is Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a> — the parent project and the vault layer this provisions for · <a href="https://open-source.sgit.ai">↗ open-source.sgit.ai</a> · <a href="https://wardley-maps.sgit.ai">↗ wardley-maps.sgit.ai</a> · <a href="https://risks.sgit.ai">↗ risks.sgit.ai</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="domainnote"><b>sg-compute.sgit.ai</b> is documentation. <b>sg-compute.sgraph.ai</b> is a live Route 53 zone serving per-node DNS. Same label, different TLD, stated <a href="../network/index.html#domains" style="display:inline;padding:0">deliberately</a>.</p>
+    <p class="partnote">⚠ Participant disclosure: published by the sgit project, which builds the platform this site documents and audits. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html">v0.1.0</a> · <a href="../admin/index.html">engineering</a></p>
+  </div>
+  <div>
+    <h4>The platform</h4>
+    <a href="../what-it-is/index.html">What it is</a>
+    <a href="../specs/index.html">The spec catalogue</a>
+    <a href="../agents/index.html">The machine surface</a>
+    <a href="../security/index.html">Isolation &amp; trade-offs</a>
+  </div>
+  <div>
+    <h4>The argument</h4>
+    <a href="../why/index.html">Serverless for agents</a>
+    <a href="../numbers/index.html">The measured numbers</a>
+    <a href="../rename/index.html">The rename</a>
+  </div>
+  <div>
+    <h4>The audit</h4>
+    <a href="../shipped/index.html">&#8594; What ships, and what does not</a>
+    <a href="../roadmap/index.html">Build order &amp; open questions</a>
+    <a href="../documents/index.html">The documents</a>
+    <a href="../about/participant.html">Where we lose</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../admin/comms.html">Comms: tasks &amp; requests</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../network/index.html">The network</a>
+    <a href="../llms.txt">llms.txt</a>
+    <a href="../llms-full.txt">llms-full.txt</a>
+  </div>
+</div></footer>
+
+</body>
+</html>

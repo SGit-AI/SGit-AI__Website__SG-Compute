@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The measured numbers · sg-compute.sgit.ai</title>
+<meta name="description" content="Boot benchmarks from 24 real runs including seven capacity failures, the test counts by path, the commit history month by month, and what can and cannot honestly be said about cost. Everything on this page is checkable.">
+<link rel="canonical" href="https://sg-compute.sgit.ai/numbers/index.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="sg-compute.sgit.ai">
+<meta property="og:url" content="https://sg-compute.sgit.ai/numbers/index.html">
+<meta property="og:title" content="The measured numbers, including the ones that did not work">
+<meta property="og:description" content="24 real boot runs with the seven InsufficientInstanceCapacity failures published alongside them. Honest evidence that spot GPU capacity is not guaranteed is worth more than a clean table.">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">sg-compute<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai — the parent project: the vault layer and the shipped CLI this compute platform provisions for">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">audit draft</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history">v0.1.0</a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../what-it-is/index.html">The platform<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../what-it-is/index.html">What it is: two ephemeral layers</a>
+      <a class="sl" href="../specs/index.html">The spec catalogue</a>
+      <a class="sl" href="../agents/index.html">The machine surface</a>
+      <a class="sl" href="../security/index.html">Isolation &amp; the one trade-off</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../why/index.html">The argument<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../why/index.html">A serverless environment for agents</a>
+      <a class="sl here" href="../numbers/index.html">The measured numbers</a>
+      <a class="sl" href="../rename/index.html">The rename</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../shipped/index.html">The audit<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../shipped/index.html">What ships, and what does not</a>
+      <a class="sl" href="../roadmap/index.html">Build order &amp; open questions</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../documents/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../documents/index.html">The documents</a>
+      <a class="sl" href="../data/specs.json">The catalogue as JSON</a>
+      <a class="sl" href="../llms.txt">llms.txt</a>
+      <a class="sl" href="../llms-full.txt">llms-full.txt</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../admin/comms.html">Comms: tasks &amp; requests</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Admin &amp; engineering</a>
+      <a class="sl" href="../network/index.html">The network</a>
+      <a class="sl" href="../about/participant.html">Where we lose</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__SG-Compute">★ GitHub</a>
+  <script src="../assets/nav.js" defer></script>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">sg-compute.sgit.ai</a> / numbers</div>
+<h1>The measured numbers</h1>
+<p class="lead">This is the site's credibility page, because everything on it is checkable. No number here comes from a brief, a README or a capabilities file — each one was measured, and each one carries the date it was measured on and the thing it was measured from.</p>
+
+<div class="evbox">
+  <span class="evtag">house rule</span>
+  <p><b>Every number on this site is generated from data, or carries the date it was measured.</b> If it can be regenerated at build time it is — the <a href="../specs/index.html">spec catalogue</a> is a projection of <a href="../data/specs.json">a JSON file</a>, and CI fails if the page drifts from it. If it cannot, it is dated. <a href="../admin/index.html#generated">How that is enforced →</a></p>
+</div>
+
+<h2 id="boot">Boot benchmarks — 24 real runs</h2>
+<p>Measured <b>11 May 2026</b>, eu-west-2, time to SSM-ready. Instance ids and AMI ids are stripped; the timings are not.</p>
+<div class="tablewrap">
+  <table>
+    <thead><tr><th>Instance</th><th>Purchase</th><th style="text-align:right">Seconds</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><td><code>t3.micro</code></td><td>on-demand</td><td style="text-align:right"><b>16.4–16.5</b></td><td></td></tr>
+      <tr><td><code>c5.large</code></td><td>on-demand</td><td style="text-align:right"><b>16.2–16.3</b></td><td>a bigger instance is not a slower one</td></tr>
+      <tr><td><code>g5.xlarge</code></td><td>on-demand</td><td style="text-align:right"><b>18.2–18.7</b></td><td>AMI A</td></tr>
+      <tr><td><code>g5.xlarge</code></td><td><b>spot</b></td><td style="text-align:right"><b>20.5–20.6</b></td><td>spot costs ~2 seconds, not ~20</td></tr>
+      <tr><td><code>g5.xlarge</code></td><td>on-demand</td><td style="text-align:right"><b>38.5–69.5</b></td><td><b>AMI B — 2–4× slower</b></td></tr>
+    </tbody>
+  </table>
+</div>
+<p>Two findings there are worth more than the headline. <b>The measured EC2 cold start is ~16 seconds, not the 30–60 the platform's own cold-start ladder claims</b> — the ladder is pessimistic against its own benchmark. And <b>AMI choice changes boot time by 2–4×</b>, which is a far more actionable finding than instance type: the same instance family, on a different image, is the difference between 18 seconds and 70.</p>
+
+<h3 id="failures">The seven that failed</h3>
+<div class="warnbox">
+  <p><b>Seven recorded <code>InsufficientInstanceCapacity</code> failures</b> for <code>g5.xlarge</code>, across both availability zones, in the same benchmark run.</p>
+  <p>They are published here for the same reason the successes are: they are the honest evidence that <b>spot GPU capacity is not guaranteed</b>, and it is exactly the kind of number nobody else prints. A clean table of five rows would have been a better-looking page and a worse one.</p>
+</div>
+
+<h2 id="fifty">The 50-second number, and what it is for</h2>
+<blockquote class="challenge">“<b>The 50-second end-to-end provisioning is the number that matters most.</b> It is not as fast as Lambda (sub-second cold start), not as fast as Fargate (10–30s), but it gives a dedicated EC2 instance per-vault with full control, isolation, and a stable DNS name.”</blockquote>
+<p>Note the gap between the two figures on this page. The instance is up in <b>~16 seconds</b>; the end-to-end claim is <b>50</b>. <b>The difference is provisioning, DNS and health-checking, not instance start</b> — and publishing that breakdown is more useful than either number on its own, because it says where the remaining 34 seconds would have to come from if anyone wanted them back.</p>
+
+<h2 id="tests">Tests — 7,110 collectible, 4,793 in CI</h2>
+<pre class="shell">pytest tests/ci tests/unit -q
+-> <span class="g">4,785 passed</span>, <span class="r">4 failed</span>, 4 skipped — <span class="cy">81 seconds</span>
+</pre>
+<p>4,785 tests in 81 seconds is a genuinely fast, genuinely large suite, across 799 test files.</p>
+<div class="tablewrap">
+  <table>
+    <thead><tr><th>Path</th><th style="text-align:right">Collected</th><th>In CI?</th></tr></thead>
+    <tbody>
+      <tr><td><code>tests/ci</code></td><td style="text-align:right">33</td><td class="verdict"><span class="opt-verdict opt-yes">yes</span></td></tr>
+      <tr><td><code>tests/unit</code></td><td style="text-align:right">4,760</td><td class="verdict"><span class="opt-verdict opt-yes">yes</span></td></tr>
+      <tr><td><code>tests/integration</code></td><td style="text-align:right">24</td><td class="verdict"><span class="opt-verdict opt-no">no</span></td></tr>
+      <tr><td><code>tests/integration_live</code></td><td style="text-align:right">60</td><td class="verdict"><span class="opt-verdict opt-no">no</span></td></tr>
+      <tr><td><code>tests/local</code></td><td style="text-align:right">5</td><td class="verdict"><span class="opt-verdict opt-no">no</span></td></tr>
+      <tr><td><code>tests/benchmarks</code></td><td style="text-align:right">3</td><td class="verdict"><span class="opt-verdict opt-no">no</span></td></tr>
+      <tr><td><code>sg_compute__tests</code></td><td style="text-align:right"><b>672</b></td><td class="verdict"><span class="opt-verdict opt-no">no</span></td></tr>
+      <tr><td><code>sg_compute_specs/**/tests</code></td><td style="text-align:right"><b>1,280</b></td><td class="verdict"><span class="opt-verdict opt-no">no</span></td></tr>
+      <tr><td><code>sgraph_ai_service_playwright__cli/**/tests</code></td><td style="text-align:right">273</td><td class="verdict"><span class="opt-verdict opt-no">no</span></td></tr>
+      <tr><td><b>Total</b></td><td style="text-align:right"><b>7,110</b></td><td class="verdict"><b>4,793 run — 67.4%</b></td></tr>
+    </tbody>
+  </table>
+</div>
+<p><b>1,952 of the un-run tests cover the new trees</b> — the parts the rename is building. Six of the seven collection errors in the repository are in those suites: four genuine circular imports, one missing module, one stale import path. Adding the two suites to CI surfaces all six immediately, and it is <a href="../roadmap/index.html#fixes">one workflow edit</a>.</p>
+<div class="note"><p><b>About the four failures.</b> They are test-hygiene time bombs, not code defects: three IAM tests hardcode a <code>last_used</code> date that is now more than 90 days stale, so a <code>STALE_ROLE</code> assertion fires; the fourth needs a built wheel. <b>They fail for anyone who clones the repository today</b>, which is worth fixing before the site invites people to.</p></div>
+
+<h2 id="history">History — 2,777 commits in 100 days, then silence</h2>
+<p>First commit <b>16 April 2026</b>. Last commit <b>24 July 2026</b>. Both halves belong on this page.</p>
+<div class="tablewrap">
+  <table>
+    <thead><tr><th>Month</th><th style="text-align:right">Commits</th><th>Shape</th></tr></thead>
+    <tbody>
+      <tr><td>April 2026</td><td style="text-align:right">1,136</td><td><span style="color:var(--accent)">████████████████</span></td></tr>
+      <tr><td>May 2026</td><td style="text-align:right">1,454</td><td><span style="color:var(--accent)">████████████████████</span></td></tr>
+      <tr><td>June 2026</td><td style="text-align:right">129</td><td><span style="color:var(--warm)">██</span></td></tr>
+      <tr><td>July 2026</td><td style="text-align:right">58</td><td><span style="color:var(--warm)">█</span></td></tr>
+      <tr><td>August 2026</td><td style="text-align:right">0</td><td><span class="dim">—</span></td></tr>
+    </tbody>
+  </table>
+</div>
+<p><b>Two-thirds of the repository landed in the first six weeks, and there has been no commit since 24 July.</b> That is not a criticism — it is what “built fast, then stabilised” looks like. But a site claiming an actively-developed platform against a repository whose last commit is a month old is making a claim a reader can check in one click, so this site does not make it. Whether the platform is paused, finished, or between phases is <a href="../roadmap/index.html#q8">Q8</a>, and it needs an answer from a person rather than from the tree.</p>
+
+<h3 id="authors">Who wrote it</h3>
+<div class="figs">
+  <div class="fig"><div class="n">1,700</div><div class="l">commits by <b>Claude</b> — 61%</div><span class="src">git shortlog</span></div>
+  <div class="fig"><div class="n">826</div><div class="l">commits by <b>Dinis Cruz</b> — 30%</div><span class="src">git shortlog</span></div>
+  <div class="fig"><div class="n">243</div><div class="l">commits by <b>GitHub Actions</b> — 9%</div><span class="src">git shortlog</span></div>
+</div>
+<p>That 61% is arguably the most interesting single fact about this repository for the wider network, and it invites the obvious question about who reads the code. <a href="https://open-source.sgit.ai">open-source.sgit.ai</a> has the argument — <em>someone still needs to understand what is underneath</em> — and this site has the artefact. Joining them is a strong page and an uncomfortable one; it is <a href="../roadmap/index.html#tensions">tension 2</a>.</p>
+
+<h2 id="scale">Scale</h2>
+<div class="tablewrap">
+  <table>
+    <thead><tr><th></th><th>Measured</th></tr></thead>
+    <tbody>
+      <tr><td><b>Code</b></td><td>3,999 Python files · <b>217,266 lines</b> · 799 test files</td></tr>
+      <tr><td><b>Documentation</b></td><td><b>1,265,371 words of markdown</b>, including a formal reality-document system of 72,339 words across 12 domains</td></tr>
+      <tr><td><b>Specs</b></td><td><b>16 registered</b> (plus <a href="../specs/sg_edge.html">one unregistered</a>) · 9 stable, 7 experimental · boot 15s–600s</td></tr>
+      <tr><td><b>API</b></td><td>Two FastAPI applications · a 25-verb declarative sequence language · stateful sessions · Prometheus metrics</td></tr>
+      <tr><td><b>Versioning</b></td><td><code>v0.2.71</code>, single source of truth in a repo-root <code>version</code> file, auto-incremented in CI, read at runtime and used as the image tag</td></tr>
+      <tr><td><b>Type safety</b></td><td><code>Type_Safe</code> in <b>1,333 of 3,127 package files (42.6%)</b> — runtime, not static</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="cost">Cost — what can be said, and what cannot</h2>
+<p><b>Can be said, because it is measured or is a default in the code:</b></p>
+<ul>
+  <li>The boot benchmarks above, including the seven failures.</li>
+  <li>Spot is used and defaulted where appropriate — <code>vault_app</code> and the Fargate path set <code>use_spot = True # spot by default (~70% cheaper)</code> and <code>launch_type = 'FARGATE_SPOT'</code>.</li>
+  <li>Teardown defaults: <code>max_hours = 1</code> everywhere, fractional supported (<code>0.1</code> = six minutes), idle reconciliation at roughly fifteen minutes.</li>
+  <li>The brief-level estimates, <b>labelled as estimates</b>: <em>“$0.005–0.10+ per hour per running unit; effectively free for short bursts”</em>, and for warm pools <em>“a pool of 3–5 t3.small instances at ~$0.02/hour each is roughly $1–3/day.”</em></li>
+</ul>
+<p><b>Cannot be said:</b></p>
+<ul>
+  <li><b>Any figure from the dashboard cost tracker.</b> Its own header says <em>“placeholder… shows mocked cost estimate.”</em> <a href="index.html#cost">Its rate table is five hardcoded prices.</a></li>
+  <li><b>Image sizes.</b> Not recorded anywhere, not derivable without a build.</li>
+  <li><b>Any throughput or concurrency number.</b> None were ever measured.</li>
+</ul>
+<p>So the honest cost page is: here is what a node costs to <em>start</em>, here is what it costs to <em>hold</em>, and the per-workload model is not built. That is more useful than a fabricated pricing table, and unlike a fabricated pricing table it is checkable.</p>
+
+<div class="pagenav">
+  <a href="../why/index.html">← The argument</a>
+  <a href="../shipped/index.html">What ships, and what does not →</a>
+</div>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">sg-compute<span>.sgit.ai</span></div>
+    <p>An ephemeral compute platform with sixteen ready-to-launch workload specs — measured from the tree, audit and all. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. All site content CC BY 4.0; the platform's own source is Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a> — the parent project and the vault layer this provisions for · <a href="https://open-source.sgit.ai">↗ open-source.sgit.ai</a> · <a href="https://wardley-maps.sgit.ai">↗ wardley-maps.sgit.ai</a> · <a href="https://risks.sgit.ai">↗ risks.sgit.ai</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="domainnote"><b>sg-compute.sgit.ai</b> is documentation. <b>sg-compute.sgraph.ai</b> is a live Route 53 zone serving per-node DNS. Same label, different TLD, stated <a href="../network/index.html#domains" style="display:inline;padding:0">deliberately</a>.</p>
+    <p class="partnote">⚠ Participant disclosure: published by the sgit project, which builds the platform this site documents and audits. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html">v0.1.0</a> · <a href="../admin/index.html">engineering</a></p>
+  </div>
+  <div>
+    <h4>The platform</h4>
+    <a href="../what-it-is/index.html">What it is</a>
+    <a href="../specs/index.html">The spec catalogue</a>
+    <a href="../agents/index.html">The machine surface</a>
+    <a href="../security/index.html">Isolation &amp; trade-offs</a>
+  </div>
+  <div>
+    <h4>The argument</h4>
+    <a href="../why/index.html">Serverless for agents</a>
+    <a href="../numbers/index.html">The measured numbers</a>
+    <a href="../rename/index.html">The rename</a>
+  </div>
+  <div>
+    <h4>The audit</h4>
+    <a href="../shipped/index.html">&#8594; What ships, and what does not</a>
+    <a href="../roadmap/index.html">Build order &amp; open questions</a>
+    <a href="../documents/index.html">The documents</a>
+    <a href="../about/participant.html">Where we lose</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../admin/comms.html">Comms: tasks &amp; requests</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../network/index.html">The network</a>
+    <a href="../llms.txt">llms.txt</a>
+    <a href="../llms-full.txt">llms-full.txt</a>
+  </div>
+</div></footer>
+
+</body>
+</html>

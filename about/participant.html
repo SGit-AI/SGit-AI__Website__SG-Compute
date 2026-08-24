@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Where we lose — the participant disclosure · sg-compute.sgit.ai</title>
+<meta name="description" content="This site is published by the project that builds the platform it audits. What that means for how to read it, what would change our mind, and where this approach is the wrong choice.">
+<link rel="canonical" href="https://sg-compute.sgit.ai/about/participant.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="sg-compute.sgit.ai">
+<meta property="og:url" content="https://sg-compute.sgit.ai/about/participant.html">
+<meta property="og:title" content="Where we lose — published by the project that builds the thing being audited">
+<meta property="og:description" content="This site is published by the project that builds the platform it audits. What that means for how to read it, what would change our mind, and where this approach is the wrong choice.">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">sg-compute<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai — the parent project: the vault layer and the shipped CLI this compute platform provisions for">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">audit draft</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history">v0.1.0</a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../what-it-is/index.html">The platform<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../what-it-is/index.html">What it is: two ephemeral layers</a>
+      <a class="sl" href="../specs/index.html">The spec catalogue</a>
+      <a class="sl" href="../agents/index.html">The machine surface</a>
+      <a class="sl" href="../security/index.html">Isolation &amp; the one trade-off</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../why/index.html">The argument<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../why/index.html">A serverless environment for agents</a>
+      <a class="sl" href="../numbers/index.html">The measured numbers</a>
+      <a class="sl" href="../rename/index.html">The rename</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../shipped/index.html">The audit<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../shipped/index.html">What ships, and what does not</a>
+      <a class="sl" href="../roadmap/index.html">Build order &amp; open questions</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../documents/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../documents/index.html">The documents</a>
+      <a class="sl" href="../data/specs.json">The catalogue as JSON</a>
+      <a class="sl" href="../llms.txt">llms.txt</a>
+      <a class="sl" href="../llms-full.txt">llms-full.txt</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../admin/comms.html">Comms: tasks &amp; requests</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Admin &amp; engineering</a>
+      <a class="sl" href="../network/index.html">The network</a>
+      <a class="sl here" href="../about/participant.html">Where we lose</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__SG-Compute">★ GitHub</a>
+  <script src="../assets/nav.js" defer></script>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">sg-compute.sgit.ai</a> / about</div>
+<h1>Where we lose</h1>
+<p class="lead">This site is published by the sgit project, which builds the platform it documents. That is a conflict of interest and it is stated at the top of every page rather than in a footer nobody reads. Here is what it means for how to read this, and where our approach is the wrong choice.</p>
+
+<h2 id="conflict">The conflict, plainly</h2>
+<p>We wrote the platform, commissioned the audit, and published the audit. That is three roles that would normally be three parties.</p>
+<p>What makes it checkable rather than merely asserted:</p>
+<ul>
+  <li><b>The repository is public.</b> Every claim on this site can be verified against the tree, and several of them are claims about the tree being <em>worse</em> than its documentation says.</li>
+  <li><b>The audit is published in full</b>, <a href="../documents/index.html">as raw source documents</a>, not summarised into a page we control the framing of.</li>
+  <li><b>The numbers carry their provenance.</b> Each one names what it was measured from and when. <a href="../numbers/index.html">The measured page →</a></li>
+  <li><b>The site's build fails</b> if a generated page drifts from the data it was generated from. <a href="../admin/index.html#generated">How →</a></li>
+</ul>
+<p>None of that removes the conflict. It makes the conflict cheap to check, which is the most a participant can offer.</p>
+
+<h2 id="lose">Where this approach loses</h2>
+<div class="ladder">
+  <div class="cap"><span class="capnum">1</span><h3>If you want a managed platform, use Lambda or Fargate</h3>
+    <p>The trade here is explicitly <em>more control, longer cold start</em>. If your workload fits in a function and you do not want to think about substrate, a platform that hands you a whole EC2 instance and a self-terminate timer is strictly worse for you. <a href="../why/index.html#trade">The trade, in its own words →</a></p></div>
+  <div class="cap"><span class="capnum">2</span><h3>If you need multi-node coordination today, this does not have it</h3>
+    <p>Not partially. <a href="../shipped/index.html#stacks">At all.</a> A Stack is a defined concept with no implementation behind it.</p></div>
+  <div class="cap"><span class="capnum">3</span><h3>If you need declarative infrastructure, there is none</h3>
+    <p>No Terraform, no CloudFormation, no CDK, no drift detection. Provisioning is imperative Python. Defensible for programmatic provisioning; not defensible if your organisation's answer to “what is running” is a state file.</p></div>
+  <div class="cap"><span class="capnum">4</span><h3>If you need artefacts in S3 or a vault, they do not arrive</h3>
+    <p><a href="../shipped/index.html#sinks">Two of four sinks raise <code>NotImplementedError</code>.</a> Today it is base64 inline with a 20 MB cap, or a local file.</p></div>
+  <div class="cap"><span class="capnum">5</span><h3>If you need a cost model, we do not have one</h3>
+    <p>We can tell you <a href="../numbers/index.html#cost">what a node costs to start and what the teardown defaults are</a>. We cannot tell you what a workload costs, and the only artefact that looks like it can is a self-declared placeholder.</p></div>
+  <div class="cap"><span class="capnum">6</span><h3>If active development matters to you, check the date</h3>
+    <p><a href="../numbers/index.html#history">No commit since 24 July 2026.</a> We do not know yet whether that is paused, finished or between phases, and we would rather say so than imply momentum we cannot evidence.</p></div>
+</div>
+
+<h2 id="change">What would change our mind</h2>
+<ul>
+  <li><b>A measured throughput number that contradicts the container argument.</b> <a href="../roadmap/index.html#q2">Q2 is open precisely because we expect the answer to be more interesting than the claim.</a></li>
+  <li><b>A second <code>Platform</code> implementation that turns out not to fit the ABC.</b> That would mean the abstraction is an aspiration, and we would say so.</li>
+  <li><b>A third-party spec.</b> The entry-point mechanism is architecturally supported and <b>untested in the wild</b>. If yours does not work, that is a finding and we want it.</li>
+</ul>
+
+<h2 id="how">How to argue with this site</h2>
+<p>Every source document is published raw at a stable path, every number names what it came from, and the whole site is in a public repository. If something here is wrong, the fastest route is an issue against <a href="https://github.com/SGit-AI/SGit-AI__Website__SG-Compute">the site repository</a> naming the page and the claim. <a href="../admin/comms.html">Open requests and their state are on the comms page</a>, in public, updated every release.</p>
+
+<div class="pagenav">
+  <a href="../network/index.html">← The network</a>
+  <a href="../admin/index.html">How this site is built →</a>
+</div>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">sg-compute<span>.sgit.ai</span></div>
+    <p>An ephemeral compute platform with sixteen ready-to-launch workload specs — measured from the tree, audit and all. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. All site content CC BY 4.0; the platform's own source is Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a> — the parent project and the vault layer this provisions for · <a href="https://open-source.sgit.ai">↗ open-source.sgit.ai</a> · <a href="https://wardley-maps.sgit.ai">↗ wardley-maps.sgit.ai</a> · <a href="https://risks.sgit.ai">↗ risks.sgit.ai</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="domainnote"><b>sg-compute.sgit.ai</b> is documentation. <b>sg-compute.sgraph.ai</b> is a live Route 53 zone serving per-node DNS. Same label, different TLD, stated <a href="../network/index.html#domains" style="display:inline;padding:0">deliberately</a>.</p>
+    <p class="partnote">⚠ Participant disclosure: published by the sgit project. You are on the disclosure page.</p>
+    <p class="verline">site <a href="../admin/versions.html">v0.1.0</a> · <a href="../admin/index.html">engineering</a></p>
+  </div>
+  <div>
+    <h4>The platform</h4>
+    <a href="../what-it-is/index.html">What it is</a>
+    <a href="../specs/index.html">The spec catalogue</a>
+    <a href="../agents/index.html">The machine surface</a>
+    <a href="../security/index.html">Isolation &amp; trade-offs</a>
+  </div>
+  <div>
+    <h4>The argument</h4>
+    <a href="../why/index.html">Serverless for agents</a>
+    <a href="../numbers/index.html">The measured numbers</a>
+    <a href="../rename/index.html">The rename</a>
+  </div>
+  <div>
+    <h4>The audit</h4>
+    <a href="../shipped/index.html">&#8594; What ships, and what does not</a>
+    <a href="../roadmap/index.html">Build order &amp; open questions</a>
+    <a href="../documents/index.html">The documents</a>
+    <a href="../about/participant.html">Where we lose</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../admin/comms.html">Comms: tasks &amp; requests</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../network/index.html">The network</a>
+    <a href="../llms.txt">llms.txt</a>
+    <a href="../llms-full.txt">llms-full.txt</a>
+  </div>
+</div></footer>
+
+</body>
+</html>

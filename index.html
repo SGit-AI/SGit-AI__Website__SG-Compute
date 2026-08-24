@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>sg-compute.sgit.ai — an ephemeral compute platform, measured from the tree</title>
+<meta name="description" content="Sixteen ready-to-launch workload specs, not a browser service: 71.5% of the new codebase is not browser code and Playwright is 1 of 16. Built in 100 days, 4,785 tests passing in 81 seconds — published with the audit that says where the maturity claim is overstated.">
+<link rel="canonical" href="https://sg-compute.sgit.ai/index.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="sg-compute.sgit.ai">
+<meta property="og:url" content="https://sg-compute.sgit.ai/index.html">
+<meta property="og:title" content="An ephemeral compute platform named after one of its sixteen specs">
+<meta property="og:description" content="Both claims were tested against the code and both hold: the repo needs renaming, and the platform is genuinely mature. Here is the measurement, and the four places the maturity claim is overstated.">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="index.html">sg-compute<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai — the parent project: the vault layer and the shipped CLI this compute platform provisions for">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">audit draft</span>
+  <a class="ver" href="admin/versions.html" title="Site release history">v0.1.0</a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="what-it-is/index.html">The platform<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="what-it-is/index.html">What it is: two ephemeral layers</a>
+      <a class="sl" href="specs/index.html">The spec catalogue</a>
+      <a class="sl" href="agents/index.html">The machine surface</a>
+      <a class="sl" href="security/index.html">Isolation &amp; the one trade-off</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="why/index.html">The argument<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="why/index.html">A serverless environment for agents</a>
+      <a class="sl" href="numbers/index.html">The measured numbers</a>
+      <a class="sl" href="rename/index.html">The rename</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="shipped/index.html">The audit<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="shipped/index.html">What ships, and what does not</a>
+      <a class="sl" href="roadmap/index.html">Build order &amp; open questions</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="documents/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="documents/index.html">The documents</a>
+      <a class="sl" href="data/specs.json">The catalogue as JSON</a>
+      <a class="sl" href="llms.txt">llms.txt</a>
+      <a class="sl" href="llms-full.txt">llms-full.txt</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="admin/comms.html">Comms: tasks &amp; requests</a>
+      <a class="sl" href="admin/versions.html">Release history</a>
+      <a class="sl" href="admin/index.html">Admin &amp; engineering</a>
+      <a class="sl" href="network/index.html">The network</a>
+      <a class="sl" href="about/participant.html">Where we lose</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__SG-Compute">★ GitHub</a>
+  <script src="assets/nav.js" defer></script>
+</div></nav>
+
+<header class="hero">
+  <div class="eyebrow">Ephemeral compute · sixteen workload specs · agent infrastructure</div>
+  <h1>A compute platform named<br>after one of its sixteen specs</h1>
+  <p class="sub"><b>SG/Compute</b> launches an isolated environment, runs the work, and terminates it. Sixteen ready-to-launch specs — browsers, vaults, container runtimes, model inference, observability — each a typed manifest away from a running node. The repository is still named after one of them, and the number that settles it is this: <b>71.5% of the new codebase is not browser code</b>.</p>
+  <div class="ctas">
+    <a class="cta1" href="what-it-is/index.html">What it actually is →</a>
+    <a class="cta2" href="specs/index.html">The sixteen specs →</a>
+    <a class="cta2" href="shipped/index.html">What is <em>not</em> built →</a>
+  </div>
+</header>
+
+<!-- the opening move: a bug this site found in the platform's own CI -->
+<section class="band alt" id="guard">
+  <div class="split">
+    <h2 style="text-align:left;font-size:1.5rem;margin-top:0">We should start with a bug we found in its CI</h2>
+    <p style="font-size:.95rem;color:#34363c;line-height:1.7">The platform has a guard whose whole job is to stop the new code importing from the legacy package it is being extracted from. It has been passing since the day it was written. It has never once matched anything.</p>
+<pre class="shell"><span class="d"># tests/ci/test_no_legacy_imports.py</span>
+r'from\s+sgraph_ai_service_playwright<span class="r">[^_]</span>|import\s+sgraph_ai_service_playwright<span class="r">[^_]</span>'
+
+<span class="d"># [^_] requires a NON-underscore after the stem. The real package is:</span>
+sgraph_ai_service_playwright<span class="y">__</span>cli        <span class="d"># two underscores</span>
+
+<span class="d"># run both patterns over the tree:</span>
+GUARD regex   : <span class="g">0 files</span>    -> test PASSES <span class="d">(vacuously)</span>
+REAL imports  : <span class="r">69 files</span>, 228 import lines
+FIXED regex   : <span class="r">69 files</span>   -> test FAILS, as intended
+</pre>
+    <p style="font-size:.95rem;color:#34363c;line-height:1.7"><b>Deleting four characters turns it red.</b> And the dependency runs both ways — the legacy package imports the new one 72 times — so the cycle the guard's own docstring says was broken is not broken.</p>
+    <p class="cap">A platform site that leads with a bug it found in its own CI is trusted differently from one that leads with a feature list. That is the whole editorial policy of this site, stated once at the top. <a href="rename/index.html#guard">The guard, in full</a> · <a href="roadmap/index.html#fixes">it is fix F1 of seven, and it takes four characters</a>.</p>
+  </div>
+</section>
+
+<!-- what it is -->
+<section class="band" id="what">
+  <h2>Two ephemeral layers, and conflating them is the common misreading</h2>
+  <p class="blurb">Almost everyone reading this platform for the first time collapses these into one thing. They are different, they have different lifetimes, and separating them is the single most useful thing this site can do on page one.</p>
+  <div class="split">
+    <div class="layers">
+      <div class="layer">
+        <div class="lnum">Layer 1 · per HTTP request</div>
+        <h3>An ephemeral browser</h3>
+        <p>Every call launches a fresh Playwright subprocess <em>and</em> a fresh Chromium, runs the declared step list, and tears both down in <code>try/finally</code> before returning. There is zero cross-request state, and a CI guard fails the build if any raw <code>browser.new_context(</code> appears outside the one sanctioned factory.</p>
+        <span class="unit">lifetime: one request · milliseconds to seconds</span>
+      </div>
+      <div class="layer l2">
+        <div class="lnum">Layer 2 · per node</div>
+        <h3>An ephemeral EC2 instance</h3>
+        <p>A per-node API key minted and written to SSM before launch, composed user-data, EC2 tags as the registry, a two-phase health poll — then <code>systemd-run --on-active</code> paired with <code>InstanceInitiatedShutdownBehavior=terminate</code>. <b>Halt means terminate, not stop.</b> Default one hour, everywhere.</p>
+        <span class="unit">lifetime: one hour by default · 0.1h to unbounded</span>
+      </div>
+    </div>
+    <p class="cap"><a href="what-it-is/index.html">Both layers in full, with the sessions exception, the watchdog, and the isolation table →</a></p>
+  </div>
+</section>
+
+<!-- the axioms -->
+<section class="band alt" id="axioms">
+  <h2>Three axioms, rescued from a file that is 42 versions stale</h2>
+  <p class="blurb">They are named in <code>capabilities.json</code>, which is frozen at v0.1.29 while the code is at v0.2.71 — and which the repository's own documentation tells you not to read. The axioms are good, and unlike the file that names them, they are actually implemented.</p>
+  <div class="cards">
+    <a class="card" href="what-it-is/index.html#layer1">
+      <div class="tag">axiom 1</div>
+      <h3>Statelessness</h3>
+      <p>Fresh browser process, fresh context, fresh page, per request — torn down in <code>try/finally</code> whatever happens. Cookies apply to the per-request context and are discarded with it.</p>
+      <span class="go">How it is enforced →</span>
+    </a>
+    <a class="card" href="security/index.html#allowlist">
+      <div class="tag">axiom 2</div>
+      <h3>Least privilege by declaration</h3>
+      <p>The JavaScript allowlist is <b>deny by default, exact match</b>. An agent cannot <code>evaluate</code> anything until an operator populates the list. Nothing is permitted by omission.</p>
+      <span class="go">The isolation boundaries →</span>
+    </a>
+    <a class="card" href="agents/index.html#capabilities">
+      <div class="tag">axiom 3</div>
+      <h3>Self-description</h3>
+      <p><code>GET /health/capabilities</code> is built at runtime by a detector that works out its own deployment target — laptop, CI, container, Lambda. The service tells you what it can do, live.</p>
+      <span class="go">The machine surface →</span>
+    </a>
+  </div>
+</section>
+
+<!-- the catalogue -->
+<section class="band" id="catalogue">
+  <h2>The catalogue is the argument</h2>
+  <p class="blurb">The 30 April naming brief called it <em>“the simulated AWS Marketplace: a catalogue of pre-configured, ready-to-launch environments.”</em> Sixteen registered specs, nine stable and seven experimental, boot times from 15 seconds to 600. Grouped by what they actually do, one row makes the case on its own.</p>
+  <div class="split">
+    <table>
+      <thead><tr><th>Family</th><th>Specs</th><th style="text-align:right">Lines</th></tr></thead>
+      <tbody>
+        <tr><td><b>browser</b></td><td><a href="specs/playwright.html">playwright</a>, <a href="specs/content_proxy.html">content_proxy</a>, <a href="specs/firefox.html">firefox</a>, <a href="specs/vnc.html">vnc</a>, <a href="specs/neko.html">neko</a></td><td style="text-align:right">20,199</td></tr>
+        <tr><td><b>vault</b></td><td><a href="specs/vault_publish.html">vault_publish</a>, <a href="specs/vault_app.html">vault_app</a></td><td style="text-align:right">19,943</td></tr>
+        <tr><td><b>observability</b></td><td><a href="specs/elastic.html">elastic</a>, <a href="specs/prometheus.html">prometheus</a>, <a href="specs/opensearch.html">opensearch</a></td><td style="text-align:right">3,904</td></tr>
+        <tr><td><b>runtime</b></td><td><a href="specs/docker.html">docker</a>, <a href="specs/podman.html">podman</a></td><td style="text-align:right">2,757</td></tr>
+        <tr><td><b>llm</b></td><td><a href="specs/local_claude.html">local_claude</a>, <a href="specs/ollama.html">ollama</a></td><td style="text-align:right">2,437</td></tr>
+        <tr><td><b>network</b></td><td><a href="specs/mitmproxy.html">mitmproxy</a></td><td style="text-align:right">1,448</td></tr>
+        <tr><td><b>tool</b></td><td><a href="specs/open_design.html">open_design</a></td><td style="text-align:right">773</td></tr>
+      </tbody>
+    </table>
+    <p class="cap"><b>Vault specs are within 300 lines of browser specs.</b> Playwright is 1 of 16 registered specs and 16.8% of spec code. <a href="specs/index.html">The full catalogue, one page per spec, generated from the data →</a></p>
+  </div>
+</section>
+
+<!-- what "mature" measures out at -->
+<section class="band alt" id="measured">
+  <h2>What “very mature” measures out at</h2>
+  <p class="blurb">Every number here was measured from the tree on 24 August 2026, at repo version v0.2.71. None of it comes from the README — <a href="shipped/index.html#stale">the README describes a repository that does not exist</a>.</p>
+  <div class="split">
+    <div class="figs">
+      <div class="fig"><div class="n">4,785</div><div class="l">tests passing, in <b>81 seconds</b></div><span class="src">pytest tests/ci tests/unit</span></div>
+      <div class="fig"><div class="n">2,777</div><div class="l">commits and 245 tags, in <b>100 days</b></div><span class="src">16 Apr – 24 Jul 2026</span></div>
+      <div class="fig"><div class="n">1.27M</div><div class="l">words of markdown, with a formal reality discipline</div><span class="src">team/ + library/</span></div>
+      <div class="fig"><div class="n">~16s</div><div class="l">measured EC2 boot to SSM-ready</div><span class="src">24 runs, 11 May 2026</span></div>
+      <div class="fig"><div class="n warnfig">0</div><div class="l">linters, type-checkers or static analysis of any kind</div><span class="src">no config anywhere</span></div>
+      <div class="fig"><div class="n warnfig">67.4%</div><div class="l">of collectible tests actually run in CI — the rest hide <b>six real breakages</b></div><span class="src">4,793 of 7,110</span></div>
+      <div class="fig"><div class="n warnfig">4</div><div class="l">sources of truth that disagree with the code</div><span class="src">code wins, stated policy</span></div>
+      <div class="fig"><div class="n warnfig">31</div><div class="l">days since the last commit</div><span class="src">as of 24 Aug 2026</span></div>
+    </div>
+    <p class="cap">The verdict, published as written: <b>mature where it counts, thin where the repo has not looked.</b> <a href="numbers/index.html">Every measured number, with its provenance →</a> · <a href="shipped/index.html">the audit in full →</a></p>
+  </div>
+</section>
+
+<!-- honesty -->
+<section class="band" id="honest">
+  <h2>And here is what is not built</h2>
+  <p class="blurb">The most quotable ideas in this platform's corpus are the ones with no code behind them. That is worth stating on the front page rather than three clicks in, because the repository's own governing rule already says it: <em>“briefs are aspirations, not facts.”</em></p>
+  <div class="cards">
+    <a class="card" href="shipped/index.html#warm">
+      <div class="tag">not built</div>
+      <h3>Warm pools</h3>
+      <p>Central to the serverless pitch and specified in a 1,729-word brief with worked economics. <b>Zero implementation.</b> Grep finds one idle-teardown threshold and nothing else.</p>
+      <span class="go">The ledger →</span>
+    </a>
+    <a class="card" href="shipped/index.html#stacks">
+      <div class="tag">not built</div>
+      <h3>Multi-node stacks</h3>
+      <p>A Stack is meant to be 2+ coordinated Nodes — the taxonomy's whole point. The routes return a list, the CLI is unwired, and <b>thirteen help strings use “stack” for a single instance</b>.</p>
+      <span class="go">The ledger →</span>
+    </a>
+    <a class="card" href="shipped/index.html#sinks">
+      <div class="tag">not built</div>
+      <h3>S3 and vault artefact sinks</h3>
+      <p>Four sinks declared, two implemented. No S3, no presigned URLs, no vault writes — today it is base64 inline with a 20 MB cap, or a local file.</p>
+      <span class="go">The ledger →</span>
+    </a>
+    <a class="card" href="shipped/index.html#ami">
+      <div class="tag">broken</div>
+      <h3>The AMI bake pipeline</h3>
+      <p>A genuinely good two-phase bake-and-verify workflow that invokes a binary called <code>sg-play</code> sixteen times. <code>sg-play</code> is defined nowhere. <b>The whole workflow is dead.</b></p>
+      <span class="go">The ledger →</span>
+    </a>
+  </div>
+</section>
+
+<!-- the domain decision -->
+<section class="band alt" id="domains">
+  <div class="split">
+    <h2 style="text-align:left;font-size:1.4rem;margin-top:0">One thing to state before you discover it</h2>
+    <p style="font-size:.95rem;color:#34363c;line-height:1.7"><b><code>sg-compute.sgit.ai</code> is this site: documentation.</b> <b><code>sg-compute.sgraph.ai</code> is a live Route 53 zone</b> serving per-node DNS as <code>&lt;stack-name&gt;.sg-compute.&lt;zone&gt;</code>, referenced 128 times in the platform's code and tests. Same label, different TLD.</p>
+    <p style="font-size:.95rem;color:#34363c;line-height:1.7">The alternative was moving 128 references and every running node. We did not; we are claiming the distinction instead, and saying so here rather than letting you find it in a support thread. <a href="network/index.html#domains">The decision, and where it could still bite →</a></p>
+  </div>
+</section>
+
+<!-- read next -->
+<section class="band" id="read">
+  <h2>Where to go next</h2>
+  <p class="blurb">Seven pages, in the order the commissioning brief put them.</p>
+  <div class="cards">
+    <a class="card" href="what-it-is/index.html"><div class="tag">start here</div><h3>What it actually is</h3><p>The two ephemeral layers, sessions and the greenlet bug that shaped them, the watchdog, and how artefacts come back.</p><span class="go">Read →</span></a>
+    <a class="card" href="specs/index.html"><div class="tag">the platform</div><h3>The spec catalogue</h3><p>Sixteen specs, three generalisation mechanisms, and the entry-point contract for specs that live in your repository.</p><span class="go">Read →</span></a>
+    <a class="card" href="why/index.html"><div class="tag">the argument</div><h3>Serverless for agents</h3><p>“We are competing for the agent-deployment market.” The cold-start ladder against the measured benchmarks.</p><span class="go">Read →</span></a>
+    <a class="card" href="numbers/index.html"><div class="tag">credibility</div><h3>The measured numbers</h3><p>Boot benchmarks including the seven capacity failures, test counts, and the commit history — everything checkable.</p><span class="go">Read →</span></a>
+    <a class="card" href="rename/index.html"><div class="tag">the migration</div><h3>The rename</h3><p>Nine acceptance criteria scored, the full breakage list, and the sequencing that does not orphan live infrastructure.</p><span class="go">Read →</span></a>
+    <a class="card" href="agents/index.html"><div class="tag">for machines</div><h3>The machine surface</h3><p>Two API surfaces, the 25-verb sequence language, and a correction to the received wisdom about how auth actually works.</p><span class="go">Read →</span></a>
+    <a class="card" href="security/index.html"><div class="tag">boundaries</div><h3>Isolation, and one trade-off</h3><p>Five isolation boundaries with the mechanism behind each, and the API key in an EC2 tag that the code itself comments on.</p><span class="go">Read →</span></a>
+    <a class="card" href="roadmap/index.html"><div class="tag">unresolved</div><h3>Build order &amp; open questions</h3><p>Seven fixes, eight questions published without answers, and seven tensions this site is not going to pretend away.</p><span class="go">Read →</span></a>
+  </div>
+</section>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">sg-compute<span>.sgit.ai</span></div>
+    <p>An ephemeral compute platform with sixteen ready-to-launch workload specs — measured from the tree, audit and all. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. All site content CC BY 4.0; the platform's own source is Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a> — the parent project and the vault layer this provisions for · <a href="https://open-source.sgit.ai">↗ open-source.sgit.ai</a> · <a href="https://wardley-maps.sgit.ai">↗ wardley-maps.sgit.ai</a> · <a href="https://risks.sgit.ai">↗ risks.sgit.ai</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="domainnote"><b>sg-compute.sgit.ai</b> is documentation. <b>sg-compute.sgraph.ai</b> is a live Route 53 zone serving per-node DNS. Same label, different TLD, stated <a href="network/index.html#domains" style="display:inline;padding:0">deliberately</a>.</p>
+    <p class="partnote">⚠ Participant disclosure: published by the sgit project, which builds the platform this site documents and audits. <a href="about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="admin/versions.html">v0.1.0</a> · <a href="admin/index.html">engineering</a> · <a href="index.md">this page as markdown</a></p>
+  </div>
+  <div>
+    <h4>The platform</h4>
+    <a href="what-it-is/index.html">What it is</a>
+    <a href="specs/index.html">The spec catalogue</a>
+    <a href="agents/index.html">The machine surface</a>
+    <a href="security/index.html">Isolation &amp; trade-offs</a>
+  </div>
+  <div>
+    <h4>The argument</h4>
+    <a href="why/index.html">Serverless for agents</a>
+    <a href="numbers/index.html">The measured numbers</a>
+    <a href="rename/index.html">The rename</a>
+  </div>
+  <div>
+    <h4>The audit</h4>
+    <a href="shipped/index.html">&#8594; What ships, and what does not</a>
+    <a href="roadmap/index.html">Build order &amp; open questions</a>
+    <a href="documents/index.html">The documents</a>
+    <a href="about/participant.html">Where we lose</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="admin/comms.html">Comms: tasks &amp; requests</a>
+    <a href="admin/versions.html">Release history</a>
+    <a href="network/index.html">The network</a>
+    <a href="llms.txt">llms.txt</a>
+    <a href="llms-full.txt">llms-full.txt</a>
+  </div>
+</div></footer>
+
+</body>
+</html>

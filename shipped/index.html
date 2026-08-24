@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>What ships, and what does not · sg-compute.sgit.ai</title>
+<meta name="description" content="The honest ledger: no warm pools, no multi-node stacks, create_node for 3 of 16 specs, artefact sinks 2 of 4, one platform of four, no cost model, no throughput measurement, and an AMI pipeline that invokes a binary defined nowhere. Plus the four sources of truth that disagree with the code.">
+<link rel="canonical" href="https://sg-compute.sgit.ai/shipped/index.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="sg-compute.sgit.ai">
+<meta property="og:url" content="https://sg-compute.sgit.ai/shipped/index.html">
+<meta property="og:title" content="What ships, and what does not — the unsoftened ledger">
+<meta property="og:description" content="The platform's own governing rule is “briefs are aspirations, not facts.” This page applies it: eight things that are specified, argued or assumed, and not built.">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">sg-compute<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai — the parent project: the vault layer and the shipped CLI this compute platform provisions for">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">audit draft</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history">v0.1.0</a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../what-it-is/index.html">The platform<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../what-it-is/index.html">What it is: two ephemeral layers</a>
+      <a class="sl" href="../specs/index.html">The spec catalogue</a>
+      <a class="sl" href="../agents/index.html">The machine surface</a>
+      <a class="sl" href="../security/index.html">Isolation &amp; the one trade-off</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../why/index.html">The argument<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../why/index.html">A serverless environment for agents</a>
+      <a class="sl" href="../numbers/index.html">The measured numbers</a>
+      <a class="sl" href="../rename/index.html">The rename</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../shipped/index.html">The audit<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl here" href="../shipped/index.html">What ships, and what does not</a>
+      <a class="sl" href="../roadmap/index.html">Build order &amp; open questions</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../documents/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../documents/index.html">The documents</a>
+      <a class="sl" href="../data/specs.json">The catalogue as JSON</a>
+      <a class="sl" href="../llms.txt">llms.txt</a>
+      <a class="sl" href="../llms-full.txt">llms-full.txt</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../admin/comms.html">Comms: tasks &amp; requests</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Admin &amp; engineering</a>
+      <a class="sl" href="../network/index.html">The network</a>
+      <a class="sl" href="../about/participant.html">Where we lose</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__SG-Compute">★ GitHub</a>
+  <script src="../assets/nav.js" defer></script>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">sg-compute.sgit.ai</a> / shipped</div>
+<h1>What ships, and what does not</h1>
+<p class="lead">The platform's own documentation carries a governing rule: <b>“If the reality document doesn't list it, it does not exist. … Briefs are aspirations, not facts.”</b> That is an unusually disciplined honesty mechanism, and this page is what happens when you apply it to the platform itself.</p>
+
+<div class="evbox ev-warn">
+  <span class="evtag">policy</span>
+  <p><b>Code wins.</b> Where the README, <code>capabilities.json</code>, the reality document and the tree disagree, <b>the tree is right</b>. Every claim on this page was measured from the tree on <b>24 August 2026</b> at repo version <b>v0.2.71</b>, not read from documentation. Four of those sources are knowingly stale and <a href="#stale">they are named at the bottom of this page</a>.</p>
+</div>
+
+<h2 id="ledger">The ledger</h2>
+<p>Eight things this platform is described as having, or is assumed to have, and does not.</p>
+
+<h3 id="warm">1. There are no warm pools</h3>
+<p>Warm pools are central to the serverless pitch — they are the rung of the <a href="../why/index.html#ladder">cold-start ladder</a> that takes a node from 30–60 seconds to 5–15. They are specified in a <b>1,729-word brief with worked economics</b> (<em>“a pool of 3–5 t3.small instances at ~$0.02/hour each is roughly $1–3/day”</em>).</p>
+<p><b>Zero implementation.</b> Grep across the tree finds <code>IDLE_TEARDOWN_THRESHOLD</code> in the edge reconciler and nothing else. The ladder rung is a design, not a feature.</p>
+
+<h3 id="stacks">2. There are no multi-node stacks</h3>
+<p>The taxonomy is explicit: a <b>Node</b> is one compute instance, a <b>Pod</b> is a container on a node, a <b>Spec</b> is a workload definition, and a <b>Stack is 2+ coordinated Nodes</b>. That last definition is the whole point of having the word.</p>
+<p><code>Routes__Compute__Stacks</code> returns a <em>list</em>. <code>Cli__Compute__Stack</code> is unwired. <b>There is no multi-node orchestration anywhere in the tree.</b></p>
+<div class="warnbox"><p>And the word is used anyway: <b>thirteen CLI help strings in one file</b> say <em>“Ephemeral X EC2 stacks”</em> about a single instance — against a naming brief that said, in bold, <em>“Reserve ‘stack’ for this. Do not use it for single nodes.”</em> Either build the thing or retire the word: <a href="../roadmap/index.html#q5">Q5</a>.</p></div>
+
+<h3 id="createnode">3. <code>create_node</code> covers 3 of 16 specs</h3>
+<p><code>EC2__Platform._service_for</code> raises <code>NotImplementedError</code> for anything but <code>docker</code>, <code>podman</code> and <code>vnc</code>. The other thirteen specs create nodes through their own CLI and service paths, not the control-plane API.</p>
+<p><b>The uniform CLI is real; the uniform API is not.</b> Every spec page states this for itself — <a href="../specs/ollama.html">here it is on ollama</a>, for instance — because three of sixteen is a real limitation and hiding it produces support questions rather than preventing them.</p>
+
+<h3 id="sinks">4. Artefact sinks: two of four</h3>
+<p><code>Enum__Artefact__Sink</code> declares <code>VAULT</code>, <code>INLINE</code>, <code>LOCAL_FILE</code>, <code>S3</code>. Both <code>write_bytes_to_vault</code> and <code>write_bytes_to_s3</code> raise <code>NotImplementedError</code>.</p>
+<p>Today, an artefact comes back as base64 inline in the JSON body (20 MB cap), as raw PNG bytes from the screenshot endpoint, or as a local file path in development. <b>No S3. No presigned URLs. No vault writes.</b></p>
+<p>This one is worth naming loudly because <a href="../specs/index.html#families">two specs exist whose declared capability is literally <code>vault-writes</code></a>. The capability is implemented twice at the spec layer and missing at the platform layer — <a href="../roadmap/index.html#q4">Q4</a>.</p>
+
+<h3 id="platforms">5. Non-EC2 platforms do not exist</h3>
+<p><code>'ec2' | 'k8s' | 'gcp' | 'local'</code> is a <em>comment</em> in the <code>Platform</code> ABC. Only <code>EC2__Platform</code> is implemented. An abstract base class with one implementation has not been tested as an abstraction — <a href="../roadmap/index.html#q3">Q3</a>, where the honest observation is that <code>local</code> would be the cheapest proof and would also make the test suite runnable without AWS.</p>
+
+<h3 id="cost">6. There is no cost model</h3>
+<p>The only cost artefact in the tree is a dashboard tracker whose own header says it: <em>“placeholder cost tracker. Shows <b>mocked</b> cost estimate… <b>Real cost calculation is its own brief</b>.”</em> Its rate table is five hardcoded t3 prices. <b>That brief does not exist.</b></p>
+<p>So this site publishes no cost figure from it. <a href="../numbers/index.html#cost">What can honestly be said about cost</a> is: here is what a node costs to <em>start</em> (measured), here is what it costs to <em>hold</em> (the teardown defaults), and the per-workload model is not built.</p>
+
+<h3 id="throughput">7. Throughput has never been measured</h3>
+<p><em>“A single container can serve hundreds of parallel requests trivially”</em> is a load-bearing claim in the Lambda comparison. It is <b>argued and never measured</b>. There are no load tests anywhere in the repository, and no aggregated latency dataset either — <code>/sequence/execute</code> emits a full timings block per call and nothing aggregates them, so there is no p50 or p95 to publish.</p>
+<p>It is also the claim most likely to be wrong in an interesting way: every browser request launches a fresh Chromium <em>process</em>, so the ceiling here is memory, not the web framework. <a href="../roadmap/index.html#q2">Q2</a>.</p>
+
+<h3 id="ami">8. The AMI bake pipeline is dead</h3>
+<p><code>bake-ami.yml</code> is a genuinely good two-phase process — install from scratch, health and smoke checks, clean, snapshot, <b>relaunch from the baked AMI and re-verify</b>, then tag <code>healthy</code> or <code>unhealthy</code>. That is a better AMI process than most infrastructure teams run, and it is cited as a maturity signal.</p>
+<div class="warnbox"><p>It invokes a binary called <b><code>sg-play</code> sixteen times</b>. <code>sg-play</code> is defined nowhere — not in <code>pyproject.toml</code>, not in <code>scripts/</code>. <b>The whole workflow is currently not runnable as written.</b> It is a one-line problem hiding an entire pipeline, and it is <a href="../roadmap/index.html#fixes">fix F3</a>.</p></div>
+
+<h2 id="images">And one number this site will not print</h2>
+<p>Image sizes. They are not recorded anywhere in either repository and not derivable without a build, so there is no honest number to give. One <code>docker images</code> line would close it; until someone runs it, the field stays empty rather than estimated.</p>
+<div class="tablewrap">
+  <table>
+    <thead><tr><th>Image</th><th>Base</th><th>Role</th><th>Size</th></tr></thead>
+    <tbody>
+      <tr><td><code>diniscruz/sg-playwright</code></td><td><code>mcr.microsoft.com/playwright/python:v1.58.0-noble</code></td><td>the data plane, port 8000</td><td class="verdict"><span class="opt-verdict opt-no">not measured</span></td></tr>
+      <tr><td><code>diniscruz/sg-playwright-vnc</code></td><td>the above, <b>by digest</b></td><td>adds Xvfb, openbox, x11vnc, novnc, websockify, supervisord</td><td class="verdict"><span class="opt-verdict opt-no">not measured</span></td></tr>
+      <tr><td><code>diniscruz/sg-host-control</code></td><td><code>python:3.12-alpine</code></td><td>the pod sidecar</td><td class="verdict"><span class="opt-verdict opt-no">not measured</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="stale">The four sources of truth that disagree with the code</h2>
+<p>Every one of these went stale for the same reason: it was written once, by hand. That is why <a href="../admin/index.html#generated">this site generates every page that describes the code from data</a>, and why CI fails if a generated page drifts. A documentation site for this platform that is hand-maintained would be the fifth.</p>
+<div class="tablewrap">
+  <table>
+    <thead><tr><th>Artefact</th><th>Says</th><th>Reality</th></tr></thead>
+    <tbody>
+      <tr><td><code>capabilities.json</code></td><td><code>v0.1.29</code></td><td><b>v0.2.71 — 42 minor versions behind.</b> <code>COPY</code>'d into the image and served at <code>/admin/capabilities</code>. The repo's own docs say not to read it</td></tr>
+      <tr><td>The reality-document index</td><td><code>v0.2.30</code>, 17 May 2026</td><td>v0.2.71. <b>The discipline is right and the maintenance did not happen</b> — 41 versions behind</td></tr>
+      <tr><td><code>README.md</code></td><td><em>“Phase 0 in progress — repo skeleton, Dockerfile, CI workflow scaffolding”</em></td><td><b>217,266 lines of Python, 7,110 tests.</b> It also documents a package directory that does not exist, cites a base image tag the Dockerfile does not pin, and claims a Lambda Web Adapter the Dockerfile header explicitly says is absent</td></tr>
+      <tr><td><code>sg_compute/version</code></td><td><code>v0.1.162</code></td><td><b>Read by nothing.</b> Grep for any code reading it returns zero hits</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="note"><p><b>The README is the single most misleading artefact in the repository</b>, and no word of this site was written from it. It is <a href="../roadmap/index.html#fixes">fix F6</a>: half a day to rewrite from the tree.</p></div>
+
+<h2 id="four">The maturity claim, and the four places it is overstated</h2>
+<p>The claim being audited is <em>“a VERY mature ephemeral compute platform.”</em> <b>It holds</b> — <a href="../numbers/index.html">the measurements are here</a> — and a site that repeats it without these four qualifications would be caught by anyone who clones the repository.</p>
+<div class="ladder">
+  <div class="cap"><span class="capnum">a</span><h3>There is no static analysis. None.</h3>
+    <p>No <code>mypy</code>, <code>ruff</code>, <code>flake8</code>, <code>pylint</code>, <code>black</code>, <code>isort</code>, <code>setup.cfg</code> or <code>tox.ini</code> anywhere, and no such configuration in <code>pyproject.toml</code>. Type safety is enforced <em>at runtime</em> via <code>Type_Safe</code>, present in <b>1,333 of 3,127 package files (42.6%)</b>. That is a real and defensible architectural choice — runtime validation catches things static analysis cannot — but it is not a substitute, and 57% of files have neither.</p>
+    <span class="from">The substitute is four hand-written structural guards in <code>tests/ci/</code>. <b>One of them has never worked</b> — <a href="../rename/index.html#guard">the four-character bug</a>.</span></div>
+  <div class="cap"><span class="capnum">b</span><h3>CI runs 67.4% of the tests</h3>
+    <p><b>4,793 of 7,110 collectible tests.</b> The 2,317 outside CI include <b>1,952 that test the new <code>sg_compute</code> and <code>sg_compute_specs</code> trees</b> — which is to say, the parts the rename is building.</p>
+    <p>And it shows. <b>Six of the seven collection errors are in the un-CI'd suites</b>: four genuine circular imports, one missing module, one stale import path. Adding those two suites to CI would surface all six immediately, and it is one workflow edit. <a href="../numbers/index.html#tests">The full breakdown by path →</a></p>
+    <span class="from">This is <b>the highest-value change available in the repository</b> — <a href="../roadmap/index.html#fixes">fix F2</a>.</span></div>
+  <div class="cap"><span class="capnum">c</span><h3>There is no infrastructure-as-code</h3>
+    <p>No Terraform, CloudFormation, CDK or SAM templates anywhere. Provisioning is imperative Python over <code>osbot-aws</code>. Defensible for a platform whose whole point is programmatic provisioning — but it means no declarative description of the AWS footprint, no plan/apply, and no drift detection.</p></div>
+  <div class="cap"><span class="capnum">d</span><h3>Four sources of truth disagree with the code</h3>
+    <p><a href="#stale">Named above.</a> The site's stated policy is the one the repo's own dev pack already reached: <b>code wins.</b></p></div>
+</div>
+
+<h2 id="verdict">The verdict, published as written</h2>
+<blockquote class="challenge"><b>Mature where it counts, thin where the repo has not looked.</b><br><br>4,785 tests passing in 81 seconds, digest-first multi-arch CI, AMI bake-and-verify, 1.27 million words of documentation with a formal reality discipline, and operational hardening written from real incidents.<br><br>And: no linter, no type-checker, a third of the tests outside CI hiding six real breakages, no IaC, and four sources of truth that disagree with the code.</blockquote>
+<p>That paragraph is worth more to this platform's credibility than any feature list. It is also <b>about five days of work away from being a much better paragraph</b>: <a href="../roadmap/index.html#fixes">the seven fixes are listed, in order of value</a>, and the first one is four characters.</p>
+
+<div class="pagenav">
+  <a href="../numbers/index.html">← The measured numbers</a>
+  <a href="../roadmap/index.html">Build order &amp; open questions →</a>
+</div>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">sg-compute<span>.sgit.ai</span></div>
+    <p>An ephemeral compute platform with sixteen ready-to-launch workload specs — measured from the tree, audit and all. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. All site content CC BY 4.0; the platform's own source is Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a> — the parent project and the vault layer this provisions for · <a href="https://open-source.sgit.ai">↗ open-source.sgit.ai</a> · <a href="https://wardley-maps.sgit.ai">↗ wardley-maps.sgit.ai</a> · <a href="https://risks.sgit.ai">↗ risks.sgit.ai</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="domainnote"><b>sg-compute.sgit.ai</b> is documentation. <b>sg-compute.sgraph.ai</b> is a live Route 53 zone serving per-node DNS. Same label, different TLD, stated <a href="../network/index.html#domains" style="display:inline;padding:0">deliberately</a>.</p>
+    <p class="partnote">⚠ Participant disclosure: published by the sgit project, which builds the platform this site documents and audits. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html">v0.1.0</a> · <a href="../admin/index.html">engineering</a></p>
+  </div>
+  <div>
+    <h4>The platform</h4>
+    <a href="../what-it-is/index.html">What it is</a>
+    <a href="../specs/index.html">The spec catalogue</a>
+    <a href="../agents/index.html">The machine surface</a>
+    <a href="../security/index.html">Isolation &amp; trade-offs</a>
+  </div>
+  <div>
+    <h4>The argument</h4>
+    <a href="../why/index.html">Serverless for agents</a>
+    <a href="../numbers/index.html">The measured numbers</a>
+    <a href="../rename/index.html">The rename</a>
+  </div>
+  <div>
+    <h4>The audit</h4>
+    <a href="../shipped/index.html">&#8594; What ships, and what does not</a>
+    <a href="../roadmap/index.html">Build order &amp; open questions</a>
+    <a href="../documents/index.html">The documents</a>
+    <a href="../about/participant.html">Where we lose</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../admin/comms.html">Comms: tasks &amp; requests</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../network/index.html">The network</a>
+    <a href="../llms.txt">llms.txt</a>
+    <a href="../llms-full.txt">llms-full.txt</a>
+  </div>
+</div></footer>
+
+</body>
+</html>

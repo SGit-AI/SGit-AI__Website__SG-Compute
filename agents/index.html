@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The machine surface — API, sequence language, and how auth really works · sg-compute.sgit.ai</title>
+<meta name="description" content="Two FastAPI applications, the 25-verb declarative sequence language, the self-description endpoint, and a correction to the received wisdom about the auth model: x-sgraph-access-token appears zero times in this codebase except as a header to discard.">
+<link rel="canonical" href="https://sg-compute.sgit.ai/agents/index.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="sg-compute.sgit.ai">
+<meta property="og:url" content="https://sg-compute.sgit.ai/agents/index.html">
+<meta property="og:title" content="The machine surface — and a correction to how everyone thinks the auth works">
+<meta property="og:description" content="Two FastAPI applications, the 25-verb declarative sequence language, the self-description endpoint, and a correction to the received wisdom about the auth model: x-sgraph-access-token appears zero times in this codebase except as a header to discard.">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">sg-compute<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai — the parent project: the vault layer and the shipped CLI this compute platform provisions for">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">audit draft</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history">v0.1.0</a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl here" href="../what-it-is/index.html">The platform<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../what-it-is/index.html">What it is: two ephemeral layers</a>
+      <a class="sl" href="../specs/index.html">The spec catalogue</a>
+      <a class="sl here" href="../agents/index.html">The machine surface</a>
+      <a class="sl" href="../security/index.html">Isolation &amp; the one trade-off</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../why/index.html">The argument<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../why/index.html">A serverless environment for agents</a>
+      <a class="sl" href="../numbers/index.html">The measured numbers</a>
+      <a class="sl" href="../rename/index.html">The rename</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../shipped/index.html">The audit<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../shipped/index.html">What ships, and what does not</a>
+      <a class="sl" href="../roadmap/index.html">Build order &amp; open questions</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../documents/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../documents/index.html">The documents</a>
+      <a class="sl" href="../data/specs.json">The catalogue as JSON</a>
+      <a class="sl" href="../llms.txt">llms.txt</a>
+      <a class="sl" href="../llms-full.txt">llms-full.txt</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../admin/comms.html">Comms: tasks &amp; requests</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Admin &amp; engineering</a>
+      <a class="sl" href="../network/index.html">The network</a>
+      <a class="sl" href="../about/participant.html">Where we lose</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__SG-Compute">★ GitHub</a>
+  <script src="../assets/nav.js" defer></script>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">sg-compute.sgit.ai</a> / agents</div>
+<h1>The machine surface</h1>
+<p class="lead">This page is for the thing that will actually call it. Two FastAPI applications with different auth postures, a declarative step language with 25 verbs, an endpoint that describes its own capabilities at runtime — and one correction to the received wisdom about how authentication works, because the received wisdom gives the right advice for the wrong reason.</p>
+
+<h2 id="apps">Two applications, two auth postures</h2>
+
+<h3>App 1 — the Playwright data plane</h3>
+<p>Image <code>diniscruz/sg-playwright</code>. <b>All routes require <code>X-API-Key</code></b>, enforced by middleware. There is no anonymous surface.</p>
+<div class="tablewrap">
+  <table>
+    <thead><tr><th>Group</th><th>Routes</th></tr></thead>
+    <tbody>
+      <tr><td>Console</td><td><code>GET /</code> — a capability-driven HTML console</td></tr>
+      <tr><td>Health</td><td><code>/health/info</code> · <code>/health/status</code> · <code>/health/capabilities</code></td></tr>
+      <tr><td>Browser primitives</td><td><code>POST /browser/navigate|click|fill|get-content|get-url</code></td></tr>
+      <tr><td>Screenshot</td><td><code>POST /browser/screenshot</code> — <b>raw PNG bytes</b>, timings in <code>X-*-Ms</code> headers</td></tr>
+      <tr><td>Sequences</td><td><code>POST /sequence/execute</code> — <a href="#sequence">the 25-verb step language</a></td></tr>
+      <tr><td>Capture</td><td><code>POST /screenshot</code> · <code>/screenshot/batch</code> · <code>/inspect</code></td></tr>
+      <tr><td>Sessions</td><td><code>POST /session/open</code>, <code>/session/{id}/act|probe|close</code></td></tr>
+      <tr><td>Desktop</td><td><code>POST /desktop/browser</code> — headed, on an X display. <b>VNC image only</b>; returns 400 on a headless image</td></tr>
+      <tr><td>Metrics</td><td><code>GET /metrics</code> — Prometheus</td></tr>
+      <tr><td>Agentic admin</td><td><code>/admin/health|info|env|boot-log|error|manifest|capabilities|skills/{name}</code></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>App 2 — the SG/Compute control plane</h3>
+<p>Three routes are <b>auth-free</b> by design: <code>GET /api/health</code>, <code>/api/health/ready</code> and <code>/catalog/caller-ip</code>. Everything else is authenticated.</p>
+<ul>
+  <li><code>/api/specs</code> — the catalogue, live from the manifests</li>
+  <li><code>/api/nodes</code> — CRUD, plus <code>/{node}/pods|stats|logs|stop</code> through the sidecar</li>
+  <li><code>/api/stacks</code> — <a href="../shipped/index.html#stacks">returns a list; there is no multi-node orchestration behind it</a></li>
+  <li><code>/api/amis</code></li>
+  <li><b>per-spec routes, auto-discovered by convention</b> — <code>spec_id 'docker'</code> resolves to <code>sg_compute_specs.docker.api.routes.Routes__Docker__Stack</code>, with no registration list</li>
+  <li><code>/legacy/*</code>, carrying <code>X-Deprecated</code> on every response</li>
+  <li>host-plane routes (<code>Auth</code>, <code>Containers</code>, <code>Docs</code>, <code>Images</code>, <code>Logs</code>, <code>Pods</code>, <code>Shell</code>, <code>Status</code>), TLS routes, vault-spec routes, and two Lambdas</li>
+</ul>
+<div class="note"><p>A design note worth knowing before you debug something: <b>“specs without a route class are silently skipped.”</b> Convenient during development, a silent-failure mode in production. A spec that loses its route class disappears from the API with no error.</p></div>
+
+<h2 id="auth">⚠ The auth model — the guidance is right, the mechanism is not what it implies</h2>
+<p>The received wisdom is: <em>“<code>x-sgraph-access-token</code> for <code>/pw/…</code>, <code>X-API-Key</code> for direct stack access.”</em> <b>That guidance is correct and you should keep following it.</b> The mechanism behind it is not what it sounds like.</p>
+<p><b><code>x-sgraph-access-token</code> appears zero times in this platform's Python except as a header to discard.</b> The service only ever validates <code>X-API-Key</code>. The translation happens in the vault's reverse proxy:</p>
+<pre class="shell">ENV_VAR__TOKEN    = 'SGRAPH_SEND__ACCESS_TOKEN'          <span class="d"># injected upstream as X-API-Key</span>
+UPSTREAM_API_KEY  = 'X-API-Key'
+STRIP_REQUEST     = {'host', 'content-length', <span class="y">'x-sgraph-access-token'</span>, 'cookie'}
+...
+headers[UPSTREAM_API_KEY] = token                        <span class="d"># vault auth -> upstream auth</span>
+</pre>
+<p>So <code>x-sgraph-access-token</code> is <b>the vault's</b> auth header, not this platform's. The proxy strips it and injects <code>X-API-Key</code> from its own environment.</p>
+<div class="warnbox">
+  <p><b>One sub-claim in the existing documentation is wrong, and it is corrected here.</b> The claim is: <em>“a caller sending <code>X-API-Key</code> to the proxy gets 401 at the proxy.”</em></p>
+  <p>It does not. <code>X-API-Key</code> is <b>not</b> in <code>STRIP_REQUEST</code>, and the proxy overwrites it unconditionally. The 401 comes from the vault application's own middleware, sitting in front of the proxy. Same outcome, different component — which matters the moment you are debugging one of them.</p>
+</div>
+<div class="note">
+  <p><b>And a fact worth stating plainly: the <code>/pw</code> proxy is in neither repository.</b> The reverse-proxy class is written to be <em>vendored into</em> a vault image — <em>“kept single-file and dependency-light… so it can be vendored into a container we do not build.”</em> Grepping the vault repository for <code>/pw</code>, the route table or the image name returns <b>zero hits</b>.</p>
+  <p>So anyone documenting the production auth path — including this page — is documenting a component they cannot see. <a href="../roadmap/index.html#gaps">That is G6, and it is a real gap rather than an editorial hedge.</a></p>
+</div>
+
+<h2 id="sequence">The sequence language — 25 verbs, one round trip</h2>
+<p><code>POST /sequence/execute</code> takes a declared list of steps and runs them against a single fresh browser, returning a per-step result and a full timings block. It is the endpoint that makes this useful to an agent rather than to a script: <b>one authenticated call, one browser lifecycle, one deadline</b>.</p>
+<pre class="shell"><span class="d"># the shape — a declared step list, ids unique, run against a deadline</span>
+{
+  "steps": [
+    {"id": "go",    "action": "<span class="cy">navigate</span>", "url": "https://example.com"},
+    {"id": "wait",  "action": "<span class="cy">wait_for</span>", "selector": "#results"},
+    {"id": "shot",  "action": "<span class="cy">screenshot</span>", "full_page": true}
+  ]
+}
+
+<span class="d"># the response distinguishes three outcomes, per run:</span>
+<span class="g">COMPLETED</span>   every step ran
+<span class="r">FAILED</span>      a step failed
+<span class="y">PARTIAL</span>     the deadline hit; remaining steps returned marked <span class="d">SKIPPED</span>
+</pre>
+<p>That third outcome is the one that matters for an agent deciding whether to retry: a halted run tells you exactly how far it got, rather than discarding the work.</p>
+
+<h2 id="capabilities">Self-description — ask the service, not the file</h2>
+<p><code>GET /health/capabilities</code> returns the live capability set, built at runtime by <code>Capability__Detector</code>, which works out its own deployment target from the environment — <code>laptop | ci | claude_web | container | lambda</code> — and reports what is actually available there.</p>
+<div class="warnbox">
+  <p><b>Do not read <code>capabilities.json</code>.</b> It is <code>COPY</code>'d into the image and served verbatim at <code>/admin/capabilities</code>, and it is frozen at <code>v0.1.29</code> while the code is at <code>v0.2.71</code> — <b>42 minor versions behind</b>. The platform's own documentation says so: <em>“The UI reads <code>GET /health/capabilities</code>… <b>never</b> the stale <code>capabilities.json</code>.”</em></p>
+  <p>The three axioms that file names are good and are implemented; <a href="../index.html#axioms">they are on the front page</a>. The file itself is <a href="../roadmap/index.html#fixes">fix F5</a>: delete it or regenerate it.</p>
+</div>
+
+<h2 id="js">The JavaScript allowlist is deny-by-default</h2>
+<p>Worth knowing before you plan around it: <code>JS__Expression__Allowlist</code> is <b>deny by default, exact match</b>. An agent <b>cannot <code>evaluate</code> anything</b> until an operator populates the allowlist with the specific expressions it may run. Nothing is permitted by omission.</p>
+<p>There is one deliberate exception, and it is the only place deny-by-default is switched off — <a href="../security/index.html#allowlist">it is named and examined on the security page</a> rather than left in the source.</p>
+
+<h2 id="constructed">Stable URLs on this site</h2>
+<p>Two promises, stated rather than left to be inferred:</p>
+<ul>
+  <li>Every source document is fetchable at <code>/briefs/&lt;filename&gt;</code>. <a href="../documents/index.html">The index →</a></li>
+  <li>The spec catalogue is machine-readable at <a href="../data/specs.json"><code>/data/specs.json</code></a>, and every spec page on this site is generated from it. If you want the data rather than the prose, take the JSON.</li>
+  <li><a href="../llms.txt">/llms.txt</a> and <a href="../llms-full.txt">/llms-full.txt</a>.</li>
+</ul>
+
+<div class="pagenav">
+  <a href="../specs/index.html">← The spec catalogue</a>
+  <a href="../security/index.html">Isolation &amp; the one trade-off →</a>
+</div>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">sg-compute<span>.sgit.ai</span></div>
+    <p>An ephemeral compute platform with sixteen ready-to-launch workload specs — measured from the tree, audit and all. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. All site content CC BY 4.0; the platform's own source is Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a> — the parent project and the vault layer this provisions for · <a href="https://open-source.sgit.ai">↗ open-source.sgit.ai</a> · <a href="https://wardley-maps.sgit.ai">↗ wardley-maps.sgit.ai</a> · <a href="https://risks.sgit.ai">↗ risks.sgit.ai</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="domainnote"><b>sg-compute.sgit.ai</b> is documentation. <b>sg-compute.sgraph.ai</b> is a live Route 53 zone serving per-node DNS. Same label, different TLD, stated <a href="../network/index.html#domains" style="display:inline;padding:0">deliberately</a>.</p>
+    <p class="partnote">⚠ Participant disclosure: published by the sgit project, which builds the platform this site documents and audits. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html">v0.1.0</a> · <a href="../admin/index.html">engineering</a></p>
+  </div>
+  <div>
+    <h4>The platform</h4>
+    <a href="../what-it-is/index.html">What it is</a>
+    <a href="../specs/index.html">The spec catalogue</a>
+    <a href="../agents/index.html">The machine surface</a>
+    <a href="../security/index.html">Isolation &amp; trade-offs</a>
+  </div>
+  <div>
+    <h4>The argument</h4>
+    <a href="../why/index.html">Serverless for agents</a>
+    <a href="../numbers/index.html">The measured numbers</a>
+    <a href="../rename/index.html">The rename</a>
+  </div>
+  <div>
+    <h4>The audit</h4>
+    <a href="../shipped/index.html">&#8594; What ships, and what does not</a>
+    <a href="../roadmap/index.html">Build order &amp; open questions</a>
+    <a href="../documents/index.html">The documents</a>
+    <a href="../about/participant.html">Where we lose</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../admin/comms.html">Comms: tasks &amp; requests</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../network/index.html">The network</a>
+    <a href="../llms.txt">llms.txt</a>
+    <a href="../llms-full.txt">llms-full.txt</a>
+  </div>
+</div></footer>
+
+</body>
+</html>

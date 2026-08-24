@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How this site is built · sg-compute.sgit.ai</title>
+<meta name="description" content="Static HTML in the sgit.ai design language, released the same way as its sibling sites: every push to dev is validated, auto-tagged and deployed. Plus the two things this site adds — pages generated from data with a CI drift check, and a leak tripwire that encodes a live-infrastructure redaction list.">
+<link rel="canonical" href="https://sg-compute.sgit.ai/admin/index.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="sg-compute.sgit.ai">
+<meta property="og:url" content="https://sg-compute.sgit.ai/admin/index.html">
+<meta property="og:title" content="How this site is built — validate, tag, deploy, and two checks no sibling needs">
+<meta property="og:description" content="Static HTML in the sgit.ai design language, released the same way as its sibling sites: every push to dev is validated, auto-tagged and deployed. Plus the two things this site adds — pages generated from data with a CI drift check, and a leak tripwire that encodes a live-infrastructure redaction list.">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">sg-compute<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai — the parent project: the vault layer and the shipped CLI this compute platform provisions for">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">audit draft</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history">v0.1.0</a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../what-it-is/index.html">The platform<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../what-it-is/index.html">What it is: two ephemeral layers</a>
+      <a class="sl" href="../specs/index.html">The spec catalogue</a>
+      <a class="sl" href="../agents/index.html">The machine surface</a>
+      <a class="sl" href="../security/index.html">Isolation &amp; the one trade-off</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../why/index.html">The argument<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../why/index.html">A serverless environment for agents</a>
+      <a class="sl" href="../numbers/index.html">The measured numbers</a>
+      <a class="sl" href="../rename/index.html">The rename</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../shipped/index.html">The audit<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../shipped/index.html">What ships, and what does not</a>
+      <a class="sl" href="../roadmap/index.html">Build order &amp; open questions</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../documents/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../documents/index.html">The documents</a>
+      <a class="sl" href="../data/specs.json">The catalogue as JSON</a>
+      <a class="sl" href="../llms.txt">llms.txt</a>
+      <a class="sl" href="../llms-full.txt">llms-full.txt</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../admin/comms.html">Comms: tasks &amp; requests</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl here" href="../admin/index.html">Admin &amp; engineering</a>
+      <a class="sl" href="../network/index.html">The network</a>
+      <a class="sl" href="../about/participant.html">Where we lose</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__SG-Compute">★ GitHub</a>
+  <script src="../assets/nav.js" defer></script>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">sg-compute.sgit.ai</a> / admin</div>
+<h1>How this site is built</h1>
+<p class="lead">Static HTML in the sgit.ai design language, released the same way as <a href="https://sgit.ai">the main site</a> and <a href="https://pki.sgit.ai">pki.sgit.ai</a>: every push to <code>dev</code> is validated, auto-tagged and deployed to GitHub Pages. This site adds two checks, and both exist because of something specific about its subject.</p>
+
+<h2 id="pipeline">The release pipeline</h2>
+<ol>
+  <li><b>validate</b> — two steps. First the generators re-run in <code>--check</code> mode: every page under <code>specs/</code> and <code>documents/</code> must still match the data it was generated from. Then <code>node admin/build/validate.js</code>: internal links resolve, the version agrees everywhere, every page declares a canonical URL on the host named in <code>CNAME</code>, the catalogue carries its survey date, and <a href="#leak">the leak tripwire</a> passes. A failure stops the release: no tag, no publish. It also runs on pull requests, so branch work is gated before it reaches <code>dev</code>.</li>
+  <li><b>tag-release</b> — every push to <code>dev</code> ends tagged <code>v{release}.{major}.{minor}</code>. The version is owned by <code>admin/build/version.txt</code>, bumped exactly once per release, and must agree with the release commit's subject (<code>site vX.Y.Z: …</code>). CI verifies the two agree and that the bump is the next minor (or a deliberate major), then tags the release commit — which is <code>HEAD</code> on a direct push and <code>HEAD</code>'s parent when a pull request lands as a merge commit. The first run backfills tags for historical releases from commit subjects.</li>
+  <li><b>deploy</b> — publishes the tagged working tree to GitHub Pages. Runs on manual dispatch even without a tag, never when validation failed, never from a pull request.</li>
+</ol>
+
+<h2 id="generated">The rule no sibling site needs</h2>
+<blockquote class="challenge"><b>Generate every page that describes the code, from the code, at build time.</b></blockquote>
+<p>Four artefacts in the platform's own repository are knowingly stale — <a href="../shipped/index.html#stale"><code>capabilities.json</code> 42 minor versions behind, the reality document 41, a README describing a package directory that does not exist, and a version file nothing reads</a>. Every one of them went stale for the same reason: <b>it was written once, by hand</b>.</p>
+<p>Sixteen hand-written spec pages would be the fifth. So:</p>
+<ul>
+  <li><b>The catalogue is data.</b> <a href="../data/specs.json"><code>data/specs.json</code></a> carries a row per spec, and it carries its own provenance — <code>surveyed</code>, <code>repo_version</code>, <code>source</code>. Validation fails if any of those are missing.</li>
+  <li><b>The pages are a projection of it.</b> <code>gen_specs.py</code> writes <code>specs/index.html</code> and one page per spec; <code>gen_documents.py</code> writes the <code>documents/</code> readers from <code>data/documents.json</code>.</li>
+  <li><b>CI re-runs both in <code>--check</code> mode</b> and fails if a page has drifted from its source. The comparison ignores the nav and footer blocks, which are owned by <code>chrome.py</code> and applied after generation.</li>
+  <li><b>Derived numbers are computed, then cross-checked.</b> Family LOC, spec counts, the stable/experimental split and the browser share are all computed from the per-spec rows and compared against the summary blocks the survey recorded separately. <b>If the two disagree the build fails</b> rather than publishing a number nobody can reproduce.</li>
+</ul>
+<div class="note"><p><b>The honest limit of this.</b> The site repository does not contain the platform's source, so “generated from the code” means generated from <b>a machine-readable survey of the code</b>, carrying the date and repo version it was taken at — 24 August 2026, v0.2.71. That is a weaker guarantee than reading <code>manifest.py</code> directly, and it is stated here rather than implied away. Wiring the generator to the platform repository is the version of this that would close the gap.</p></div>
+
+<h2 id="leak">The leak tripwire</h2>
+<p>The sibling sites ban vault-key-shaped strings from the tree. This site bans considerably more, because <b>the platform it documents is live infrastructure and publishing a hostname here would publish an attack surface</b>.</p>
+<p><code>admin/build/validate.js</code> fails the release if any file in the tree contains:</p>
+<ul>
+  <li>the platform's AWS account id;</li>
+  <li>any of ten live internal hostnames;</li>
+  <li>a named live stack FQDN, matched by slug;</li>
+  <li>anything shaped like a real EC2 instance id or AMI id;</li>
+  <li>anything shaped like an sgit vault key.</li>
+</ul>
+<p>The editorial rule it encodes is <b>shapes, not addresses</b>: <code>&lt;stack-name&gt;.sg-compute.&lt;zone&gt;</code> is documentation, a live FQDN is a target.</p>
+<div class="warnbox">
+  <p><b>One deliberate exception, and it is the reason the exception mechanism exists.</b> The bare zone <code>sg-compute.sgraph.ai</code> <em>is</em> published — on the front page and in <a href="../network/index.html#domains">/network/</a> — because this site's label collides with it and <a href="../rename/index.html#domain">the stated decision is to claim the distinction rather than move 128 references</a>. The zone name is the subject of that decision. Per-node FQDNs under it are not, and the slug patterns still catch them: the check blanks the allowed zone before scanning, so <code>&lt;a-stack-slug&gt;.sg-compute.sgraph.ai</code> still fails.</p>
+</div>
+
+<h2 id="release">Releasing a change</h2>
+<pre class="shell"><span class="d"># 1. bump the version — exactly once per release</span>
+echo "v0.1.1" &gt; admin/build/version.txt
+<span class="d"># 2. add a row to admin/versions.html, update admin/comms.html</span>
+<span class="d"># 3. regenerate the pages</span>
+python3 admin/build/gen_specs.py
+python3 admin/build/gen_documents.py
+<span class="d"># 4. propagate the badge and any nav/footer change to every page,</span>
+<span class="d">#    generated ones included — and stamp llms.txt and index.md</span>
+python3 admin/build/chrome.py
+<span class="d"># 5. AFTER chrome: the files that read the tree and the stamped twins,</span>
+<span class="d">#    or they assemble a stale version line</span>
+python3 admin/build/gen_llms_full.py
+python3 admin/build/gen_sitemap.py
+<span class="d"># 6. validate locally — exactly what CI runs</span>
+python3 admin/build/gen_specs.py     --check
+python3 admin/build/gen_documents.py --check
+python3 admin/build/gen_llms_full.py --check
+python3 admin/build/gen_sitemap.py   --check
+node admin/build/validate.js
+<span class="d"># 7. commit with the version in the subject, push to dev</span>
+git commit -am "site v0.1.1: what changed"
+git push -u origin dev
+</pre>
+
+<h2 id="tooling">The build tooling</h2>
+<div class="tablewrap">
+  <table>
+    <thead><tr><th>File</th><th>What it owns</th></tr></thead>
+    <tbody>
+      <tr><td><code>admin/build/version.txt</code></td><td>The version. Single source of truth; everything else reads it</td></tr>
+      <tr><td><code>admin/build/chrome.py</code></td><td><b>The single definition of the nav and footer</b>, rewritten in place across every page — hand-written and generated alike. Also stamps the version into <code>llms.txt</code>, <code>llms-full.txt</code> and <code>index.md</code>, which on the sibling sites was hand-edited and silently missed twice</td></tr>
+      <tr><td><code>admin/build/pagelib.py</code></td><td>The shared page shell and the write-or-check writer both generators use</td></tr>
+      <tr><td><code>admin/build/gen_specs.py</code></td><td>Generates <code>specs/</code> from <code>data/specs.json</code>, and cross-checks every derived total</td></tr>
+      <tr><td><code>admin/build/gen_documents.py</code></td><td>Generates the <code>documents/</code> readers from <code>data/documents.json</code></td></tr>
+      <tr><td><code>admin/build/gen_llms_full.py</code></td><td>Assembles <code>llms-full.txt</code> from <code>llms.txt</code>, <code>index.md</code> and <code>briefs/</code> — the thing pki.sgit.ai lacks</td></tr>
+      <tr><td><code>admin/build/gen_sitemap.py</code></td><td>Walks the tree for <code>sitemap.xml</code>, dated from the release row</td></tr>
+      <tr><td><code>admin/build/validate.js</code></td><td>The release gate: version, links, canonical, provenance, leak tripwire</td></tr>
+      <tr><td><code>data/specs.json</code></td><td>The spec catalogue, with its survey date and repo version</td></tr>
+      <tr><td><code>briefs/*.md</code></td><td>The source documents, verbatim — <a href="../documents/index.html#redaction">two of them redacted under their own rule</a></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="conventions">Conventions carried from the sibling sites</h2>
+<ul>
+  <li>Light theme, same design tokens, same honest-limitations posture, <b>-ise not -ize</b>.</li>
+  <li>Source documents captured verbatim under <code>briefs/</code> with a curated reader alongside — <b>the raw file stays the source of truth</b> and the reader renders it at load time, falling back to a link if anything fails.</li>
+  <li>Machine-readable entry points: <a href="../llms.txt">llms.txt</a>, <a href="../llms-full.txt">llms-full.txt</a>, <a href="../index.md">index.md</a>, and <a href="../data/specs.json">the catalogue as JSON</a>. The sibling sites lack <code>llms-full.txt</code>; this one has it.</li>
+  <li><b>The version badge</b> in the nav links to the release history, so any page tells you which release you are reading — and CI enforces that they all agree.</li>
+  <li><b>The stage pill</b> states the site's maturity in the nav rather than in a footer nobody reads.</li>
+  <li><b>The domain note</b> in every footer, because <a href="../network/index.html#domains">that is the question this site will be asked most</a>.</li>
+  <li>Print styles: every page prints as a clean document.</li>
+</ul>
+
+<div class="pagenav">
+  <a href="versions.html">← Release history</a>
+  <a href="comms.html">Comms →</a>
+</div>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">sg-compute<span>.sgit.ai</span></div>
+    <p>An ephemeral compute platform with sixteen ready-to-launch workload specs — measured from the tree, audit and all. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. All site content CC BY 4.0; the platform's own source is Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a> — the parent project and the vault layer this provisions for · <a href="https://open-source.sgit.ai">↗ open-source.sgit.ai</a> · <a href="https://wardley-maps.sgit.ai">↗ wardley-maps.sgit.ai</a> · <a href="https://risks.sgit.ai">↗ risks.sgit.ai</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="domainnote"><b>sg-compute.sgit.ai</b> is documentation. <b>sg-compute.sgraph.ai</b> is a live Route 53 zone serving per-node DNS. Same label, different TLD, stated <a href="../network/index.html#domains" style="display:inline;padding:0">deliberately</a>.</p>
+    <p class="partnote">⚠ Participant disclosure: published by the sgit project, which builds the platform this site documents and audits. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html">v0.1.0</a> · <a href="../admin/index.html">engineering</a></p>
+  </div>
+  <div>
+    <h4>The platform</h4>
+    <a href="../what-it-is/index.html">What it is</a>
+    <a href="../specs/index.html">The spec catalogue</a>
+    <a href="../agents/index.html">The machine surface</a>
+    <a href="../security/index.html">Isolation &amp; trade-offs</a>
+  </div>
+  <div>
+    <h4>The argument</h4>
+    <a href="../why/index.html">Serverless for agents</a>
+    <a href="../numbers/index.html">The measured numbers</a>
+    <a href="../rename/index.html">The rename</a>
+  </div>
+  <div>
+    <h4>The audit</h4>
+    <a href="../shipped/index.html">&#8594; What ships, and what does not</a>
+    <a href="../roadmap/index.html">Build order &amp; open questions</a>
+    <a href="../documents/index.html">The documents</a>
+    <a href="../about/participant.html">Where we lose</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../admin/comms.html">Comms: tasks &amp; requests</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../network/index.html">The network</a>
+    <a href="../llms.txt">llms.txt</a>
+    <a href="../llms-full.txt">llms-full.txt</a>
+  </div>
+</div></footer>
+
+</body>
+</html>

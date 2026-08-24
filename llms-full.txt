@@ -1,0 +1,1686 @@
+# sg-compute.sgit.ai — full text
+
+Site version: v0.1.0. Every page and every source document of https://sg-compute.sgit.ai/ in one
+file, so an agent can read the whole argument in a single fetch.
+
+GENERATED — assembled by admin/build/gen_llms_full.py from llms.txt, index.md and
+briefs/*.md, and re-checked in CI. It cannot say anything the site does not.
+
+Structure of this file:
+  PART 1  the index (llms.txt), for orientation and the stable-URL promises
+  PART 2  the front page in full (index.md)
+  PART 3  the 11 source documents this site was written from, verbatim
+
+Editorial policy, which applies to all three parts: CODE WINS. Where the platform's
+README, capabilities.json, reality document and tree disagree, the tree is right. Every
+number was measured from the tree on 24 August 2026 at repo version v0.2.71, or carries
+its own date. Two of the documents in PART 3 are published redacted, under their own
+rule — they are the redaction list, so they named every live address the site was told
+to strip; each address was replaced by the shape it is an instance of.
+
+All content CC BY 4.0 — Dinis Cruz, with AI co-authorship (Claude, Anthropic). The
+platform's own source code is Apache-2.0.
+
+
+
+
+==============================================================================
+PART 1 — THE INDEX (source: /llms.txt)
+
+==============================================================================
+
+
+# sg-compute.sgit.ai — SG/Compute, an ephemeral compute platform
+
+> SG/Compute launches an isolated environment, runs the declared work, and terminates it.
+> Sixteen ready-to-launch workload specs — browsers, vaults, container runtimes, model
+> inference, observability — each a typed manifest away from a running node. The repository
+> is still named after one of the sixteen, and the number that settles the rename is that
+> 71.5% of the new codebase is not browser code. This site documents the platform AND audits
+> it: the maturity claim holds, and the four places it is overstated are published alongside.
+
+Site version: v0.1.0 (24 August 2026). Published by the sgit project, which builds the platform
+this site audits — participant disclosure at /about/participant.html. All content CC BY 4.0; the
+platform's own source is Apache-2.0.
+
+## Properties agents may rely on
+
+- Every source document is fetchable at a stable constructed URL: /briefs/<filename>. This is a
+  promise, not an accident.
+- The spec catalogue is machine-readable at /data/specs.json, carrying a row per spec plus its
+  own provenance (surveyed date, repo version, source). Every spec page on this site is
+  GENERATED from that file, and CI fails if a page drifts from it. If you want the data rather
+  than the prose, take the JSON.
+- Every number on this site is either generated from data or carries the date it was measured.
+- Editorial policy, stated once and applied everywhere: CODE WINS. Where the platform's README,
+  capabilities.json, reality document and tree disagree, the tree is right. No word of this site
+  was written from the README.
+- Two domains, deliberately distinct: sg-compute.sgit.ai (this site, documentation) and
+  sg-compute.sgraph.ai (a live Route 53 zone serving per-node DNS). Same label, different TLD.
+
+## Measured, 24 August 2026, at repo version v0.2.71
+
+- 3,999 Python files, 217,266 lines, 799 test files, 1,265,371 words of markdown.
+- 4,785 tests passing in 81 seconds; 7,110 collectible; CI runs 4,793 — 67.4%.
+- 2,777 commits and 245 tags in 100 days (16 Apr – 24 Jul 2026). Claude 1,700 / Dinis Cruz 826 /
+  GitHub Actions 243. No commit since 24 July.
+- 16 registered specs (plus one unregistered), 9 stable and 7 experimental, boot 15s–600s.
+- EC2 boot to SSM-ready: ~16 seconds measured across 24 real runs, plus 7 recorded
+  InsufficientInstanceCapacity failures. Full data at /numbers/index.html.
+
+## What it actually is — /what-it-is/index.html
+
+Two ephemeral layers, and conflating them is the most common misreading:
+- LAYER 1, per HTTP request: a fresh Playwright subprocess and a fresh Chromium per call, torn
+  down in try/finally. Zero cross-request state, with a CI guard that fails the build if any raw
+  browser.new_context( appears outside the single sanctioned page factory.
+- LAYER 2, per node: an EC2 instance with a per-node API key minted and written to SSM before
+  launch, composed user-data, EC2 tags as the registry, a two-phase health poll, and
+  systemd-run --on-active paired with InstanceInitiatedShutdownBehavior=terminate. HALT MEANS
+  TERMINATE, NOT STOP. Default max_hours = 1 everywhere; 0.1 supported; 0 disables.
+
+Also on that page: sessions (one dedicated OS thread each, because Playwright's sync API is
+greenlet-based and cross-thread calls deadlock — the exact symptom CI was hitting); the
+Request__Watchdog that calls os._exit(2) on a stuck request, with the GIL reasoning in the
+source; the six isolation boundaries; and the artefact sinks, of which only 2 of 4 are
+implemented.
+
+## The spec catalogue — /specs/index.html, generated from /data/specs.json
+
+Sixteen registered specs with typed manifests, stability ratings and measured boot times — what
+the 30 April naming brief called "the simulated AWS Marketplace". By family, in lines of code:
+browser 20,199 · vault 19,943 · observability 3,904 · runtime 2,757 · llm 2,437 · network 1,448 ·
+tool 773. Vault specs are within 300 lines of browser specs.
+
+Three generalisation mechanisms: manifest.py per spec (the registry, typed), Spec__Routes__Loader
+(convention-based route discovery), Spec__CLI__Builder (the same ten verbs generated for every
+spec). Plus PEP 621 entry-point discovery under the group sg_compute.specs — third-party specs
+are architecturally supported and UNTESTED IN THE WILD.
+
+## The audit — /shipped/index.html
+
+Published unsoftened, because the platform's own governing rule is "briefs are aspirations, not
+facts". NOT BUILT: warm pools (specified in a 1,729-word brief, zero code); multi-node stacks
+(the taxonomy's whole point — routes return a list, the CLI is unwired, and 13 help strings use
+"stack" for a single instance); create_node for 13 of 16 specs; artefact sinks VAULT and S3 (both
+raise NotImplementedError — no S3, no presigned URLs, no vault writes); non-EC2 platforms
+('k8s' | 'gcp' | 'local' is a comment in the Platform ABC); a real cost model; any throughput
+measurement. BROKEN: bake-ami.yml invokes a binary called sg-play sixteen times that is defined
+nowhere, so the whole AMI pipeline is dead.
+
+OVERSTATED IN FOUR PLACES: no static analysis of any kind; CI runs 67.4% of tests and the rest
+hide six real import-level breakages; no infrastructure-as-code; four sources of truth disagree
+with the code.
+
+## The rename — /rename/index.html
+
+Nine acceptance criteria scored against the tree: 3 done, 2 partial, 4 not done, plus one
+deliberate improvement over spec. Architecturally done, textually about 40% done. Includes the
+four-character guard bug: tests/ci/test_no_legacy_imports.py uses a regex requiring a
+non-underscore after the package stem, while the real package has two — so it matches 0 files and
+passes vacuously against 228 real legacy imports across 69 files.
+
+## The argument — /why/index.html
+
+"We are not competing for the generic developer-platform market (Vercel, Cloudflare Workers,
+Lambda)… We are competing for the agent-deployment market." The definitional move that makes an
+EC2 instance with a one-hour self-terminate serverless, the cold-start ladder against the measured
+benchmarks (the measured 16 seconds beats the ladder's own claimed 30–60), the 50-second
+end-to-end number, and the recursion idea — a control plane that runs inside the platform, the
+most quotable unbuilt idea in the corpus.
+
+## The machine surface — /agents/index.html
+
+Two FastAPI applications; a 25-verb declarative sequence language returning COMPLETED / FAILED /
+PARTIAL with skipped steps named; GET /health/capabilities built at runtime by a detector that
+identifies its own deployment target. IMPORTANT CORRECTION: x-sgraph-access-token appears zero
+times in the platform's Python except as a header to discard. The service only validates
+X-API-Key; the translation happens in a vault reverse proxy that is vendored into an image whose
+source is in neither repository.
+
+## Published unresolved — /roadmap/index.html
+
+Seven repository fixes in order of value (F1 is four characters), eight build-fresh items, eight
+questions with no answers, seven honest tensions, and the loose ends worth an hour each.
+
+## The sources — /documents/index.html
+
+Twelve documents, published in full, raw markdown as the source of truth at /briefs/<filename>.
+Two are published redacted under their own rule — they are the redaction list, so they named every
+live address the site was told to strip.
+
+## Full text
+
+A single-file expansion of this site is at /llms-full.txt.
+
+
+==============================================================================
+PART 2 — THE FRONT PAGE (source: /index.md)
+
+==============================================================================
+
+
+# sg-compute.sgit.ai — an ephemeral compute platform, named after one of its sixteen specs
+
+> SG/Compute launches an isolated environment, runs the work, and terminates it. Sixteen
+> ready-to-launch specs — browsers, vaults, container runtimes, model inference,
+> observability — each a typed manifest away from a running node. The repository is still
+> named after one of them, and the number that settles it is this: **71.5% of the new
+> codebase is not browser code**.
+
+*Source: <https://sg-compute.sgit.ai/index.html> · site v0.1.0 · markdown twin of the front page.
+Every number measured from the tree on 24 August 2026, at repo version v0.2.71. Code wins:
+where the README, `capabilities.json`, the reality document and the tree disagree, the tree
+is right.*
+
+---
+
+## Start with a bug we found in its CI
+
+A guard exists to stop the new tree importing from the legacy package it is being extracted
+from. Its regex is `sgraph_ai_service_playwright[^_]` — and `[^_]` requires a **non-underscore**
+after the stem, while the real package is `sgraph_ai_service_playwright__cli`, with **two**.
+
+```
+GUARD regex   : 0 files    -> test PASSES (vacuously)
+REAL imports  : 69 files, 228 import lines
+FIXED regex   : 69 files   -> test FAILS, as intended
+```
+
+**Deleting four characters turns it red.** And the dependency runs both ways — the legacy
+package imports the new one 72 times — so the cycle the guard's own docstring says was broken
+is not broken. [The guard in full](rename/index.html#guard).
+
+## Two ephemeral layers, and conflating them is the common misreading
+
+| | Layer 1 — per HTTP request | Layer 2 — per node |
+|---|---|---|
+| What is ephemeral | A browser | An EC2 instance |
+| Mechanism | Fresh Playwright subprocess + fresh Chromium, torn down in `try/finally` | `systemd-run --on-active` + `InstanceInitiatedShutdownBehavior=terminate` |
+| Lifetime | One request | One hour by default; `0.1` supported; `0` disables |
+| Guarantee | Zero cross-request state — a CI guard fails the build on any raw `browser.new_context(` outside the one sanctioned factory | **Halt means terminate, not stop** |
+
+[Both layers in full, with sessions, the watchdog and the isolation table](what-it-is/index.html).
+
+## Three axioms, rescued from a file 42 versions stale
+
+They are named in `capabilities.json`, frozen at v0.1.29 against code at v0.2.71 — a file the
+platform's own documentation says not to read. The axioms are good and, unlike the file,
+implemented: **statelessness**, **least-privilege-by-declaration** (the JS allowlist is deny by
+default, exact match), **self-description** (`/health/capabilities`, built at runtime).
+
+## The catalogue is the argument
+
+| Family | Specs | Lines |
+|---|---|---:|
+| browser | playwright, content_proxy, firefox, vnc, neko | 20,199 |
+| vault | vault_publish, vault_app | 19,943 |
+| observability | elastic, prometheus, opensearch | 3,904 |
+| runtime | docker, podman | 2,757 |
+| llm | local_claude, ollama | 2,437 |
+| network | mitmproxy | 1,448 |
+| tool | open_design | 773 |
+
+**Vault specs are within 300 lines of browser specs.** Playwright is 1 of 16 registered specs
+and 16.8% of spec code. [The full catalogue, one page per spec, generated from the data](specs/index.html).
+
+## What "very mature" measures out at
+
+- **4,785 tests passing in 81 seconds** — a large, fast, green suite across 799 files.
+- **2,777 commits and 245 tags in 100 days** — 16 Apr to 24 Jul 2026. Claude 1,700 / Dinis 826 / Actions 243.
+- **1,265,371 words of markdown**, with a formal reality discipline whose governing rule is *"if the reality document doesn't list it, it does not exist."*
+- **~16 seconds** measured EC2 boot to SSM-ready, across 24 real runs.
+
+And, in the same breath:
+
+- **No static analysis of any kind** — no mypy, ruff, flake8, black, tox.
+- **CI runs 67.4% of collectible tests**; the 2,317 outside it hide **six real import-level breakages**.
+- **No infrastructure-as-code.**
+- **Four sources of truth disagree with the code**, including a README that says *"Phase 0 in progress — repo skeleton"* at 217,266 lines.
+- **No commit since 24 July 2026.**
+
+[Every measured number, with its provenance](numbers/index.html).
+
+## And what is not built
+
+No warm pools. No multi-node stacks. `create_node` for 3 of 16 specs. Artefact sinks 2 of 4 —
+no S3, no presigned URLs, no vault writes. One platform of four. No cost model. No throughput
+measurement. And the AMI bake pipeline invokes a binary called `sg-play` sixteen times that is
+defined nowhere, so it is dead. [The unsoftened ledger](shipped/index.html).
+
+## The rename
+
+Nine acceptance criteria from the 30 April naming brief, scored against the tree: **3 done,
+2 partial, 4 not done, plus one deliberate improvement over spec**. Architecturally done,
+textually about 40% done. [The scorecard, the breakage list, and the sequencing that does not
+orphan live nodes](rename/index.html).
+
+## The argument
+
+> *"We are **not** competing for the generic developer-platform market (Vercel, Cloudflare
+> Workers, Lambda)… **We are competing for the agent-deployment market.**"*
+
+The definitional move that lets an EC2 instance with a one-hour self-terminate count as
+serverless, the trade stated honestly, and the cold-start ladder measured against its own
+benchmark — where the measured 16 seconds beats the ladder's claimed 30–60.
+[The argument](why/index.html).
+
+## One thing to state before you discover it
+
+**`sg-compute.sgit.ai` is this site: documentation.** **`sg-compute.sgraph.ai` is a live Route 53
+zone** serving per-node DNS, referenced 128 times in the platform's code and tests. Same label,
+different TLD. The decision is to claim the distinction rather than move 128 references, and to
+say so here. [The decision, and where it could still bite](network/index.html#domains).
+
+## Published unresolved
+
+Eight questions with no answers, seven tensions not smoothed over, and a seven-item fix list
+where the first item is four characters. [Build order, open questions and tensions](roadmap/index.html).
+
+## Who is writing this
+
+Published by the sgit project, which builds the platform this site audits. The repository is
+public, the audit is published in full as raw source documents, and every number names what it
+was measured from. [The participant disclosure, including where our approach loses](about/participant.html).
+
+## Site
+
+- [The source documents](documents/index.html) — twelve, verbatim; two redacted under their own rule
+- [The catalogue as JSON](data/specs.json)
+- [Comms: tasks & requests](admin/comms.html)
+- [Release history](admin/versions.html)
+- [How this site is built](admin/index.html)
+- [llms.txt](llms.txt) · [llms-full.txt](llms-full.txt)
+
+All content CC BY 4.0. The platform's own source is Apache-2.0.
+
+
+==============================================================================
+PART 3 — THE 11 SOURCE DOCUMENTS
+
+==============================================================================
+
+
+Each is also fetchable on its own at /briefs/<filename>.
+
+
+
+==============================================================================
+source: /briefs/00__brief.md
+
+==============================================================================
+
+
+# 00 — The Brief: `sg-compute.sgit.ai`
+
+**Version** v0.33.62 · 24 August 2026
+**From** Dinis Cruz, via the SG/Send Librarian
+**To** the agent commissioned to build `sg-compute.sgit.ai`
+**Licence** CC BY 4.0 — see `07__` for the redaction list, which is longer than usual because this pack draws on a live infrastructure repo
+
+---
+
+## 1. The commission
+
+> *"a pack for `sg-compute.sgit.ai`, which not only we should have a good number of briefs about — if you take a look at `github.com/the-cyber-boardroom/SGraph-AI__Service__Playwright` (**a repo that needs to be renamed and refactored**) you will see that we have already created **a VERY mature ephemeral compute platform**."*
+
+Both claims were tested against the code. **Both hold.** The measurements are below, along with the four places the maturity claim is overstated — because a site that repeats the claim without them will be caught by anyone who clones the repo.
+
+---
+
+## 2. The rename is right, and here is the number that settles it
+
+**~71% of the new codebase is not browser code.**
+
+| | LOC | Share |
+|---|---:|---:|
+| **Generic compute core** (`sg_compute/` — Platform ABC, spec registry, node/pod managers, EC2 helpers, user-data, TLS, CLI builder, control plane) | 10,416 | 14.7% |
+| **Browser specs** (playwright, firefox, vnc, neko, content_proxy) | 20,199 | 28.5% |
+| **Non-browser specs** (sg_edge, vault_publish, vault_app, mitmproxy, docker, elastic, prometheus, opensearch, podman, ollama, local_claude, open_design) | 40,370 | 56.9% |
+
+**Playwright is 1 of 16 registered specs and 17% of spec LOC.** Include the legacy `__cli` package — 71,182 lines of AWS, IAM, credentials, sentinel and TUI code, all generic — and the browser-specific share of the whole 217k-line repo falls to about **14%**.
+
+The 30 April naming brief said it first, and better:
+
+> *"The project is called 'SP' (SGraph Playwright), which is wrong: **Playwright is just one of many components now.**"*
+> *"The overall product is sometimes called 'ephemeral EC2,' which is **too narrow: it is bigger than EC2.**"*
+> *"**Now is the right time to fix this.** We are in the middle of a refactoring. The code, the CLI, the API, and the UI can all be renamed together."*
+
+That was four months ago. **The rename is architecturally done and textually about 40% done** — scored against the brief's own nine acceptance criteria in `02__` §2.
+
+---
+
+## 3. ⚠️ The one-character bug that has been hiding it
+
+`tests/ci/test_no_legacy_imports.py` exists to stop the new tree importing from the legacy one. Its regex:
+
+```python
+r'from\s+sgraph_ai_service_playwright[^_]|import\s+sgraph_ai_service_playwright[^_]'
+```
+
+`[^_]` requires a **non-underscore** after the package stem. The real package is `sgraph_ai_service_playwright__cli` — **double** underscore. Verified independently in this session by running both patterns over the tree:
+
+```
+GUARD regex  : 0 files -> test PASSES (vacuously)
+REAL imports : 69 files, 228 import lines
+FIXED regex (drop [^_]): 69 files -> test FAILS, as intended
+```
+
+Breakdown of the 228: `__cli.aws` 126, `__cli.credentials` 71, `__cli.tui` 23, plus `osx`, `observability`, `firefox`, `neko`, `sentinel`. And the dependency runs **both ways** — `__cli` imports `sg_compute` 72 times. The guard's own docstring says *"BV2.7 broke the cycle."* **The cycle is not broken.**
+
+**Deleting four characters turns this test red immediately.** That is a good thing to do before the site claims the tree is clean — and it is a genuinely good story for `/shipped/`: a guard that was passing because it could not match the thing it was guarding against.
+
+---
+
+## 4. What "very mature" actually means — measured
+
+**Sustained:**
+
+- **`pytest tests/ci tests/unit -q` → 4,785 passed, 4 failed, 4 skipped, in 81 seconds.** A large, fast, green suite.
+- **2,777 commits and 245 tags in 100 days** — first commit 16 April 2026, last 24 July 2026. 1,700 commits by Claude, 826 by Dinis Cruz, 243 by GitHub Actions.
+- **1,265,371 words of markdown**, including a formal reality-document system (72,339 words, 12 domains) whose governing rule is *"**If the reality document doesn't list it, it does not exist.** … **Briefs are aspirations, not facts.**"*
+- **CI/CD that is genuinely sophisticated**: native per-arch builds, **push by digest only**, integration-test the pre-tag image, and only then combine digests into a manifest. `bake-ami.yml` is a two-phase bake that **relaunches from the baked AMI and re-verifies** before tagging `healthy`.
+- **Operational hardening built from real incidents** — a `Request__Watchdog` that calls `os._exit(2)` on a stuck request (written against a real Lambda deadlock, with the GIL reasoning in the source), a two-phase `Health__Poller`, ACME automation **including IP certificates**, and two Dockerfile build-time guards each citing the production incident that motivated it.
+
+**Overstated, in four specific places:**
+
+1. **There is no static analysis at all.** No mypy, ruff, flake8, pylint, black, isort, tox — no config anywhere. Type safety is enforced *at runtime* via `Type_Safe`, present in 1,333 of 3,127 package files (42.6%).
+2. **CI runs 4,793 of 7,110 collectible tests — 67.4%.** The 2,317 outside CI contain **six real import-level breakages**, including four circular imports and one missing module.
+3. **No infrastructure-as-code.** No Terraform, CloudFormation, CDK or SAM. Provisioning is imperative Python over `osbot-aws`.
+4. **Four sources of truth are knowingly stale**: `capabilities.json` (v0.1.29 vs code at v0.2.71 — **42 minor versions**), the reality doc (v0.2.30, last updated 17 May), and the README (see §5).
+
+And one thing the site should state rather than hide: **the last commit is 24 July 2026.** Two-thirds of all commits landed in the first six weeks; June had 129 and July 58. This is a platform that was built at extraordinary speed and has been quiet for a month.
+
+---
+
+## 5. The README describes a repository that does not exist
+
+```
+## Status
+**Phase 0 in progress** — repo skeleton, Dockerfile, CI workflow scaffolding.
+```
+
+At **v0.2.71, 217,266 lines of Python, 7,110 tests**. Its "Repo layout" documents a package `sgraph_ai_service_playwright/` with `schemas/ fast_api/ service/ dispatcher/ client/ docker/ consts/` — **that directory does not exist**. It points at a reality path superseded on 17 April 2026, cites base image `v1.58.2-noble` where the Dockerfile pins `v1.58.0-noble`, and claims a Lambda Web Adapter the Dockerfile header explicitly says is absent.
+
+**It is the single most misleading artefact in the repo.** Write every word of the site from the tree, never from the README — and make **"code wins"** the site's stated policy for all four stale sources.
+
+---
+
+## 6. The honesty constraint
+
+`/shipped/` has real work here:
+
+- **No warm pools.** Central to the serverless pitch, specified in a 1,729-word brief with worked economics — **zero implementation.** Grep finds only `IDLE_TEARDOWN_THRESHOLD` in the edge reconciler.
+- **No multi-node stacks.** The taxonomy's whole point is that a Stack is 2+ coordinated Nodes. `Routes__Compute__Stacks` returns a *list*, `Cli__Compute__Stack` is unwired. **There is no multi-node orchestration.**
+- **`create_node` supports 3 of 16 specs.** `EC2__Platform._service_for` raises `NotImplementedError` for anything but `docker`, `podman`, `vnc`.
+- **Artefact sinks: 2 of 4 implemented.** `VAULT` and `S3` both raise `NotImplementedError`. Today it is base64 inline (20 MB cap) or a local file. **No S3, no presigned URLs, no vault writes** — do not claim otherwise.
+- **Non-EC2 platforms do not exist.** `'ec2' | 'k8s' | 'gcp' | 'local'` is a comment in the Platform ABC. Only EC2 is implemented.
+- **No cost model.** The dashboard tracker says so itself: *"placeholder cost tracker. Shows mocked cost estimate… Real cost calculation is its own brief."* That brief does not exist.
+- **No throughput measurement.** *"A single container can serve hundreds of parallel requests trivially"* is argued and never measured. No load tests anywhere.
+- **`bake-ami.yml` is dead.** It invokes a binary called **`sg-play` sixteen times**. `sg-play` is defined nowhere — not in `pyproject.toml`, not in `scripts/`.
+
+---
+
+## 7. The numbers
+
+| | |
+|---|---|
+| **Code** | 3,999 Python files · **217,266 LOC** · 799 test files · **1,265,371 words of markdown** |
+| **History** | **2,777 commits, 245 tags, 100 days** (16 Apr → 24 Jul 2026) · Claude 1,700 / Dinis 826 / Actions 243 |
+| **Specs** | **16 registered** (+`sg_edge`, unregistered — no manifest) · 8 STABLE, 8 EXPERIMENTAL · boot times 15s–600s |
+| **Tests** | 7,110 collectible · **4,785 pass in 81 seconds** · CI covers **67.4%** · 7 collection errors, 6 outside CI |
+| **API** | Two FastAPI apps · 25-verb declarative sequence language · stateful sessions · Prometheus metrics |
+| **Boot** | Measured: t3.micro **16.4s**, c5.large **16.2s**, g5.xlarge on-demand **18.2s**, spot **20.5s** — plus **7 recorded capacity failures** |
+| **Rename** | 9 acceptance criteria: **3 done, 2 partial, 4 not done**, +1 deliberate improvement |
+| **This pack** | 9 documents · manifest of **37 rows** — 10 Tier-0, 17 Tier-1, 5 Tier-2, 5 do-not-publish; **53,132 words** of briefs, every path verified on disk · the 16-spec catalogue as JSON |
+
+---
+
+## 8. Build order
+
+1. **Fix the guard, then `/shipped/`.** Delete `[^_]`, watch it go red, and publish §3 as the site's opening credibility move. A platform site that leads with a bug it found in its own CI is trusted differently from one that leads with features.
+2. **`/what-it-is/` — the two ephemeral layers.** `01__`. The most common misreading of this platform is conflating the per-request browser teardown with the per-node EC2 teardown. Separate them on page one.
+3. **`/specs/` — the catalogue.** `04__` and `specs__catalogue.json`. Sixteen specs, three generalisation mechanisms, and the entry-point path for third-party specs. **This is what makes it a platform rather than a service.**
+4. **`/rename/` — publish the migration.** `02__`. Nine criteria scored, the full surface list, the PyPI and Docker breakage, and the `sg-compute.sgit.ai` vs `sg-compute.sgraph.ai` collision (§`02__` §5).
+5. **`/why/` — the serverless argument.** `05__`. *"We are competing for the agent-deployment market."*
+6. **`/numbers/`** — the boot benchmarks with the instance IDs stripped, including the capacity failures. Honest measured data beats a marketing claim.
+7. **`/agents/`** — the API surface, the auth model as it actually works (`01__` §4 corrects the received wisdom), and the sequence language.
+
+Publish the build order unresolved with `08__`'s open questions and tensions visible.
+
+---
+
+This document is released under the Creative Commons Attribution 4.0 International licence (CC BY 4.0).
+
+---
+
+*Published on sg-compute.sgit.ai under CC BY 4.0. Source: the `sg-compute.sgit.ai` brief pack v0.33.62, 24 August 2026, by Dinis Cruz via the SG/Send Librarian, with AI co-authorship (Claude, Anthropic).*
+
+
+==============================================================================
+source: /briefs/01__what-it-is.md
+
+==============================================================================
+
+
+# 01 — What it actually is
+
+## 1. Two ephemeral layers — and the site must not conflate them
+
+This is the most common misreading of the platform, and separating the two layers is the clearest thing the site can do on page one.
+
+### Layer 1 — an ephemeral *browser*, per HTTP request
+
+From the source, verbatim:
+
+> *"Layer-3 multi-step execution. **Stateless by design: every call launches a fresh `sync_playwright` + Chromium, runs the declared step list, and tears both down in `try/finally` before returning.**"*
+
+> *"Each call to `launch()` starts a fresh `sync_playwright()` Node subprocess **AND** a fresh Browser, so there is zero"* cross-request state.
+
+`Page__Factory` is the single sanctioned path to a `Page`, and **a CI guard fails the build if any raw `browser.new_context(` appears anywhere else.** That is an architectural rule with a mechanism behind it, which is rarer than it should be.
+
+The request lifecycle: parse steps → reject duplicate ids → validate → launch fresh Chromium → new context and page → apply credentials → iterate steps against a deadline (remaining steps marked `SKIPPED` on halt) → derive `COMPLETED` / `FAILED` / `PARTIAL` → **`try/finally` always tears down** → return with a full timings block.
+
+### Layer 2 — an ephemeral *EC2 node*
+
+`sg_compute/platforms/Platform.py` is the abstraction — `create_node`, `list_nodes`, `get_node`, `delete_node` — with `name: str = '' # 'ec2' | 'k8s' | 'gcp' | 'local'`. **Only `EC2__Platform` exists.**
+
+The lifecycle, end to end:
+
+1. **Request** — `POST /api/nodes`, or `sg <spec> create`
+2. **Key mint** — `api_key = secrets.token_urlsafe(32)`, commented *"per-node random key; never reused"*, written to SSM **before launch** so cloud-init can read it
+3. **Provision** — `run_instances` with composed user-data sections: `Base`, `Docker`, `Sidecar`, `Nginx`, `Env__File`, `GPU_Verify`, `NVIDIA_Container_Toolkit`, `Ollama`, `VLLM`, `SGit_Venv`, `Claude_Code__Firstboot`, `Shutdown`
+4. **Address** — **the EC2 tags are the registry.** `sg:stack-name` and `sg:purpose`; states map `running→READY`, `pending→BOOTING`, `shutting-down|stopping→TERMINATING`
+5. **Wait** — `Health__Poller`, two-phase: EC2 reports `running`, then an HTTP probe succeeds
+6. **Execute** — pods managed over the host-control sidecar; `Sidecar__Client` sends `{'X-API-Key': self.api_key}`
+7. **Teardown** — three independent paths
+
+**Teardown is the part worth publishing**, because it is a real design decision:
+
+```bash
+systemd-run --on-active={seconds}s /sbin/shutdown -h now
+```
+
+paired with `InstanceInitiatedShutdownBehavior=terminate`. **Halt means terminate, not stop.** Default `max_hours = 1` across every spec; `vault_app` supports fractional (`0.1` = 6 minutes); `max_hours=0` disables. Plus explicit `delete`, plus `SG_Edge__Fleet__Reconciler` with `IDLE_TEARDOWN_THRESHOLD = 3` — three consecutive zero-vault idle checks at a 5-minute cadence, so roughly 15 minutes.
+
+On spot instances the flag is deliberately skipped, with the reasoning in the source: *"spot non-hibernation instances always terminate on OS shutdown; skip the flag (it's silently ignored)."*
+
+---
+
+## 2. Sessions — the exception to statelessness, and why
+
+Held sessions get **one dedicated OS thread each**, owning the Playwright runtime, browser and page for the session's whole life. The rationale is a real bug, documented verbatim:
+
+> *"Playwright's sync API is greenlet-based… Calling `page.goto` / `page.locator(...)` from a **DIFFERENT** thread leads to undefined behaviour (deadlocks, silent hangs, or 'navigate failed' with no `error_message` — **the exact symptom `session_act` was hitting in CI**)."*
+
+TTLs: `/session/open` defaults to **300,000 ms (5 minutes)**; `/desktop/browser` to **3,600,000 ms (1 hour)**; both capped at `capabilities.max_session_lifetime_ms`. **Every access refreshes the full TTL.**
+
+Expiry is swept **lazily**, at the start of every registry operation and from `Playwright__Service.setup()` — so any request to any endpoint sweeps idle sessions, and **there is no background thread.** Teardown runs on the worker thread, for Playwright affinity. Idle cost, from the source: *"the worker blocks on `queue.get()` — **0% CPU, ~few KB of RAM.**"*
+
+That is a genuinely elegant design and it is undocumented publicly.
+
+---
+
+## 3. The watchdog — publish this, it is the best engineering story in the repo
+
+`Request__Watchdog` runs a daemon thread. If any in-flight request exceeds `max_request_ms`, it calls `os._exit(2)`.
+
+The source explains why, and the reasoning is the interesting part: **`time.sleep` releases the GIL, so the watchdog keeps ticking even through a main-thread deadlock**, and **`os._exit` bypasses cleanup, `finally` blocks and GIL contention** — which a graceful shutdown could not do from inside a deadlock. The Lambda Web Adapter sees the process die, and AWS hands the next invocation a fresh container.
+
+It was written against a real production deadlock. **A platform site that publishes the failure and the mechanism reads very differently from one that publishes a feature list.**
+
+---
+
+## 4. The API surface — two apps, and one correction to the received wisdom
+
+### App 1 — the Playwright data plane
+
+Image `diniscruz/sg-playwright`. **All routes require `X-API-Key`** via `Middleware__Check_API_Key`.
+
+`GET /` (a capability-driven HTML console) · `/health/info` `/health/status` `/health/capabilities` · `POST /browser/navigate|click|fill|get-content|get-url` · `POST /browser/screenshot` (**raw PNG bytes**, timings in `X-*-Ms` headers) · `POST /sequence/execute` (the **25-verb declarative step language**) · `POST /screenshot` `/screenshot/batch` `/inspect` · `POST /session/open`, `/session/{id}/act|probe|close` · `POST /desktop/browser` (headed on an X display; **VNC image only — 400s on headless**) · `GET /metrics` (Prometheus) · `/test-pages/{name}` · and an agentic admin surface at `/admin/health|info|env|boot-log|error|manifest|capabilities|skills/{name}`.
+
+### App 2 — the SG/Compute control plane
+
+`GET /api/health`, `/api/health/ready`, `/catalog/caller-ip` — **auth-free**. Then `/api/specs`, `/api/nodes` CRUD, `/{node}/pods|stats|logs|stop` via the sidecar, `/api/stacks`, `/api/amis`, **per-spec routes auto-discovered by convention**, and `/legacy/*` carrying `X-Deprecated` on every response. Plus host-plane routes (`Auth`, `Containers`, `Docs`, `Images`, `Logs`, `Pods`, `Shell`, `Status`), `Routes__TLS`, `Routes__Vault__Spec`, and two Lambdas (`/__edge__/*`, `/__waker__/*`).
+
+### ⚠️ The auth model — the guidance is right, the mechanism is not what people think
+
+The received wisdom is *"`x-sgraph-access-token` for `/pw/...`, `X-API-Key` for direct stack access."* **That guidance is correct and should be kept.** The mechanism behind it is not what it implies.
+
+**`x-sgraph-access-token` appears zero times in this repo's Python except as a header to discard.** The service only ever validates `X-API-Key`. The translation happens in the vault's reverse proxy:
+
+```python
+ENV_VAR__TOKEN    = 'SGRAPH_SEND__ACCESS_TOKEN'          # injected upstream as X-API-Key
+UPSTREAM_API_KEY  = 'X-API-Key'
+STRIP_REQUEST     = {'host', 'content-length', 'x-sgraph-access-token', 'cookie'}
+...
+headers[UPSTREAM_API_KEY] = token                        # vault auth → upstream auth
+```
+
+So **`x-sgraph-access-token` is the *vault's* auth header, not sg-playwright's.** The proxy strips it and injects `X-API-Key` from `SGRAPH_SEND__ACCESS_TOKEN`.
+
+**One sub-claim in the existing skill documentation is wrong** and should be corrected on the site: *"A caller sending `X-API-Key` to the proxy gets 401 at the proxy."* It does not — `X-API-Key` is **not** in `STRIP_REQUEST`, and the proxy overwrites it unconditionally. The 401 comes from the vault app's own middleware sitting in front of the proxy.
+
+**And a fact the site must state:** the `/pw` proxy is **in neither repo**. `Fast_API__Reverse_Proxy` is written to be *vendored into* the `diniscruz/sg-send-vault` image — *"kept single-file and dependency-light… so it can be vendored into a container we do not build."* Grepping `__Send` for `/pw`, `REVERSE_PROXY__ROUTES` or `sg-playwright` in code returns **zero hits**. **Anyone documenting the production auth path is documenting a component they cannot see.**
+
+---
+
+## 5. Isolation boundaries
+
+| Boundary | Mechanism |
+|---|---|
+| Job ↔ job, same node | Fresh Playwright subprocess + fresh Browser + fresh BrowserContext per request, `try/finally` teardown |
+| Session ↔ session | Dedicated OS thread, own browser process, registry keyed by `Session_Id` |
+| Node ↔ node | Separate EC2 instances, per-node security group, **per-node API key, never reused** |
+| Untrusted JS | `JS__Expression__Allowlist` — **deny by default, exact match.** `evaluate` is rejected until an operator populates the allowlist. The `allow_all` bypass is set only by the screenshot surface, on the stated ground that *"each call is an isolated session"* |
+| Network | Browser traffic through the mitmproxy sidecar; *"isolation is Docker network"*; sidecar `:8080` unreachable from outside the EC2 |
+| Cookies | `SET_COOKIE` applies to the per-request context — *"stateless — the context is fresh per request and discarded after; no session persistence"* |
+
+**One weakness to disclose rather than hide.** `EC2__Platform.create_node` writes the per-node API key into an **EC2 tag**:
+
+```python
+if node_info.instance_id:                          # tag so dashboard can read key without SSM
+    EC2__Launch__Helper().add_tags(region, str(node_info.instance_id),
+                                   [{'Key': 'sg-compute:host-api-key', 'Value': api_key}])
+```
+
+The codebase already knows: `Schema__Playwright__Info.py:22` reads *"**Visible to anyone with `ec2:DescribeInstances`.**"*
+
+The key is *also* in SSM, which is the correct store — the tag is a dashboard convenience with a stated cost. **No live key is exposed in the repo; this is a design trade-off, not a leak.** `07__` §4 has the recommended framing, which is to publish it as a known trade-off with the mitigation named. Hiding it would be worse than the trade-off itself.
+
+---
+
+## 6. How artefacts come back — correct the likely assumption
+
+`Enum__Artefact__Sink` declares `VAULT`, `INLINE`, `LOCAL_FILE`, `S3`. The default is `INLINE`.
+
+**Only `INLINE` and `LOCAL_FILE` are implemented.** Both `write_bytes_to_vault` and `write_bytes_to_s3` raise `NotImplementedError`.
+
+So today: **base64 in the JSON body** (20 MB cap — a source comment notes that `Safe_Str__Text__Dangerous`'s 64 KB default was rejecting real screenshot PNGs), **raw PNG bytes** for `POST /browser/screenshot`, or a local file path in development.
+
+**No S3. No presigned URLs. No vault writes.** The site must not claim otherwise — and the gap is worth naming, because vault writes are the obvious integration with the rest of the estate.
+
+---
+
+This document is released under the Creative Commons Attribution 4.0 International licence (CC BY 4.0).
+
+---
+
+*Published on sg-compute.sgit.ai under CC BY 4.0. Source: the `sg-compute.sgit.ai` brief pack v0.33.62, 24 August 2026, by Dinis Cruz via the SG/Send Librarian, with AI co-authorship (Claude, Anthropic).*
+
+
+==============================================================================
+source: /briefs/02__the-rename.md
+
+==============================================================================
+
+
+# 02 — The rename: what is done, what is not, and what breaks
+
+The lead is right that the repo needs renaming, and the 30 April 2026 naming brief already specified it in full — including nine numbered acceptance criteria. This document scores the work against that brief and lists what a rename would actually break.
+
+**Headline: architecturally done, textually about 40% done.** The Node/Pod/Spec abstraction, the manifest system, the route loader and the CLI builder are all built and working. The package name, the PyPI name, the Docker image, the env-var prefix, the runtime `service_name` and the word "stack" all still say Playwright.
+
+---
+
+## 1. Where the names are, counted
+
+| Name | Files containing |
+|---|---:|
+| `sgraph_ai_service_playwright` | 5,140 |
+| `sg-playwright` | 5,008 |
+| `sg_compute` | 3,013 |
+| `SG/Compute` | 815 |
+| `sg-compute` | 557 |
+| `SGraph-AI__Service__Playwright` | 114 |
+| `sgraph-ai-service-playwright` (PyPI) | 14 |
+
+Runtime self-identification is still Playwright — `Capability__Detector.py:60` sets `service_name = 'sg-playwright'`. Env vars are **21 distinct `SG_PLAYWRIGHT__*`** against **2 `SG_COMPUTE__*`**.
+
+---
+
+## 2. The nine acceptance criteria, scored
+
+From the 30 April brief. Verified against the tree.
+
+| # | Criterion | | Evidence |
+|---|---|:-:|---|
+| 1 | No "SP" / "SGraph Playwright" references remain | ❌ | `sp` and `sp-cli` are live `pyproject.toml` entry points; `sgraph_ai_service_playwright__cli` is 71,182 LOC |
+| 2 | CLI uses `sg-compute node/pod/stack` | 🟡 | The `sg-compute` binary exists, but only `sg nodes` is wired into `Cli__SG`. **`Cli__Compute` — the taxonomy-correct aggregator with pod/spec/stack — exists and is not a `pyproject` entry point**, reachable only via `scripts/sg_compute_cli.py` |
+| 3 | API uses `/nodes /pods /stacks /specs` | ✅ | All four route classes exist and are mounted |
+| 4 | Frontend nav shows Nodes/Specs/Stacks/Settings | ✅ | `sg-compute-left-nav.html`: Compute · Nodes · Stacks · Specs · Settings · API |
+| 5 | Specs stored as JSON with `spec.json` | ❌→✅ | **Deliberate deviation, and better than the brief asked for**: typed `manifest.py` + `Schema__Spec__Manifest__Entry`. See `04__` |
+| 6 | "Stack" reserved for multi-node only | ❌ | Every per-spec CLI help string still says *"Ephemeral X EC2 stacks"* for a single instance — **13 occurrences in `Cli__SG.py` alone** |
+| 7 | ≥6 specs defined | ✅ | 16 registered |
+| 8 | Folder structure matches the taxonomy | 🟡 | `sg_compute/{core,cli,control_plane,platforms}` + `sg_compute_specs/` match. `frontend/` is still `sgraph_ai_service_playwright__api_site/` |
+| 9 | Old naming gone from user-facing surfaces | ❌ | `service_name='sg-playwright'`, `SG_PLAYWRIGHT__*`, the `diniscruz/sg-playwright` image, the `sgraph-ai-service-playwright` PyPI name |
+
+**Score: 3 done, 2 partial, 4 not done — plus one deliberate improvement over spec.**
+
+Criterion 6 is the cheapest and most visible win. The brief was explicit: *"**Reserve 'stack' for this. Do not use it for single nodes.**"* Thirteen help strings in one file currently violate it, and — see `08__` — there is no multi-node orchestration for the word to describe anyway.
+
+---
+
+## 3. The guard that was supposed to hold the line
+
+Covered in `00__` §3 and worth restating here because it belongs to the rename story: `tests/ci/test_no_legacy_imports.py` uses `sgraph_ai_service_playwright[^_]`, which cannot match `sgraph_ai_service_playwright__cli`. **Verified: guard matches 0 files; 228 real legacy imports exist across 69 files; deleting `[^_]` makes it fail as intended.**
+
+The dependency also runs **both ways** — `__cli` imports `sg_compute` 72 times — so the cycle the guard's docstring claims was broken is not broken.
+
+There is a second tell in the same file. Its `_OBJECT_NONE_ALLOWLIST` exempts a path called `sg_compute_specs/playwright/core/docker/Local__Docker__SGraph_AI__Service__Playwright.py` — **a class named after the old service, living inside the new tree.** The rename has not reached the class names.
+
+---
+
+## 4. Full rename scope, and what breaks
+
+| Surface | Current | Breaks? |
+|---|---|---|
+| Repo name | `SGraph-AI__Service__Playwright` | 114 files reference it |
+| **PyPI package** | `sgraph-ai-service-playwright` | **Yes — published name.** Needs a new package plus a deprecation shim |
+| **Docker images** | `diniscruz/sg-playwright`, `-vnc`, `sg-host-control` | **Yes — 124 + 19 references** including CI, user-data and compose. Running EC2 nodes pull by name |
+| Legacy package dir | `sgraph_ai_service_playwright__cli/` | 228 imports across 69 files |
+| Frontend dir | `sgraph_ai_service_playwright__api_site/` | Static mount paths + the `test_wheel_contains_ui` guard |
+| **Env vars** | `SG_PLAYWRIGHT__*` (21) | **Baked into `.env` on every running EC2** — a rename orphans live nodes |
+| Runtime identity | `service_name = 'sg-playwright'` | Consumers key off `/health/info` |
+| CLI aliases | `sp`, `sp-cli` | Documented as *"legacy, kept for backward compat"* |
+| DNS zone | `sg-compute.sgraph.ai` (128 refs) | **Live Route 53 zone** — see §5 |
+
+**One thing is already broken:** `.github/workflows/bake-ami.yml` invokes a binary called **`sg-play` sixteen times**. `sg-play` is defined nowhere — not in `pyproject.toml`, not in `scripts/`. **That entire workflow is dead**, which also means the AMI bake pipeline described in `00__` §4 as a maturity signal is currently not runnable as written.
+
+**Recommended sequencing**, because a big-bang rename would orphan live infrastructure:
+
+1. **Fix the guard first** (`00__` §3) so the legacy dependency becomes visible and measurable.
+2. **Fix `sg-play`** — the dead workflow is a one-line problem hiding a whole pipeline.
+3. **Add aliases before removing names.** Publish the new PyPI package and Docker tags alongside the old; make `service_name` configurable; accept both env-var prefixes with the old one warning.
+4. **Break the `__cli` cycle** — 228 imports, mostly `aws`, `credentials` and `tui`. This is the real work and it is the thing blocking a clean package boundary.
+5. **Then rename the repo**, last, when nothing points at the old name that is not aliased.
+
+---
+
+## 5. ⚠️ The domain collision — decide it deliberately
+
+The target is **`sg-compute.sgit.ai`**.
+
+**`sg-compute.sgraph.ai` is a live Route 53 zone**, used for per-node DNS as `<stack-name>.sg-compute.sgraph.ai`, and it appears **128 times** in the repo — including in code defaults and test assertions.
+
+Same label, different TLD. That is workable, and it is also the kind of thing that produces a support question every week forever. The site should either:
+
+- **claim the distinction explicitly** — `sgit.ai` is documentation, `sgraph.ai` is running infrastructure — and say so on the front page and in `/network/`; or
+- **move the node DNS** to `sgit.ai` too, which touches 128 references and every running node.
+
+The first is much cheaper and is the recommendation. But it must be a stated decision on the site, not an accident a reader discovers.
+
+---
+
+## 6. The naming brief's other good ideas, currently unused
+
+Three lines from the 30 April brief deserve to be on the site rather than buried in a four-month-old document:
+
+> *"An interesting property: **the Ephemeral Compute control plane should be able to run inside Ephemeral Compute**… This is recursion, but it is also practical."*
+
+That is directly supported by the serverless brief's *"We do not need a serverless 'control plane' running 24/7. The control plane is one specific role that can spin up itself on demand, do its work, and shut down."* **Nobody has built it, and it is the most quotable idea in the corpus.**
+
+> *"This is the **simulated AWS Marketplace**: a catalogue of pre-configured, ready-to-launch environments."*
+
+Sixteen specs with typed manifests, stability ratings and boot times is exactly that catalogue, and `/specs/` should be framed as one.
+
+> *"The overall product is sometimes called 'ephemeral EC2,' which is too narrow: **it is bigger than EC2.**"*
+
+Still true, and still not reflected in a `Platform` ABC that only has one implementation. `08__` Q3.
+
+---
+
+This document is released under the Creative Commons Attribution 4.0 International licence (CC BY 4.0).
+
+---
+
+*Published on sg-compute.sgit.ai under CC BY 4.0. Source: the `sg-compute.sgit.ai` brief pack v0.33.62, 24 August 2026, by Dinis Cruz via the SG/Send Librarian, with AI co-authorship (Claude, Anthropic).*
+
+
+==============================================================================
+source: /briefs/03__maturity-audit.md
+
+==============================================================================
+
+
+# 03 — The maturity audit
+
+The lead's claim is that this is *"a VERY mature ephemeral compute platform."* **It holds** — and a site that repeats it without the four qualifications below will be caught by anyone who clones the repo. Publishing the audit is what makes the claim credible.
+
+Every number here was measured in this session, not estimated.
+
+---
+
+## 1. Where the maturity is real
+
+### Tests
+
+```
+pytest tests/ci tests/unit -q
+→ 4,785 passed, 4 failed, 4 skipped — 81 seconds
+```
+
+**4,785 tests in 81 seconds** is a genuinely fast, genuinely large suite. Repo total collectible: **7,110** across 799 test files.
+
+The 4 failures are **test-hygiene time bombs, not code defects**: three IAM tests hardcode `last_used='2026-05-17T00:00:00+00:00'`, which is now more than 90 days stale, so a `STALE_ROLE` assertion fires. The fourth needs a built wheel. **These will fail for anyone who clones the repo today** — worth fixing before the site invites people to.
+
+### History
+
+**2,777 commits and 245 tags in 100 days.** First commit 16 April 2026, last 24 July 2026.
+
+| Author | Commits |
+|---|---:|
+| Claude | 1,700 (61%) |
+| Dinis Cruz | 826 (30%) |
+| GitHub Actions | 243 (9%) |
+
+And the shape, which the site should publish rather than smooth over:
+
+| Month | Commits |
+|---|---:|
+| Apr 2026 | 1,136 |
+| May 2026 | 1,454 |
+| Jun 2026 | 129 |
+| Jul 2026 | 58 |
+
+**Two-thirds of the repo landed in the first six weeks, and there has been no commit since 24 July** — a month of silence as of this pack. That is not a criticism; it is what "built fast, then stabilised" looks like. But a site claiming an actively-developed platform against a repo whose last commit is a month old is making a claim a reader can check in one click.
+
+### CI/CD
+
+Nine workflows; `ci-pipeline.yml` alone is 36,815 bytes. The pipeline is real:
+
+unit tests → increment tag → **native per-arch builds** (amd64 on `ubuntu-latest`, arm64 on `ubuntu-24.04-arm`) → **push by digest only** → integration-test the pre-tag image → **only then** combine digests into a manifest and push to Docker Hub. Same again for the VNC image.
+
+`bake-ami.yml` is a two-phase bake: install from scratch → health and smoke checks → clean → snapshot → **relaunch from the baked AMI and re-verify** → tag `healthy` or `unhealthy`. That is a better AMI process than most infrastructure teams run. **⚠️ It is also currently dead — see `02__` §4.**
+
+Versioning: `v0.2.71`, single source of truth in the repo-root `version` file, auto-incremented by `owasp-sbot/OSBot-GitHub-Actions`, read at runtime by `consts/version.py` and every `manifest.py`, and used as the image tag.
+
+### Documentation
+
+**1,265,371 words of markdown.**
+
+| Area | Files | Words |
+|---|---:|---:|
+| `team/humans/` | 219 | 426,410 |
+| `team/comms/` | 246 | 218,913 |
+| `team/roles/` | 130 | 158,075 |
+| `team/claude/` (debriefs) | 204 | 156,651 |
+| `library/dev_packs/` | 96 | 144,051 |
+| `library/docs/` | 54 | 64,289 |
+| `library/guides/` | 22 | 44,547 |
+| `library/catalogue/` | 37 | 30,038 |
+
+And the mechanism that makes it trustworthy — a formal **reality-document system** (`team/roles/librarian/reality/`, 72,339 words, 12 domains) with a governing rule quoted in `.claude/CLAUDE.md`:
+
+> ***"If the reality document doesn't list it, it does not exist.** … **Briefs are aspirations, not facts.**"*
+
+That is an unusually disciplined honesty mechanism and it deserves a page of its own. **It is also stale** — the index header reads `v0.2.30 | Last updated: 2026-05-17` against a repo at v0.2.71, and the repo's own dev pack flags it: *"The reality doc and `capabilities.json` are demonstrably stale."*
+
+### Operational hardening
+
+Not aspirational — each piece is traceable to a real incident:
+
+- **`Request__Watchdog`** — daemon thread, `os._exit(2)` on a stuck request, written against a real Lambda deadlock, with the GIL reasoning in the source. See `01__` §3.
+- **`Health__Poller`** — two-phase: EC2 `running`, then HTTP probe.
+- **Two Dockerfile build-time guards** asserting the installed Playwright version equals `1.58.0` **in the same interpreter as `CMD`**, each with a comment naming the production incident that motivated it.
+- **ACME / Let's Encrypt automation including IP certificates** via a `shortlived` profile.
+- **Prometheus `/metrics`**, plus an observability service with AMP remote-write and OpenSearch.
+- **`utils/ec2_boot_bench/`** — 24 real benchmark runs, including recorded failures.
+
+---
+
+## 2. Where the claim is overstated — four places
+
+### (a) There is no static analysis. None.
+
+No `mypy`, `ruff`, `flake8`, `pylint`, `black`, `isort`, `setup.cfg` or `tox.ini` anywhere, and no such configuration in `pyproject.toml`.
+
+Type safety is enforced **at runtime**, via `Type_Safe` from `osbot-utils`, present in **1,333 of 3,127 package files (42.6%)**. That is a real and defensible architectural choice — runtime validation catches things static analysis cannot — but it is not a substitute, and 57% of files do not use it.
+
+The substitute is `tests/ci/`: four hand-written structural guards. **One of them is broken** (`02__` §3).
+
+### (b) CI runs 67.4% of the tests
+
+| Path | Collected | In CI? |
+|---|---:|:-:|
+| `tests/ci` | 33 | ✅ |
+| `tests/unit` | 4,760 | ✅ |
+| `tests/integration` | 24 | ❌ |
+| `tests/integration_live` | 60 | ❌ |
+| `tests/local` | 5 | ❌ |
+| `tests/benchmarks` | 3 | ❌ |
+| `sg_compute__tests` | **672** | ❌ |
+| `sg_compute_specs/**/tests` | **1,280** | ❌ |
+| `sgraph_ai_service_playwright__cli/**/tests` | 273 | ❌ |
+| **Total** | **7,110** | **4,793 run** |
+
+**2,317 tests never run in CI — including 1,952 that test the new `sg_compute` and `sg_compute_specs` trees**, which is to say the parts the rename is building.
+
+And it shows. **Six of the seven collection errors are in the un-CI'd suites:** four genuine circular imports (`TAG_PURPOSE_KEY` in the neko, opensearch, prometheus and vnc `*__AWS__Client.py` files), one missing module (`sg_compute_specs.playwright.core.schemas.browser.Schema__Proxy__Auth__Basic`), and one stale osbot import path.
+
+**Adding `sg_compute__tests` and `sg_compute_specs/**/tests` to CI would surface six real breakages immediately.** That is the highest-value change available in the repo.
+
+### (c) No infrastructure-as-code
+
+No Terraform, CloudFormation, CDK or SAM templates anywhere. Provisioning is imperative Python over `osbot-aws`.
+
+Defensible for a platform whose whole point is programmatic provisioning — but it means there is no declarative description of the AWS footprint, no plan/apply, and no drift detection. Worth stating rather than leaving a reader to infer it.
+
+### (d) Four sources of truth are knowingly stale
+
+| Artefact | Says | Reality |
+|---|---|---|
+| `capabilities.json` | `v0.1.29` | **v0.2.71 — 42 minor versions behind.** `COPY`'d into the image and served at `/admin/capabilities` |
+| Reality doc index | `v0.2.30`, 17 May 2026 | v0.2.71 |
+| `README.md` | *"Phase 0 in progress — repo skeleton"* | 217,266 LOC, 7,110 tests |
+| `sg_compute/version` | `v0.1.162` | **Read by nothing.** Grep for any code reading it returns zero hits |
+
+The repo's own documentation already tells you not to trust `capabilities.json`:
+
+> *"The UI reads `GET /health/capabilities` (the live `Schema__Service__Capabilities`, populated by `Capability__Detector`) — **never** the stale `capabilities.json`."*
+
+**The site needs one stated policy: code wins.** The repo's own dev pack already rules this way; make it explicit and apply it everywhere.
+
+---
+
+## 3. The verdict to publish
+
+> **Mature where it counts, thin where the repo has not looked.**
+>
+> 4,785 tests passing in 81 seconds, digest-first multi-arch CI, AMI bake-and-verify, 1.27 million words of documentation with a formal reality discipline, and operational hardening written from real incidents.
+>
+> And: no linter, no type-checker, a third of the tests outside CI hiding six real breakages, no IaC, and four sources of truth that disagree with the code.
+
+That paragraph, published as-is, is worth more to the site's credibility than any feature list. It is also **five days of work away from being a much better paragraph** — fix the guard, add the two test suites to CI, resolve the six imports, delete `capabilities.json` or regenerate it, rewrite the README from the tree, and fix the three date-brittle IAM tests.
+
+---
+
+This document is released under the Creative Commons Attribution 4.0 International licence (CC BY 4.0).
+
+---
+
+*Published on sg-compute.sgit.ai under CC BY 4.0. Source: the `sg-compute.sgit.ai` brief pack v0.33.62, 24 August 2026, by Dinis Cruz via the SG/Send Librarian, with AI co-authorship (Claude, Anthropic).*
+
+
+==============================================================================
+source: /briefs/04__the-spec-system.md
+
+==============================================================================
+
+
+# 04 — The spec system: what makes it a platform
+
+**This is the page that justifies the rename.** One abstraction, sixteen implementations, three generalisation mechanisms, and a documented path for specs that live outside the repo. Full data in `specs__catalogue.json`.
+
+---
+
+## 1. The catalogue
+
+Seventeen directories; **sixteen registered** (`sg_edge` has no `manifest.py` and is therefore invisible to the registry — see §5).
+
+| Spec | LOC | Capability | Boot | Stability | Family |
+|---|---:|---|---:|---|---|
+| **vault_publish** | 11,682 | vault-writes, subdomain-routing | 45s | EXPERIMENTAL | vault |
+| **playwright** | 10,180 | browser-automation | 30s | **STABLE** | browser |
+| *sg_edge* | *9,108* | *— unregistered —* | — | — | infra |
+| **vault_app** | 8,261 | vault-writes | 45s | EXPERIMENTAL | vault |
+| **content_proxy** | 4,971 | mitm-proxy | 600s | EXPERIMENTAL | browser |
+| **firefox** | 1,992 | mitm-proxy | 90s | EXPERIMENTAL | browser |
+| **vnc** | 1,876 | mitm-proxy | 120s | **STABLE** | browser |
+| **docker** | 1,558 | container-runtime | 600s | **STABLE** | runtime |
+| **local_claude** | 1,498 | llm-inference | 180s | EXPERIMENTAL | llm |
+| **mitmproxy** | 1,448 | mitm-proxy | 15s | **STABLE** | network |
+| **elastic** | 1,372 | metrics | 180s | **STABLE** | observability |
+| **prometheus** | 1,311 | metrics | 120s | **STABLE** | observability |
+| **opensearch** | 1,221 | metrics | 180s | **STABLE** | observability |
+| **podman** | 1,199 | container-runtime | 120s | **STABLE** | runtime |
+| **neko** | 1,180 | iframe-embed | 120s | **STABLE** | browser |
+| **ollama** | 939 | llm-inference | 120s | EXPERIMENTAL | llm |
+| **open_design** | 773 | design-tool | 480s | EXPERIMENTAL | tool |
+
+**Nine stable, seven experimental.** Boot times span 15 seconds (mitmproxy) to 600 seconds (docker, content_proxy) — a 40× range, which is itself a good argument for the manifest carrying `boot_seconds_typical` as a field rather than a footnote.
+
+**These are not documents.** Each is a working package with `manifest.py`, `api/routes/`, `cli/`, `service/`, `schemas/`, `tests/`, and often `ui/`.
+
+---
+
+## 2. Three mechanisms, and none of them is `capabilities.json`
+
+### (a) `manifest.py` — the registry
+
+Every spec exposes a typed `MANIFEST` of `Schema__Spec__Manifest__Entry`:
+
+```
+spec_id · display_name · icon · version · stability · boot_seconds_typical
+capabilities · nav_group · extends · soon · create_endpoint_path
+```
+
+> *"**Single source of truth.** Every spec's `manifest.py` exposes `MANIFEST`."*
+
+This is where the 30 April brief's criterion 5 was **deliberately improved on** — it asked for specs stored as JSON with a `spec.json`; what shipped is typed Python with a schema. Better, and the site should say so rather than scoring it as a miss.
+
+### (b) `Spec__Routes__Loader` — convention-based discovery
+
+`spec_id 'docker'` resolves to `sg_compute_specs.docker.api.routes.Routes__Docker__Stack`. No registration list, no import graph to maintain.
+
+And a design note worth publishing because it cuts both ways: *"**Specs without a route class are silently skipped.**"* Convenient during development; a silent-failure mode in production. A spec that loses its route class disappears from the API with no error.
+
+### (c) `Spec__CLI__Builder` — generated CLIs
+
+**Per-spec CLIs are generated, not written.** The builder registers a uniform verb set for every spec:
+
+```
+list · info · create · wait · health · connect · exec · delete · ami list|bake · cert
+```
+
+Sixteen specs, one CLI surface, written once. This is the strongest single argument that the thing is a platform: **adding a spec costs a manifest, a route class and a service — the CLI comes free.**
+
+### (d) Entry points — specs outside the repo
+
+`Spec__Loader` already supports **PEP 621 entry-point discovery** under the group `sg_compute.specs`, alongside the in-repo walk. The 30 April *"Spec Standard: External Repos"* brief specified it.
+
+**Third-party specs are architecturally supported and untested in the wild.** That is a genuinely interesting claim and it should be published as a claim, not a feature — with an invitation to try it.
+
+### ⚠️ What is *not* the mechanism
+
+`capabilities.json`:
+
+```json
+{ "app": "sg-playwright", "version": "v0.1.29",
+  "axioms": ["statelessness", "least-privilege-by-declaration", "self-description"],
+  "declared_narrowing": [] }
+```
+
+**Frozen at v0.1.29 while the repo is at v0.2.71 — 42 minor versions.** It is `COPY`'d into the image and served verbatim at `GET /admin/capabilities`, and **the repo's own documentation says not to read it**:
+
+> *"The UI reads `GET /health/capabilities` (the live `Schema__Service__Capabilities`, populated by `Capability__Detector`) — **never** the stale `capabilities.json`."*
+
+The live mechanism is `Capability__Detector`, which detects the deployment target from environment variables (`laptop | ci | claude_web | container | lambda`) and builds capabilities at runtime. **Present that as the self-description story; mention `capabilities.json` only as a known-stale artefact, or delete it.**
+
+The three axioms it names — *statelessness, least-privilege-by-declaration, self-description* — are good, and they are actually implemented (`01__` §1, the JS allowlist, `/health/capabilities`). **Rescue the axioms from the stale file and put them on the front page.**
+
+---
+
+## 3. What this makes possible — and what it does not yet
+
+**Possible today.** Sixteen ready-to-launch environments, each with a typed manifest, a stability rating, a measured boot time, a generated CLI and auto-discovered routes. The 30 April brief's own framing:
+
+> *"This is the **simulated AWS Marketplace**: a catalogue of pre-configured, ready-to-launch environments."*
+
+That is exactly what `/specs/` should be, and it is real.
+
+**Not yet, and the site must say so:**
+
+- **`create_node` covers 3 of 16 specs.** `EC2__Platform._service_for` raises `NotImplementedError` for anything but `docker`, `podman`, `vnc`. The other thirteen create nodes through their own CLI and service paths, not the control-plane API. **The uniform CLI is real; the uniform API is not.**
+- **One platform.** `Platform.name` is documented as `'ec2' | 'k8s' | 'gcp' | 'local'`. Only EC2 exists.
+- **No multi-node stacks.** `Routes__Compute__Stacks` returns a list; `Cli__Compute__Stack` is unwired.
+- **`sg_edge` is unregistered** — 9,108 lines, the second-largest spec directory, and invisible to the registry because it has no `manifest.py`. Either register it or move it out of `sg_compute_specs/`; leaving the largest unregistered thing inside the spec tree is confusing for anyone reading the catalogue.
+
+---
+
+## 4. Why the family view matters more than the list
+
+Grouped by what they actually do:
+
+| Family | Specs | LOC |
+|---|---|---:|
+| **browser** | playwright, content_proxy, firefox, vnc, neko | 20,199 |
+| **vault** | vault_publish, vault_app | 19,943 |
+| **observability** | elastic, prometheus, opensearch | 3,904 |
+| **runtime** | docker, podman | 2,757 |
+| **llm** | local_claude, ollama | 2,437 |
+| **network** | mitmproxy | 1,448 |
+| **tool** | open_design | 773 |
+
+**Vault specs are within 300 lines of browser specs.** That single row is the clearest possible statement that this is not a browser service — and it points at the integration the rest of the estate wants: vault-writes as a first-class capability, already implemented twice.
+
+It also explains why the artefact-sink gap (`01__` §6) matters more than it looks. Two specs exist whose capability is literally `vault-writes`, and the generic artefact writer's vault path raises `NotImplementedError`. **The capability exists at the spec layer and not at the platform layer.** That is `08__` Q4.
+
+---
+
+## 5. How to write `/specs/`
+
+1. **One page per spec**, generated from `manifest.py` — the manifest already carries everything a page needs. Do not hand-write sixteen pages that will drift.
+2. **Lead with the family view**, not the alphabetical list.
+3. **Show stability and boot time in the header**, because they are what a reader is actually choosing on.
+4. **State the `create_node` gap per spec** — three of sixteen is a real limitation and hiding it produces support questions.
+5. **Publish the entry-point contract** as an invitation: here is how a spec that lives in your repo joins this catalogue.
+6. **Generate the page from the tree, at build time.** Every stale artefact in this repo became stale because it was written once by hand.
+
+---
+
+This document is released under the Creative Commons Attribution 4.0 International licence (CC BY 4.0).
+
+---
+
+*Published on sg-compute.sgit.ai under CC BY 4.0. Source: the `sg-compute.sgit.ai` brief pack v0.33.62, 24 August 2026, by Dinis Cruz via the SG/Send Librarian, with AI co-authorship (Claude, Anthropic).*
+
+
+==============================================================================
+source: /briefs/05__the-serverless-argument.md
+
+==============================================================================
+
+
+# 05 — The argument: a serverless environment for agents
+
+The strategy is well developed — **23 briefs, 52,873 words measured**, mostly between 30 April and 16 May 2026. This is the `/why/` section, and it is the strongest writing in the corpus.
+
+---
+
+## 1. The positioning, in its own words
+
+> *"**A serverless environment for agents, with the isolation, observability, and substrate control that agent workloads actually need.**"*
+
+And the market it is explicitly *not* in:
+
+> *"We are **not** competing for the generic developer-platform market (Vercel, Cloudflare Workers, Lambda)… **We are competing for the agent-deployment market.**"*
+
+That is a sharper position than most infrastructure projects manage, and it is defensible because the workload genuinely differs — agent runs are seconds-to-minutes, need a real filesystem and a real browser, and care more about isolation and substrate control than about millisecond cold starts.
+
+The definition the whole argument rests on:
+
+> *"**Serverless = no servers running when there is no traffic, with a defined cost to start serving traffic and ongoing per-invocation cost while traffic is served.**"*
+
+Note what it does *not* say: nothing about functions, nothing about managed runtimes. That definitional move is what lets an EC2 instance with a one-hour self-terminate count as serverless, and the site should make the move explicitly rather than assuming it.
+
+---
+
+## 2. The trade, stated honestly
+
+> *"The trade-off Lambda makes is 'less control, smaller startup tax, fully managed.' Our composition makes a different trade: **more control, slightly longer first-call cold-start, broader workload range, and per-substrate optimisation.**"*
+
+> *"**Lambda's 100ms cold-start is impressive but irrelevant for most agentic workloads** (which run for seconds or minutes anyway)."*
+
+> *"**Containers do not have this problem.** A single container can serve hundreds of parallel requests trivially. The cold-start is paid **once per container, not once per request**." … "**the workhorse substrate is a container, not a function.**"*
+
+**⚠️ The "hundreds of parallel requests" claim is argued and never measured.** There are no load tests anywhere in the repo. Either measure it before publishing or state it as a design expectation. `08__` Q2.
+
+---
+
+## 3. The cold-start ladder
+
+The corpus's most useful single table:
+
+| Substrate | Cold start | Status |
+|---|---|---|
+| EC2 cold | 30–60 s | ✅ implemented |
+| **EC2 from warm pool** | **5–15 s** | ❌ **not implemented** |
+| Fargate cold | 10–30 s | partial (experiment) |
+| Container on a running EC2 | 1–5 s | ✅ implemented |
+| Cached-image restart | 100–500 ms | — |
+| Firecracker snapshot restore | < 50 ms | future |
+
+**And the measured reality beats the ladder's own top rung.** From `utils/ec2_boot_bench/` — 24 real runs, eu-west-2, 11 May 2026, time to SSM-ready:
+
+| Instance | Purchase | Seconds |
+|---|---|---|
+| t3.micro | on-demand | **16.4–16.5** |
+| c5.large | on-demand | **16.2–16.3** |
+| g5.xlarge | on-demand | **18.2–18.7** |
+| g5.xlarge | spot | **20.5–20.6** |
+| g5.xlarge (different AMI) | on-demand | **38.5–69.5** |
+
+Two things there are worth publishing. **The measured EC2 cold start is ~16 seconds, not 30–60** — the ladder is pessimistic against its own benchmark. And **AMI choice changes boot time by 2–4×**, which is a more actionable finding than the instance type.
+
+Plus **7 recorded `InsufficientInstanceCapacity` failures** for g5.xlarge across both AZs. **Publish those.** Honest evidence that spot GPU capacity is not guaranteed is worth more than a clean table, and it is exactly the kind of number nobody else publishes.
+
+> ⚠️ **Strip the instance IDs and AMI IDs before publishing.** See `07__` §2.
+
+---
+
+## 4. The 50-second number, and what it is for
+
+> *"**The 50-second end-to-end provisioning is the number that matters most.** It is not as fast as Lambda (sub-second cold start), not as fast as Fargate (10–30s), but it gives a dedicated EC2 instance per-vault with full control, isolation, and a stable DNS name."*
+
+> *"…the 'click and you have a dedicated environment' pattern (**where 50s is a fair trade for the isolation**)."*
+
+That is the product claim in one sentence, and it is honest about what it is trading. Note the gap between the 16-second boot benchmark and the 50-second end-to-end figure: **the difference is provisioning, DNS and health-checking, not instance start.** Publishing that breakdown would be more useful than either number alone.
+
+---
+
+## 5. The recursion — the best unbuilt idea
+
+> *"**We do not need a serverless 'control plane' running 24/7.** The control plane is one specific role that can spin up itself on demand, do its work, and shut down. **The DNS layer is the always-on piece** (cheap; effectively free); everything else is on-demand."*
+
+And from the naming brief:
+
+> *"An interesting property: **the Ephemeral Compute control plane should be able to run inside Ephemeral Compute**… This is recursion, but it is also practical."*
+
+**Nobody has built it.** It is the most quotable idea in the corpus, it follows directly from the architecture, and a platform that can host its own control plane is a much stronger claim than one that cannot. Whether it *should* be built is `08__` Q1 — a control plane that must exist to start itself has a bootstrap problem, and the honest answer may be "the DNS layer and one small always-on waker, everything else ephemeral."
+
+---
+
+## 6. Cost — what can be said, and what cannot
+
+**Can be said:**
+
+- Measured boot times (§3), including the failures.
+- Spot is used and defaulted where appropriate: `vault_app` and Fargate set `use_spot = True # spot by default (~70% cheaper)` and `launch_type = 'FARGATE_SPOT'`.
+- Teardown defaults: `max_hours = 1` everywhere, fractional supported (`0.1` = 6 minutes), idle reconciliation at ~15 minutes.
+- The brief-level estimates, **labelled as estimates**: *"Cost per running unit | **$0.005–0.10+ per hour** | Effectively free for short bursts"*, and for warm pools *"A pool of 3–5 t3.small instances at ~$0.02/hour each is roughly **$1–3/day**."*
+
+**Cannot be said:**
+
+- **Any figure from the dashboard cost tracker.** Its own header: *"placeholder cost tracker. Shows **mocked** cost estimate… **Real cost calculation is its own brief**."* Its `HOURLY_RATES` table is five hardcoded t3 rates. **That brief does not exist in either repo.**
+- **Image sizes.** Not recorded anywhere and not derivable without a build.
+- **Any throughput or concurrency number.** None were measured.
+
+**The honest cost page is: here is what a run costs to *start* (measured), here is what it costs to *hold* (teardown defaults), and the per-workload cost model is not built yet.** That is more useful than a fabricated pricing table, and it is checkable.
+
+---
+
+## 7. The adjacent bets — three research threads worth a page each
+
+**Nitro Enclaves** (3,480 w, 15 May) — the confidential-compute tier, and it carries the best customer sentence in the whole corpus:
+
+> *"Run your security scan against your private repository. The scanner code is open source. The enclave's attestation proves it is the exact code you can inspect. **We cannot see your code, even though it ran on our infrastructure.**"*
+
+That is the SG/Send zero-knowledge argument extended to compute, and it belongs on this site because it is the thing that distinguishes it from every generic runner.
+
+**Firecracker** (3,222 w + 2,607 w research, 15 May) — with a fact that changed the economics:
+
+> *"**AWS nested-virt support on C8i/M8i/R8i (Feb 2026) collapsed Firecracker entry cost from $3+/hour to ~$0.09/hour.**"*
+
+**AgentCore** (2,980 w, 15 May) — where SG/Compute layers on Bedrock rather than competing with it. Worth publishing as positioning, and worth re-checking, because it is fifteen months old and that market has moved.
+
+---
+
+## 8. The workload classes to name on the front page
+
+From the serverless brief: **vault apps, agents, AppSec mini-tools, demo environments, CI workloads, multi-region testing, and security scanners in Nitro Enclaves.**
+
+Note that the spec catalogue (`04__` §4) already covers most of these — vault specs, browser specs, LLM specs, observability specs. **The workload list and the spec list are the same argument told twice, and the site should join them:** each named workload class should link to the spec that serves it, and the ones with no spec are the roadmap.
+
+And the honest caveat that belongs with all of it, from the serverless brief itself:
+
+> *"**The composition is not built yet, but the gap is integration, not new invention.**"*
+
+Fifteen months later that is still the right sentence, and `03__`'s audit says why: the pieces are real, and warm pools, multi-node stacks, non-EC2 platforms and the artefact sinks are the integration that has not happened.
+
+---
+
+This document is released under the Creative Commons Attribution 4.0 International licence (CC BY 4.0).
+
+---
+
+*Published on sg-compute.sgit.ai under CC BY 4.0. Source: the `sg-compute.sgit.ai` brief pack v0.33.62, 24 August 2026, by Dinis Cruz via the SG/Send Librarian, with AI co-authorship (Claude, Anthropic).*
+
+
+==============================================================================
+source: /briefs/06__site-architecture.md
+
+==============================================================================
+
+
+# 06 — Site Architecture
+
+## The house pattern
+
+Copy **`pki.sgit.ai`** — all six house markers, and its raw-plus-curated split (`/documents/` markdown as source of truth beside rendered HTML) is what this site needs, because much of its content is generated from a codebase.
+
+Add the `/llms-full.txt` pki lacks. And add one thing no sibling has, because this site's failure mode is specific:
+
+> **Generate every page that describes the code, from the code, at build time.**
+
+Every stale artefact in this repo — `capabilities.json` at 42 versions behind, the reality doc at 41, the README describing a package that does not exist — became stale because it was written once by hand. **A documentation site for this platform that is hand-maintained will be the fifth stale source of truth within a quarter.** The manifests, the route tables, the CLI verbs, the spec catalogue and the test counts are all machine-readable. Read them.
+
+Take pki's CI pipeline as-is, and extend the key-leak check to reject the patterns in `07__` §2.
+
+---
+
+## Page by page
+
+### `/` — the front page
+
+Two claims, in this order.
+
+**First, what it is:** an ephemeral compute platform with sixteen ready-to-launch environments — not a browser service. Lead with the number that settles it: **~71% of the new code is not browser code; Playwright is 1 of 16 specs.**
+
+**Second, the three axioms**, rescued from the stale `capabilities.json` where they are currently buried: **statelessness, least-privilege-by-declaration, self-description.** They are good, and unlike the file that names them, they are actually implemented.
+
+Then one honest sentence about state: built in 100 days, mature where it counts, and here is `/shipped/`.
+
+### `/what-it-is/` — build first
+`01__`. **The two ephemeral layers, separated on page one** — per-request browser teardown and per-node EC2 teardown are different things and conflating them is the most common misreading. Include the watchdog (`01__` §3); it is the best engineering story in the repo.
+
+### `/specs/` — the catalogue
+`04__` and `specs__catalogue.json`. **One page per spec, generated from `manifest.py`.** Family view first, alphabetical second. Stability and boot time in the header. State the `create_node` gap per spec. Publish the entry-point contract as an invitation.
+
+Frame it as the 30 April brief did: *"the simulated AWS Marketplace: a catalogue of pre-configured, ready-to-launch environments."*
+
+### `/why/` — the argument
+`05__`. *"We are competing for the agent-deployment market."* The cold-start ladder against the measured benchmarks, the 50-second claim with its breakdown, the recursion idea, and the three adjacent bets.
+
+### `/numbers/` — the measured data
+The boot benchmarks **with instance and AMI IDs stripped**, including the seven capacity failures. The test counts. The commit history. **This page is the site's credibility, because everything on it is checkable.**
+
+### `/rename/` — publish the migration
+`02__`. Unusual for a product site and right for this one: the repo is public, the old name is everywhere, and a reader will hit the mismatch immediately. Nine criteria scored, the full surface list, the PyPI and Docker breakage, the sequencing, and the domain decision.
+
+### `/agents/` — the machine surface
+The API surface from `01__` §4, **the auth model as it actually works** (including the correction to the existing skill documentation), the 25-verb sequence language, and the `/health/capabilities` self-description endpoint. Note the JS allowlist is deny-by-default — an agent cannot `evaluate` until an operator opts in.
+
+### `/shipped/` — non-negotiable
+`00__` §6, unsoftened. No warm pools. No multi-node stacks. `create_node` for 3 of 16. Artefact sinks 2 of 4. One platform of four. No cost model. No throughput measurement. `bake-ami.yml` dead. And the four stale sources with the stated policy: **code wins.**
+
+### `/network/` and `/admin/`
+The seven-site map (`07__` §5), and the `sg-compute.sgit.ai` vs `sg-compute.sgraph.ai` distinction stated plainly (`02__` §5). House-pattern admin surfaces; publish the build order unresolved with `08__`'s questions and tensions visible.
+
+---
+
+## What is generated and what is written
+
+| Content | Source |
+|---|---|
+| Spec pages | **generated** from `manifest.py` |
+| API reference | **generated** from the FastAPI route definitions |
+| CLI reference | **generated** from `Spec__CLI__Builder`'s verb set |
+| Test and coverage counts | **generated** from a CI run |
+| Version, image tags | **generated** from the `version` file |
+| The argument, the audit, the rename story | **written** — `00__`–`05__` are the raw material |
+
+The rule: **if a number appears on the site and also exists in the repo, the site reads it from the repo.** Anything else drifts.
+
+---
+
+## Naming conventions
+
+- The platform is **SG/Compute**; the repo becomes `sg-compute`; the PyPI package and Docker images follow (`02__` §4).
+- **`Node`** = one compute instance. **`Pod`** = a container on a node. **`Spec`** = a workload definition. **`Stack`** = 2+ coordinated nodes — **and per the 30 April brief, do not use "stack" for a single node.** Thirteen CLI help strings currently do.
+- Spec ids stay as they are in `manifest.py` — `playwright`, `vault_publish`, `local_claude`. Do not prettify them; they are API identifiers.
+
+---
+
+This document is released under the Creative Commons Attribution 4.0 International licence (CC BY 4.0).
+
+---
+
+*Published on sg-compute.sgit.ai under CC BY 4.0. Source: the `sg-compute.sgit.ai` brief pack v0.33.62, 24 August 2026, by Dinis Cruz via the SG/Send Librarian, with AI co-authorship (Claude, Anthropic).*
+
+
+==============================================================================
+source: /briefs/07__boundaries-and-security.md
+
+==============================================================================
+
+
+# 07 — Boundaries, redaction and the security disclosure
+
+
+> **Redacted for publication.** This document is the redaction list itself, so it named every live address it told the site to strip. It is published here under its own rule — *shapes, not addresses*: the AWS account id, the live internal hostnames, the named stack FQDNs and the real EC2 and AMI ids have each been replaced by the shape they are an instance of. Nothing else was changed. The site's [leak tripwire](../admin/index.html#leak) encodes the same list so it cannot regress.
+
+
+This pack draws on a **live infrastructure repository**. The redaction list is longer than for the other sites, and it matters more, because publishing a hostname here is publishing an attack surface.
+
+---
+
+## 1. What was checked and is clean
+
+Stated first, because it is the reassuring half and it was verified rather than assumed:
+
+- **No `.env` files with real values.** Only three `.env.example`; the root one uses `<account>.dkr.ecr.<region>.amazonaws.com` and `FAST_API__AUTH__API_KEY__VALUE=change-me`. `.gitignore` lines 138–140 cover `*.env`, `.env`, `.envrc`. No real `.env` is tracked.
+- **No AWS access keys.** Every `AKIA*` match is `AKIAIOSFODNN7EXAMPLE` — the AWS public documentation example — plus synthetic `AKIAXXXXXXXXXXXXXXXX` and `AKIANEWKEY1234567890` in test fixtures.
+- **No private keys.** Every `BEGIN PRIVATE KEY` match is synthetic: generated at test runtime via `Cert__Generator().generate('example.local')`, a literal `-----BEGIN PRIVATE KEY-----\nKEY\n-----END PRIVATE KEY-----` fixture, or a truncated shape-test constant.
+- **No GitHub, Slack, OpenAI or Anthropic tokens.** Zero matches.
+- **No public IP addresses in code.** All CI credentials come from `${{ secrets.* }}`.
+- Placeholder account ids (`123456789012`, `000000000000`, `111122223333`) are safe.
+
+---
+
+## 2. Must be redacted before publishing
+
+| Item | Where | Why |
+|---|---|---|
+| **AWS account ID `<aws-account-id>`** | `team/humans/dinis_cruz/claude-code-web/` — **20+ files**, e.g. `05/17/00/…/07__domain-strategy.md:14,86,98,283`; `05/17/01/…bootstrap.md:25,43,113,168`; `04/27/09/01__history-and-context.md:17`; `05/18/10/…/04__cli-debug-commands.md:238,246` | A real 12-digit account ID. Low direct risk, real reconnaissance value |
+| **Live internal hostnames** | Throughout | `<ops-zone>` (193) · `sg-compute.sgraph.ai` (128) · `<send-zone>` (46) · `<edge-host>.<ops-zone>` (38) · `<vault-zone>` (36) · `<dev>.<vault-zone>` (19) · `<qa-zone>` (17) · `<admin-host>.<ops-zone>` (25) · `<waker-host>.<ops-zone>` (24) |
+| **Named live stack FQDNs** | Throughout | `<stack-name>.sg-compute.<zone>` (32), `<stack-name>…` (12), `<stack-name>.<zone>` (19), `<stack-name>.<vault-zone>` (10), `<demo-slug>.<ops-zone>` (54). **`<demo-slug>` is a demo slug alongside `<demo-slug>`/`<demo-slug>`, not a customer — but it reads like a person's name. Drop it.** |
+| **Real EC2 and AMI IDs** | `utils/ec2_boot_bench/ec2_boot_bench_results.csv` — 16 rows, `i-<redacted>` etc., AMIs `ami-<redacted>`, `ami-<redacted>`, `ami-<redacted>` | Instances are long terminated; AMIs are likely private. **Publish the timings, strip the IDs** — see `05__` §3 |
+| **Internal CDN hosts** | `<dev>.<tools-zone>` (177), `<tools-zone>` (29) | Hardcoded in shipped web components |
+
+**Practical rule:** the site publishes **shapes, not addresses**. `<stack-name>.sg-compute.<zone>` is documentation; `<stack-name>.sg-compute.<zone>` is a target. Add both the account ID and the hostname list to the CI key-leak check so this cannot regress.
+
+---
+
+## 3. Do not publish
+
+Standard estate list, plus one specific to this repo:
+
+- `library/alchemist/materials/` — the whole tree. Investment figures, valuation, competitive positioning.
+- `team/humans/dinis_cruz/briefs/07/12/positioning-and-market/` — competitor maps.
+- `team/roles/appsec/reviews/02/21/v0.5.0__review__pki-architecture-security-revised.md` — already classified: *"publishing an attack roadmap for live code."*
+- `team/roles/grc/reviews/02/19/` — names a private individual with signature blocks.
+- `library/sgraph-send/dev_packs/v0.32.1__vault-to-vault-append-comms/03__provisioning-and-topologies.md` — names the driving rollout customer.
+- **Anything in `claude-code-web/` without a redaction pass.** It is the densest source of the account ID and live hostnames, and it is also where much of the operational detail lives — so it is a *redact-and-use* tree, not a skip tree.
+
+---
+
+## 4. The security disclosure — how to publish it
+
+`EC2__Platform.create_node` writes the per-node API key into an EC2 tag:
+
+```python
+if node_info.instance_id:                          # tag so dashboard can read key without SSM
+    EC2__Launch__Helper().add_tags(region, str(node_info.instance_id),
+                                   [{'Key': 'sg-compute:host-api-key', 'Value': api_key}])
+```
+
+And the codebase already documents the consequence — `Schema__Playwright__Info.py:22`: *"**Visible to anyone with `ec2:DescribeInstances`.**"*
+
+**The facts, stated fairly:**
+
+- The key is **also** in SSM, which is the correct store. The tag is a **dashboard convenience** with a comment saying exactly that.
+- **No live key is exposed in the repo.** This is a design trade-off, not a leak.
+- The blast radius is bounded: the key is **per-node and never reused**, and nodes self-terminate on a default one-hour timer.
+- The reader who can exploit it already has `ec2:DescribeInstances` in the account — which is a meaningful IAM position, though a very commonly granted one.
+
+**The recommended framing:** publish it, in `/shipped/` or a `/security/` page, as a **known trade-off with a named mitigation path** — read the key from SSM in the dashboard, drop the tag, accept the extra call. A platform site that documents its own trade-offs is trusted; one that omits a weakness its own source code comments on is not, and the code is public either way.
+
+**Do not** frame it as a vulnerability disclosure, and do not publish an exploitation path. It is an architecture note.
+
+---
+
+## 5. Network boundaries
+
+| Site | Owns | Boundary with this site |
+|---|---|---|
+| **`sg-compute.sgit.ai`** | The compute platform, specs, nodes, pods, the API, the rename | — |
+| `sgit.ai` | The vault product, the catalogue, the demos | **The `/pw` reverse proxy is vendored into `diniscruz/sg-send-vault` and is in neither repo** (`01__` §4). Whoever documents the production auth path documents a component they cannot see. Coordinate |
+| `open-source.sgit.ai` | The open-source position | Apache-2.0, the PyPI packages, and *"somebody has to be the villagers"* — this platform **is** NFR maintenance made concrete. Cross-link |
+| `wardley-maps.sgit.ai` | Mapping | The cold-start ladder is a de-facto evolution axis, and the substrate spectrum is a map waiting to be drawn. One link each way |
+| `standards.sgit.ai` | Instruments | Nitro Enclave attestation is an evidence artefact. Light link |
+| `nhi.sgit.ai`, `sg-sentinel.sgit.ai` | NHI, sentinel | The per-node key, the JS allowlist and least-privilege-by-declaration are NHI subject matter. Cross-link |
+| `risks.sgit.ai` | Risk | The EC2-tag trade-off (§4) is a worked example of an accepted risk with a named acceptor. Good link |
+
+**And the domain rule, restated because it will be asked constantly:** `sg-compute.sgit.ai` is documentation; `sg-compute.sgraph.ai` is the live Route 53 zone serving per-node DNS. Say it on the front page and in `/network/`. `02__` §5.
+
+---
+
+## 6. House style
+
+- **Code wins.** Where the README, `capabilities.json`, the reality doc and the tree disagree, the tree is right. State the policy once and apply it everywhere.
+- **Every number on the site is generated or dated.** If it cannot be regenerated at build time, it carries the date it was measured.
+- **Shapes, not addresses.** `<stack-name>.sg-compute.<zone>`, never a live FQDN.
+- **Publish failures with successes.** The seven capacity failures, the four failing tests, the broken guard, the dead workflow. This repo's own reality-document discipline already says *"briefs are aspirations, not facts"* — inherit it.
+- **-ise, not -ize**, to match the estate.
+
+---
+
+This document is released under the Creative Commons Attribution 4.0 International licence (CC BY 4.0).
+
+---
+
+*Published on sg-compute.sgit.ai under CC BY 4.0. Source: the `sg-compute.sgit.ai` brief pack v0.33.62, 24 August 2026, by Dinis Cruz via the SG/Send Librarian, with AI co-authorship (Claude, Anthropic).*
+
+
+==============================================================================
+source: /briefs/08__gaps-and-open-questions.md
+
+==============================================================================
+
+
+# 08 — Gaps, open questions and honest tensions
+
+---
+
+## 1. Fix before the site ships — the five-day list
+
+These are not site tasks; they are repo tasks that change what the site can honestly say. In order of value.
+
+| # | Fix | Effort | Effect |
+|---|---|---|---|
+| **F1** | **Delete `[^_]` from `tests/ci/test_no_legacy_imports.py`** | 4 characters | The guard goes red on 228 real legacy imports across 69 files. It has been passing vacuously since it was written |
+| **F2** | **Add `sg_compute__tests` and `sg_compute_specs/**/tests` to CI** | one workflow edit | +1,952 tests into CI, and **six real import-level breakages surface immediately** — four circular imports, one missing module, one stale osbot path |
+| **F3** | **Fix `sg-play` in `bake-ami.yml`** | one line | The binary is invoked 16 times and defined nowhere. **The whole AMI bake pipeline is currently dead** — and it is cited as a maturity signal |
+| **F4** | **Fix the three date-brittle IAM tests** | small | They hardcode `last_used='2026-05-17'`, now >90 days stale, so `STALE_ROLE` fires. **They fail for anyone who clones the repo today** |
+| **F5** | **Delete or regenerate `capabilities.json`** | small | 42 versions stale, `COPY`'d into the image, served at `/admin/capabilities`, and the repo's own docs say not to read it |
+| **F6** | **Rewrite the README from the tree** | half a day | It says *"Phase 0 in progress — repo skeleton"* at 217k LOC and documents a package that does not exist |
+| **F7** | **Add a linter** — ruff is one config block | half a day | There is currently no static analysis of any kind |
+
+F1–F4 are the ones that change the audit paragraph in `03__` §3 from honest-but-awkward to honest-and-strong.
+
+---
+
+## 2. Build-fresh items for the site
+
+| # | Item | Why |
+|---|---|---|
+| **G1** | **A generated `/specs/` page per spec** | Sixteen hand-written pages will drift. `manifest.py` already carries everything |
+| **G2** | **A real cost model** | The only cost artefact is a JS placeholder whose own header says *"Real cost calculation is its own brief."* **That brief does not exist in either repo** |
+| **G3** | **Throughput and concurrency measurement** | *"A single container can serve hundreds of parallel requests trivially"* is argued, never measured. No load tests anywhere |
+| **G4** | **Aggregated latency** | `/sequence/execute` emits a full timings block per call and nothing aggregates them. No p50/p95 dataset exists |
+| **G5** | **Image sizes** | Not recorded anywhere, not derivable without a build. **Do not publish a number** until one is measured |
+| **G6** | **The `/pw` proxy's other half** | Vendored into `diniscruz/sg-send-vault`, whose source is in neither repo. Anyone documenting the production auth path is documenting a component they cannot see |
+| **G7** | **A "built in 100 days" narrative** | Now possible — the full history is recoverable: 2,777 commits, 245 tags, 16 Apr → 24 Jul 2026, Claude 1,700 / Dinis 826. **Also shows the last commit is a month old.** Publish both halves |
+| **G8** | **Uptime, incidents, SLO** | Debriefs describe successful deployments. There is no SLO, no uptime record, no incident log |
+
+---
+
+## 3. Open questions worth publishing unresolved
+
+| # | Question | Where it stands |
+|---|---|---|
+| **Q1** | **Should the control plane run inside itself?** *"the Ephemeral Compute control plane should be able to run inside Ephemeral Compute… This is recursion, but it is also practical."* | The most quotable unbuilt idea in the corpus. But a control plane that must exist to start itself has a bootstrap problem. The honest answer may be **DNS plus one small waker always-on, everything else ephemeral** — which is what the serverless brief actually describes |
+| **Q2** | **Does a container really serve hundreds of parallel requests here?** | Central to the whole Lambda comparison, and **unmeasured**. Every browser request launches a fresh Chromium *process* — the concurrency ceiling is memory, not the web framework |
+| **Q3** | **Is `Platform` a real abstraction or an aspiration?** `'ec2' \| 'k8s' \| 'gcp' \| 'local'` is a comment; only EC2 exists | An ABC with one implementation has not been tested as an abstraction. **`local` would be the cheapest proof** and would also make the test suite runnable without AWS |
+| **Q4** | **Why do two specs have `vault-writes` while the platform's vault artefact sink raises `NotImplementedError`?** | The capability exists at the spec layer and not at the platform layer. Either the generic sink is redundant or the specs are doing it twice |
+| **Q5** | **What is a Stack, given there is no multi-node orchestration?** | The taxonomy reserves the word for 2+ coordinated nodes. `Routes__Compute__Stacks` returns a list; `Cli__Compute__Stack` is unwired; 13 CLI help strings use "stack" for a single instance. **Either build it or retire the word** |
+| **Q6** | **Should the EC2 tag carrying the API key be removed?** | `07__` §4. The mitigation is one SSM call in the dashboard. The trade is convenience against `ec2:DescribeInstances` exposure. **A stated decision either way is fine; silence is not** |
+| **Q7** | **`sg-compute.sgit.ai` and `sg-compute.sgraph.ai` — same label, different TLD** | `02__` §5. Recommendation is to claim the distinction explicitly rather than move 128 references. **Needs a decision, not a convention** |
+| **Q8** | **Is the platform still being developed?** | No commit since 24 July 2026; June and July together were 187 commits against 2,590 in April–May. Paused, done, or between phases — the site should say which |
+
+---
+
+## 4. Honest tensions
+
+1. **Extraordinary velocity, then silence.** 2,777 commits in 100 days is remarkable; a month with none is a fact a reader can check in one click. Both belong on the site.
+
+2. **61% of the commits are by Claude.** That is genuinely interesting — arguably the most interesting thing about the repo for the wider network — and it invites the obvious question about who reads the code. **`open-source.sgit.ai` has the argument** (*"someone still needs to understand what is underneath"*); this site has the artefact. Joining them is a strong page and an uncomfortable one.
+
+3. **Runtime type-safety instead of static analysis.** `Type_Safe` in 42.6% of files is a real choice with real benefits. It is also not a type-checker, and 57% of files have neither.
+
+4. **A reality-document discipline that is itself stale.** *"If the reality document doesn't list it, it does not exist"* is an excellent rule, and the reality doc is 41 versions behind. The discipline is right; the maintenance did not happen.
+
+5. **The best ideas are the unbuilt ones.** Recursion, warm pools, multi-node stacks, Nitro Enclaves, non-EC2 platforms. The corpus's most quotable material is the part with no code — which is exactly what the repo's own rule warns about: *"briefs are aspirations, not facts."*
+
+6. **A platform named for one of its sixteen specs.** Four months after the naming brief said to fix it, `sp` and `sp-cli` are still entry points and `service_name` still returns `sg-playwright`.
+
+7. **Publishing the audit is the right move and it is not comfortable.** No linter, a third of tests outside CI, a guard that never worked, a dead workflow, four stale sources. Every one is fixable in days, and publishing them alongside the fixes is the strongest possible version of the maturity claim.
+
+---
+
+## 5. Loose ends worth an hour each
+
+- **Register or relocate `sg_edge`** — 9,108 lines, the second-largest directory in `sg_compute_specs/`, no `manifest.py`, invisible to the registry.
+- **Wire `Cli__Compute` as an entry point.** The taxonomy-correct CLI exists and is only reachable via `scripts/sg_compute_cli.py`.
+- **Delete `sg_compute/version`** (`v0.1.162`) or make something read it. Grep says nothing does.
+- **Rename `Local__Docker__SGraph_AI__Service__Playwright.py`** — an old-service class name inside the new tree, currently sitting in a CI allowlist.
+- **Fix the 13 "stack" help strings** in `Cli__SG.py`. Cheapest visible win against the naming brief.
+- **Measure one image size.** One `docker images` line closes G5.
+- **Decide whether `allow_all` on the screenshot surface is still right** — it bypasses the JS allowlist on the stated ground that *"each call is an isolated session."* Probably correct; worth a written decision since it is the one place deny-by-default is switched off.
+
+---
+
+This document is released under the Creative Commons Attribution 4.0 International licence (CC BY 4.0).
+
+---
+
+*Published on sg-compute.sgit.ai under CC BY 4.0. Source: the `sg-compute.sgit.ai` brief pack v0.33.62, 24 August 2026, by Dinis Cruz via the SG/Send Librarian, with AI co-authorship (Claude, Anthropic).*
+
+
+==============================================================================
+source: /briefs/09__pack-readme.md
+
+==============================================================================
+
+
+# sg-compute.sgit.ai — brief pack
+
+**For:** the agent commissioned to build `sg-compute.sgit.ai`
+**From:** Dinis Cruz, via the SG/Send Librarian
+**Version:** v0.33.62 · 24 August 2026
+**Licence:** CC BY 4.0 — **read `LICENSE.md` before publishing anything.** This pack draws on a live infrastructure repo and the redaction list is not advisory.
+
+---
+
+## What this is
+
+A site for **SG/Compute** — an ephemeral compute platform with sixteen ready-to-launch workload specs, currently living in a repo named after one of them.
+
+Both of the lead's claims were tested against the code, and **both hold**:
+
+> *"a repo that needs to be renamed and refactored"* — **~71% of the new codebase is not browser code.** Playwright is 1 of 16 registered specs and 17% of spec LOC.
+>
+> *"a VERY mature ephemeral compute platform"* — **4,785 tests passing in 81 seconds**, 2,777 commits and 245 tags in 100 days, digest-first multi-arch CI, AMI bake-and-verify, and 1.27 million words of documentation with a formal reality discipline.
+
+Every number in this pack was measured from the tree in this session. The repo was cloned in full so the history is real.
+
+---
+
+## Read in this order
+
+| File | Words | What it does |
+|---|---:|---|
+| **`00__BRIEF.md`** | 1.6k | **Start here.** The rename verdict with the number that settles it, the one-character bug, what "mature" measures out at, the honesty constraint, the build order |
+| **`01__what-it-is.md`** | 1.5k | **The two ephemeral layers** — the thing the site must not conflate. Sessions, the watchdog, the API surface, isolation, and the auth-model correction |
+| `03__maturity-audit.md` | 1.3k | Where the maturity is real, and the four places it is overstated. With the paragraph to publish |
+| `02__the-rename.md` | 1.2k | Nine acceptance criteria scored, the broken guard, the full breakage list, the sequencing, the domain collision |
+| `04__the-spec-system.md` | 1.3k | **What makes it a platform** — one abstraction, sixteen implementations, three generalisation mechanisms |
+| `05__the-serverless-argument.md` | 1.4k | *"We are competing for the agent-deployment market."* The cold-start ladder against the measured benchmarks |
+| `06__site-architecture.md` | 0.8k | Page by page, and what is generated vs written |
+| `07__boundaries-and-security.md` | 1.0k | The redaction list, what was checked and is clean, and how to publish the one security note |
+| `08__gaps-and-open-questions.md` | 1.4k | **A five-day fix list**, 8 build-fresh items, 8 open questions, 7 honest tensions |
+| `09__source-manifest.csv` | 37 rows | Every source, tiered 0–3. **Every path verified on disk.** 53,132 words of briefs |
+| `specs__catalogue.json` | 17 specs | The full catalogue — LOC, capability, boot time, stability, family, `create_node` support — plus the boot benchmarks and the not-implemented list |
+| `LICENSE.md` | — | CC BY 4.0, the redaction rules, and the security framing |
+
+---
+
+## Start with the one-character bug
+
+`tests/ci/test_no_legacy_imports.py` exists to stop the new tree importing from the legacy one. Its regex is `sgraph_ai_service_playwright[^_]` — and `[^_]` requires a **non-underscore** after the stem, while the real package is `sgraph_ai_service_playwright__cli`, with **two**.
+
+Verified independently this session by running both patterns over the tree:
+
+```
+GUARD regex  : 0 files -> test PASSES (vacuously)
+REAL imports : 69 files, 228 import lines
+FIXED regex (drop [^_]): 69 files -> test FAILS, as intended
+```
+
+The dependency runs **both ways** — `__cli` imports `sg_compute` 72 times — so the cycle the guard's own docstring says was broken is not broken.
+
+**Deleting four characters turns it red.** And it is the site's best opening move: a platform site that leads with a bug it found in its own CI is trusted differently from one that leads with a feature list.
+
+---
+
+## Four more things to know before you write
+
+**1. The README describes a repository that does not exist.** *"Phase 0 in progress — repo skeleton, Dockerfile, CI workflow scaffolding"* — at v0.2.71, 217,266 lines of Python and 7,110 tests. It documents a package directory that is not there. **Write every word of the site from the tree, and make "code wins" the stated policy** for all four stale sources (`capabilities.json` is 42 versions behind; the reality doc 41).
+
+**2. The maturity claim needs four qualifications.** No static analysis of any kind — no mypy, ruff, flake8, black, tox. **CI runs 67.4% of the tests**, and the 2,317 outside it contain six real import-level breakages. No infrastructure-as-code. And four sources of truth that disagree with the code. All of it is about five days from being fixed — `08__` §1 has the list.
+
+**3. Development has been quiet for a month.** 2,777 commits between 16 April and 24 July 2026 — 2,590 of them in the first six weeks, then 129 in June and 58 in July, and **nothing since**. Also worth publishing: **1,700 of those commits are by Claude, 826 by Dinis.** Both halves belong on the site; a reader can check either in one click.
+
+**4. `sg-compute.sgraph.ai` is a live Route 53 zone.** Same label as the target site, different TLD, serving per-node DNS as `<stack-name>.sg-compute.sgraph.ai`, with **128 references in code and tests**. Recommendation: claim the distinction explicitly — `sgit.ai` is documentation, `sgraph.ai` is running infrastructure — rather than moving 128 references. But make it a stated decision on the front page, not something a reader discovers.
+
+---
+
+## What `/shipped/` has to say
+
+No warm pools (specified in a 1,729-word brief, zero code). No multi-node stacks — the taxonomy's whole point, and `Cli__Compute__Stack` is unwired. `create_node` supports 3 of 16 specs. Artefact sinks: 2 of 4 implemented — **no S3, no presigned URLs, no vault writes**. One platform of four declared. No cost model — the dashboard tracker says so itself. No throughput measurement. And `bake-ami.yml` invokes a binary called `sg-play` sixteen times that is defined nowhere, so **the AMI pipeline cited as a maturity signal is currently dead**.
+
+---
+
+## House pattern
+
+Copy `pki.sgit.ai`, add the `/llms-full.txt` it lacks, and add one rule no sibling needs:
+
+> **Generate every page that describes the code, from the code, at build time.**
+
+Every stale artefact in this repo became stale because it was written once by hand. The manifests, route tables, CLI verbs, spec catalogue and test counts are all machine-readable. Read them, or the site becomes the fifth stale source of truth within a quarter.
+
+Publish the build order unresolved, with `08__`'s open questions and tensions visible.
+
+---
+
+This file is released under the Creative Commons Attribution 4.0 International licence (CC BY 4.0).
+
+---
+
+*Published on sg-compute.sgit.ai under CC BY 4.0. Source: the `sg-compute.sgit.ai` brief pack v0.33.62, 24 August 2026, by Dinis Cruz via the SG/Send Librarian, with AI co-authorship (Claude, Anthropic).*
+
+
+==============================================================================
+source: /briefs/10__licence-and-redaction.md
+
+==============================================================================
+
+
+# Licence
+
+
+> **Redacted for publication.** This document is the redaction list itself, so it named every live address it told the site to strip. It is published here under its own rule — *shapes, not addresses*: the AWS account id, the live internal hostnames, the named stack FQDNs and the real EC2 and AMI ids have each been replaced by the shape they are an instance of. Nothing else was changed. The site's [leak tripwire](../admin/index.html#leak) encodes the same list so it cannot regress.
+
+
+## This pack
+
+Everything in this brief pack — the nine numbered documents, `09__source-manifest.csv`, `specs__catalogue.json`, this file and `README.md` — is released under the **Creative Commons Attribution 4.0 International licence (CC BY 4.0)**.
+
+    Copyright (c) 2026 Dinis Cruz
+    Licensed under CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/
+
+Attribution: **Dinis Cruz**, with AI co-authorship (Claude, Anthropic).
+
+## The site this pack commissions
+
+**The entire content of `sg-compute.sgit.ai`** — every page, `/documents/`, `/llms.txt`, `/llms-full.txt` and the admin surfaces — is to be published under **CC BY 4.0**, consistent with the network. Stamp every raw markdown document and gate it with `licence-audit.py --check`.
+
+**The code itself is Apache-2.0** (`/root/sg-playwright/LICENSE`, `license = "Apache 2.0"` in `pyproject.toml`), consistent with the rest of the estate. Where the site quotes source, it is quoting Apache-2.0 code — retain the notice and do not imply the snippets carry the site's CC BY licence.
+
+---
+
+## ⚠️ This pack draws on a live infrastructure repository
+
+The redaction list is longer than for the other sites, and it matters more, because publishing a hostname here publishes an attack surface. **`07__` §2 is not advisory.**
+
+**Must be stripped before anything is published:**
+
+- **The AWS account ID `<aws-account-id>`** — appears in 20+ files under `team/humans/dinis_cruz/claude-code-web/`
+- **Live internal hostnames** — `<ops-zone>` (193 refs), `sg-compute.sgraph.ai` (128), `<send-zone>` (46), `<edge-host>.<ops-zone>` (38), `<vault-zone>` (36), `<dev>.<vault-zone>` (19), `<qa-zone>` (17), `<admin-host>.<ops-zone>` (25), `<waker-host>.<ops-zone>` (24), `<dev>.<tools-zone>` (177)
+- **Named live stack FQDNs** — `<stack-name>.…`, `<stack-name>.…`, `<stack-name>.…`, `<stack-name>.…`, and `<demo-slug>.<ops-zone>` (a demo slug, not a customer — but it reads like a person's name, so drop it)
+- **Real EC2 instance IDs and AMI IDs** in `utils/ec2_boot_bench/ec2_boot_bench_results.csv` — **publish the timings, strip the 16 instance IDs and 3 AMI IDs**
+
+**The rule: shapes, not addresses.** `<stack-name>.sg-compute.<zone>` is documentation; a live FQDN is a target. Add the account ID and the hostname list to the CI key-leak check so this cannot regress.
+
+## What was checked and is clean
+
+Verified, not assumed: **no real `.env` values** (three `.env.example` only, and `.gitignore` covers the rest); **no AWS access keys** (every `AKIA*` is the AWS public documentation example or a synthetic fixture); **no private keys** (all synthetic or generated at test runtime); **no GitHub, Slack, OpenAI or Anthropic tokens**; **no public IPs in code**; all CI credentials from `${{ secrets.* }}`.
+
+## The one security note to publish honestly
+
+`EC2__Platform.create_node` writes the per-node API key into an EC2 tag, and the codebase already documents the consequence: *"Visible to anyone with `ec2:DescribeInstances`."*
+
+**No live key is exposed in the repo — this is a design trade-off, not a leak.** The key is also in SSM (the correct store); the tag is a dashboard convenience with a comment saying so; the key is per-node, never reused, and nodes self-terminate on a one-hour default.
+
+Publish it as a **known trade-off with a named mitigation** (read from SSM in the dashboard, drop the tag), not as a vulnerability disclosure, and publish no exploitation path. `07__` §4 has the framing. The source is public either way; omitting a weakness the code itself comments on costs more credibility than the weakness does.
+
+## Manifest tiers
+
+- **Tier 3 (5 rows)** — do not publish, quote or paraphrase.
+- **Tier 2 (5 rows)** — `STRIP IDS`, `FIX FIRST`, `REDACT AND USE`, `STALE — DO NOT CITE`, `DO NOT USE`. Read `why_it_matters` before touching them. In particular **the README must not be used as a source for anything**.
+- **`STALE — RECHECK`** on four Tier-1 research briefs: the Firecracker and AgentCore material is fifteen months old and those markets have moved.
+
+## Accuracy
+
+**Code wins.** Where the README, `capabilities.json`, the reality document and the tree disagree, the tree is right — and this pack's numbers were all measured from the tree in this session, not taken from documentation.
+
+**Do not publish** an image size (not recorded anywhere, not derivable without a build), any figure from the dashboard cost tracker (its own header says *"placeholder… Shows mocked cost estimate"*), or any throughput or concurrency number (none were ever measured).
+
+---
+
+This file is released under the Creative Commons Attribution 4.0 International licence (CC BY 4.0).
+
+---
+
+*Published on sg-compute.sgit.ai under CC BY 4.0. Source: the `sg-compute.sgit.ai` brief pack v0.33.62, 24 August 2026, by Dinis Cruz via the SG/Send Librarian, with AI co-authorship (Claude, Anthropic).*

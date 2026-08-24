@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Build order, open questions and honest tensions · sg-compute.sgit.ai</title>
+<meta name="description" content="Seven repository fixes in order of value — the first is four characters — eight things worth building fresh, eight questions published without answers, seven tensions this site does not pretend away, and the loose ends worth an hour each.">
+<link rel="canonical" href="https://sg-compute.sgit.ai/roadmap/index.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="sg-compute.sgit.ai">
+<meta property="og:url" content="https://sg-compute.sgit.ai/roadmap/index.html">
+<meta property="og:title" content="The build order, published unresolved">
+<meta property="og:description" content="Seven repository fixes in order of value — the first is four characters — eight things worth building fresh, eight questions published without answers, seven tensions this site does not pretend away, and the loose ends worth an hour each.">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">sg-compute<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai — the parent project: the vault layer and the shipped CLI this compute platform provisions for">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">audit draft</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history">v0.1.0</a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl" href="../what-it-is/index.html">The platform<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../what-it-is/index.html">What it is: two ephemeral layers</a>
+      <a class="sl" href="../specs/index.html">The spec catalogue</a>
+      <a class="sl" href="../agents/index.html">The machine surface</a>
+      <a class="sl" href="../security/index.html">Isolation &amp; the one trade-off</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../why/index.html">The argument<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../why/index.html">A serverless environment for agents</a>
+      <a class="sl" href="../numbers/index.html">The measured numbers</a>
+      <a class="sl" href="../rename/index.html">The rename</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl here" href="../shipped/index.html">The audit<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../shipped/index.html">What ships, and what does not</a>
+      <a class="sl here" href="../roadmap/index.html">Build order &amp; open questions</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../documents/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../documents/index.html">The documents</a>
+      <a class="sl" href="../data/specs.json">The catalogue as JSON</a>
+      <a class="sl" href="../llms.txt">llms.txt</a>
+      <a class="sl" href="../llms-full.txt">llms-full.txt</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../admin/comms.html">Comms: tasks &amp; requests</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Admin &amp; engineering</a>
+      <a class="sl" href="../network/index.html">The network</a>
+      <a class="sl" href="../about/participant.html">Where we lose</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__SG-Compute">★ GitHub</a>
+  <script src="../assets/nav.js" defer></script>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">sg-compute.sgit.ai</a> / roadmap</div>
+<h1>Build order, open questions and tensions</h1>
+<p class="lead">Published unresolved, on purpose. A roadmap with every question answered is a marketing document; this one has eight questions with no answer and seven tensions that are not going to be smoothed over. The commissioning brief asked for it this way and it was right to.</p>
+
+<h2 id="fixes">The five-day list — seven fixes, in order of value</h2>
+<p>These are not site tasks. They are <b>repository tasks that change what this site can honestly say</b>, and the first four are the ones that turn <a href="../shipped/index.html#verdict">the audit paragraph</a> from honest-but-awkward into honest-and-strong.</p>
+<div class="tablewrap">
+  <table>
+    <thead><tr><th>#</th><th>Fix</th><th>Effort</th><th>Effect</th></tr></thead>
+    <tbody>
+      <tr><td><b>F1</b></td><td>Delete <code>[^_]</code> from the legacy-import guard</td><td><b>4 characters</b></td><td>The guard goes red on <b>228 real legacy imports across 69 files</b>. It has been passing vacuously since it was written. <a href="../rename/index.html#guard">In full →</a></td></tr>
+      <tr><td><b>F2</b></td><td>Add the two new-tree test suites to CI</td><td>one workflow edit</td><td><b>+1,952 tests into CI</b>, and <b>six real import-level breakages surface immediately</b> — four circular imports, one missing module, one stale path. <b>The highest-value change available in the repository</b></td></tr>
+      <tr><td><b>F3</b></td><td>Fix <code>sg-play</code> in the AMI bake workflow</td><td>one line</td><td>The binary is invoked 16 times and defined nowhere. <a href="../shipped/index.html#ami">The whole pipeline is currently dead</a> — and it is cited as a maturity signal</td></tr>
+      <tr><td><b>F4</b></td><td>Fix the three date-brittle IAM tests</td><td>small</td><td>They hardcode a date now more than 90 days stale, so a <code>STALE_ROLE</code> assertion fires. <b>They fail for anyone who clones the repository today</b></td></tr>
+      <tr><td><b>F5</b></td><td>Delete or regenerate <code>capabilities.json</code></td><td>small</td><td>42 versions stale, <code>COPY</code>'d into the image, served at an endpoint, and the repo's own docs say not to read it</td></tr>
+      <tr><td><b>F6</b></td><td>Rewrite the README from the tree</td><td>half a day</td><td>It says <em>“Phase 0 in progress — repo skeleton”</em> at 217k lines and documents a package that does not exist</td></tr>
+      <tr><td><b>F7</b></td><td>Add a linter — ruff is one config block</td><td>half a day</td><td><a href="../shipped/index.html#four">There is currently no static analysis of any kind</a></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="gaps">Eight things worth building fresh</h2>
+<div class="tablewrap">
+  <table>
+    <thead><tr><th>#</th><th>Item</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>G1</td><td>A generated page per spec</td><td class="verdict"><span class="opt-verdict opt-yes">done, here</span></td></tr>
+      <tr><td>G2</td><td>A real cost model</td><td>The only cost artefact is a placeholder whose own header says <em>“real cost calculation is its own brief.”</em> <b>That brief does not exist</b></td></tr>
+      <tr><td>G3</td><td>Throughput and concurrency measurement</td><td><em>“Hundreds of parallel requests trivially”</em> is argued, never measured. No load tests anywhere</td></tr>
+      <tr><td>G4</td><td>Aggregated latency</td><td>Every sequence call emits a full timings block and nothing aggregates them. No p50/p95 dataset exists</td></tr>
+      <tr><td>G5</td><td>Image sizes</td><td>Not recorded, not derivable without a build. <b>One <code>docker images</code> line closes it</b></td></tr>
+      <tr><td>G6</td><td>The <code>/pw</code> proxy's other half</td><td>Vendored into an image whose source is in neither repository. <a href="../agents/index.html#auth">Anyone documenting the production auth path is documenting a component they cannot see</a></td></tr>
+      <tr><td>G7</td><td>A “built in 100 days” narrative</td><td>Now possible — the full history is recoverable. <b>And it also shows the last commit is a month old.</b> <a href="../numbers/index.html#history">Both halves are published</a></td></tr>
+      <tr><td>G8</td><td>Uptime, incidents, SLO</td><td>Debriefs describe successful deployments. There is no SLO, no uptime record, no incident log</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="questions">Eight questions, published without answers</h2>
+
+<div class="ladder">
+  <div class="cap" id="q1"><span class="capnum">Q1</span><h3>Should the control plane run inside itself?</h3>
+    <p><em>“The Ephemeral Compute control plane should be able to run inside Ephemeral Compute… This is recursion, but it is also practical.”</em></p>
+    <p><b>Where it stands:</b> the most quotable unbuilt idea in the corpus. But a control plane that must exist in order to start itself has a bootstrap problem. The honest answer is probably <b>DNS plus one small always-on waker, everything else ephemeral</b> — which is what the serverless brief actually describes, rather than the slogan.</p></div>
+  <div class="cap" id="q2"><span class="capnum">Q2</span><h3>Does a container really serve hundreds of parallel requests here?</h3>
+    <p><b>Where it stands:</b> central to the whole Lambda comparison, and <b>unmeasured</b>. Every browser request launches a fresh Chromium <em>process</em>, so the ceiling is memory rather than the web framework. This is the claim most likely to be wrong in an interesting way.</p></div>
+  <div class="cap" id="q3"><span class="capnum">Q3</span><h3>Is <code>Platform</code> a real abstraction or an aspiration?</h3>
+    <p><code>'ec2' | 'k8s' | 'gcp' | 'local'</code> is a comment; only EC2 exists.</p>
+    <p><b>Where it stands:</b> an ABC with one implementation has never been tested as an abstraction. <b><code>local</code> would be the cheapest proof</b> — and would also make the test suite runnable without AWS, which is worth having on its own.</p></div>
+  <div class="cap" id="q4"><span class="capnum">Q4</span><h3>Why do two specs have <code>vault-writes</code> while the platform's vault sink raises <code>NotImplementedError</code>?</h3>
+    <p><b>Where it stands:</b> the capability exists at the spec layer and not at the platform layer. Either the generic sink is redundant, or the two specs are each doing it themselves. <a href="../shipped/index.html#sinks">The sink ledger →</a></p></div>
+  <div class="cap" id="q5"><span class="capnum">Q5</span><h3>What is a Stack, given there is no multi-node orchestration?</h3>
+    <p><b>Where it stands:</b> the taxonomy reserves the word for 2+ coordinated nodes. The routes return a list, the CLI is unwired, and thirteen help strings use it for a single instance. <b>Either build it or retire the word.</b></p></div>
+  <div class="cap" id="q6"><span class="capnum">Q6</span><h3>Should the EC2 tag carrying the API key be removed?</h3>
+    <p><b>Where it stands:</b> the mitigation is one SSM call in the dashboard. The trade is convenience against exposure to <code>ec2:DescribeInstances</code>. <b>A stated decision either way is fine; silence is not.</b> <a href="../security/index.html#tag">The full framing →</a></p></div>
+  <div class="cap" id="q7"><span class="capnum">Q7</span><h3><code>sg-compute.sgit.ai</code> and <code>sg-compute.sgraph.ai</code> — same label, different TLD</h3>
+    <p><b>Where it stands:</b> <a href="../network/index.html#domains">the decision taken is to claim the distinction</a> rather than move 128 references. It is on this list because it is a decision that could be revisited: the argument against it is not technical, it is that a weekly support question forever eventually costs more than a migration.</p></div>
+  <div class="cap" id="q8"><span class="capnum">Q8</span><h3>Is the platform still being developed?</h3>
+    <p><b>Where it stands:</b> no commit since 24 July 2026. June and July together were 187 commits against 2,590 in April and May. <b>Paused, done, or between phases — the site should say which, and cannot work it out from the tree.</b> This one needs an answer from a person. <a href="../admin/comms.html">It is the open request on comms.</a></p></div>
+</div>
+
+<h2 id="tensions">Seven honest tensions</h2>
+<ol>
+  <li><b>Extraordinary velocity, then silence.</b> 2,777 commits in 100 days is remarkable; a month with none is a fact a reader can check in one click. Both belong on the site, so <a href="../numbers/index.html#history">both are on it</a>.</li>
+  <li><b>61% of the commits are by Claude.</b> Genuinely interesting, arguably the most interesting thing about this repository for the wider network — and it invites the obvious question about who reads the code. <a href="https://open-source.sgit.ai">open-source.sgit.ai</a> has the argument; this site has the artefact. Joining them is a strong page and an uncomfortable one.</li>
+  <li><b>Runtime type-safety instead of static analysis.</b> <code>Type_Safe</code> in 42.6% of files is a real choice with real benefits. It is also not a type-checker, and 57% of files have neither.</li>
+  <li><b>A reality-document discipline that is itself stale.</b> <em>“If the reality document doesn't list it, it does not exist”</em> is an excellent rule. The reality document is 41 versions behind. <b>The discipline is right; the maintenance did not happen</b> — which is precisely why <a href="../admin/index.html#generated">this site generates its pages from data and fails the build when they drift</a>.</li>
+  <li><b>The best ideas are the unbuilt ones.</b> Recursion, warm pools, multi-node stacks, Nitro Enclaves, non-EC2 platforms. The most quotable material in the corpus is the part with no code — which is exactly what the repository's own rule warns about: <em>“briefs are aspirations, not facts.”</em></li>
+  <li><b>A platform named for one of its sixteen specs.</b> Four months after the naming brief said to fix it, the legacy aliases are still entry points and the service still identifies itself by the old name.</li>
+  <li><b>Publishing the audit is the right move and it is not comfortable.</b> No linter, a third of the tests outside CI, a guard that never worked, a dead workflow, four stale sources. Every one is fixable in days, and publishing them alongside the fixes is the strongest possible version of the maturity claim — but it is still a site whose second section is a bug report against its own subject.</li>
+</ol>
+
+<h2 id="loose">Loose ends worth an hour each</h2>
+<ul>
+  <li><b>Register or relocate <a href="../specs/sg_edge.html">sg_edge</a></b> — 9,108 lines, no manifest, invisible to the registry.</li>
+  <li><b>Wire the taxonomy-correct CLI as an entry point.</b> It exists and is only reachable through a script.</li>
+  <li><b>Delete <code>sg_compute/version</code></b> or make something read it. Grep says nothing does.</li>
+  <li><b>Rename the old-service class inside the new tree</b> — currently sitting in a CI allowlist.</li>
+  <li><b>Fix the thirteen “stack” help strings.</b> The cheapest visible win against the naming brief.</li>
+  <li><b>Measure one image size.</b> One command closes G5.</li>
+  <li><b>Decide whether <code>allow_all</code> on the screenshot surface is still right</b> — <a href="../security/index.html#allowlist">probably yes, and it deserves a written decision</a> because it is the one place deny-by-default is switched off.</li>
+</ul>
+
+<div class="pagenav">
+  <a href="../shipped/index.html">← What ships, and what does not</a>
+  <a href="../documents/index.html">The source documents →</a>
+</div>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">sg-compute<span>.sgit.ai</span></div>
+    <p>An ephemeral compute platform with sixteen ready-to-launch workload specs — measured from the tree, audit and all. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. All site content CC BY 4.0; the platform's own source is Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a> — the parent project and the vault layer this provisions for · <a href="https://open-source.sgit.ai">↗ open-source.sgit.ai</a> · <a href="https://wardley-maps.sgit.ai">↗ wardley-maps.sgit.ai</a> · <a href="https://risks.sgit.ai">↗ risks.sgit.ai</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="domainnote"><b>sg-compute.sgit.ai</b> is documentation. <b>sg-compute.sgraph.ai</b> is a live Route 53 zone serving per-node DNS. Same label, different TLD, stated <a href="../network/index.html#domains" style="display:inline;padding:0">deliberately</a>.</p>
+    <p class="partnote">⚠ Participant disclosure: published by the sgit project, which builds the platform this site documents and audits. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html">v0.1.0</a> · <a href="../admin/index.html">engineering</a></p>
+  </div>
+  <div>
+    <h4>The platform</h4>
+    <a href="../what-it-is/index.html">What it is</a>
+    <a href="../specs/index.html">The spec catalogue</a>
+    <a href="../agents/index.html">The machine surface</a>
+    <a href="../security/index.html">Isolation &amp; trade-offs</a>
+  </div>
+  <div>
+    <h4>The argument</h4>
+    <a href="../why/index.html">Serverless for agents</a>
+    <a href="../numbers/index.html">The measured numbers</a>
+    <a href="../rename/index.html">The rename</a>
+  </div>
+  <div>
+    <h4>The audit</h4>
+    <a href="../shipped/index.html">&#8594; What ships, and what does not</a>
+    <a href="../roadmap/index.html">Build order &amp; open questions</a>
+    <a href="../documents/index.html">The documents</a>
+    <a href="../about/participant.html">Where we lose</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../admin/comms.html">Comms: tasks &amp; requests</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../network/index.html">The network</a>
+    <a href="../llms.txt">llms.txt</a>
+    <a href="../llms-full.txt">llms-full.txt</a>
+  </div>
+</div></footer>
+
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Isolation, and the one trade-off · sg-compute.sgit.ai</title>
+<meta name="description" content="Six isolation boundaries with the mechanism behind each, the deny-by-default JavaScript allowlist and its one deliberate exception, and the per-node API key written to an EC2 tag — published as a known trade-off with a named mitigation, because the code itself already comments on it.">
+<link rel="canonical" href="https://sg-compute.sgit.ai/security/index.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="sg-compute.sgit.ai">
+<meta property="og:url" content="https://sg-compute.sgit.ai/security/index.html">
+<meta property="og:title" content="Six isolation boundaries, and one trade-off the code itself comments on">
+<meta property="og:description" content="Six isolation boundaries with the mechanism behind each, the deny-by-default JavaScript allowlist and its one deliberate exception, and the per-node API key written to an EC2 tag — published as a known trade-off with a named mitigation, because the code itself already comments on it.">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<nav class="site"><div class="row">
+  <a class="brand" href="../index.html">sg-compute<span>.sgit.ai</span></a>
+  <a class="parent" href="https://sgit.ai" title="sgit.ai — the parent project: the vault layer and the shipped CLI this compute platform provisions for">↗ part of <b>sgit.ai</b></a>
+  <span class="stage-pill">audit draft</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history">v0.1.0</a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="nav-items">
+    <div class="ni ni-has">
+      <a class="nl here" href="../what-it-is/index.html">The platform<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../what-it-is/index.html">What it is: two ephemeral layers</a>
+      <a class="sl" href="../specs/index.html">The spec catalogue</a>
+      <a class="sl" href="../agents/index.html">The machine surface</a>
+      <a class="sl here" href="../security/index.html">Isolation &amp; the one trade-off</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../why/index.html">The argument<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../why/index.html">A serverless environment for agents</a>
+      <a class="sl" href="../numbers/index.html">The measured numbers</a>
+      <a class="sl" href="../rename/index.html">The rename</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../shipped/index.html">The audit<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../shipped/index.html">What ships, and what does not</a>
+      <a class="sl" href="../roadmap/index.html">Build order &amp; open questions</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../documents/index.html">Docs<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../documents/index.html">The documents</a>
+      <a class="sl" href="../data/specs.json">The catalogue as JSON</a>
+      <a class="sl" href="../llms.txt">llms.txt</a>
+      <a class="sl" href="../llms-full.txt">llms-full.txt</a>
+      </div>
+    </div>
+    <div class="ni ni-has">
+      <a class="nl" href="../admin/index.html">Site<span class="caret">&#9662;</span></a>
+      <div class="sub">
+      <a class="sl" href="../admin/comms.html">Comms: tasks &amp; requests</a>
+      <a class="sl" href="../admin/versions.html">Release history</a>
+      <a class="sl" href="../admin/index.html">Admin &amp; engineering</a>
+      <a class="sl" href="../network/index.html">The network</a>
+      <a class="sl" href="../about/participant.html">Where we lose</a>
+      </div>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/SGit-AI/SGit-AI__Website__SG-Compute">★ GitHub</a>
+  <script src="../assets/nav.js" defer></script>
+</div></nav>
+
+<main class="doc">
+<div class="crumb"><a href="../index.html">sg-compute.sgit.ai</a> / security</div>
+<h1>Isolation, and the one trade-off</h1>
+<p class="lead">Every boundary below has a named mechanism rather than a policy statement, and one of them has a documented cost. A platform that publishes its own trade-offs is trusted differently from one that omits a weakness its own source code comments on — and the source is public either way.</p>
+
+<h2 id="boundaries">The six boundaries</h2>
+<div class="tablewrap">
+  <table>
+    <thead><tr><th>Boundary</th><th>Mechanism</th></tr></thead>
+    <tbody>
+      <tr><td><b>Job ↔ job</b>, same node</td><td>Fresh Playwright subprocess, fresh Browser, fresh BrowserContext per request, torn down in <code>try/finally</code>. Not a cleared context — a new process. <a href="../what-it-is/index.html#layer1">The lifecycle →</a></td></tr>
+      <tr><td><b>Session ↔ session</b></td><td>A dedicated OS thread per session owning its own browser process; the registry is keyed by session id. <a href="../what-it-is/index.html#sessions">Why the thread affinity is load-bearing →</a></td></tr>
+      <tr><td><b>Node ↔ node</b></td><td>Separate EC2 instances, per-node security group, and a <b>per-node API key that is never reused</b></td></tr>
+      <tr><td><b>Untrusted JavaScript</b></td><td><code>JS__Expression__Allowlist</code> — <b>deny by default, exact match</b>. <a href="#allowlist">Below.</a></td></tr>
+      <tr><td><b>Network</b></td><td>Browser traffic routed through the mitmproxy sidecar; <em>“isolation is Docker network”</em>; the sidecar's <code>:8080</code> is unreachable from outside the instance</td></tr>
+      <tr><td><b>Cookies</b></td><td><code>SET_COOKIE</code> applies to the per-request context and is discarded with it — <em>“stateless — the context is fresh per request… no session persistence”</em></td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="note"><p>The strongest of these is the node boundary, because it is the one that does not depend on the process model being correct: two workloads on two nodes are two EC2 instances with two security groups and two keys. Everything above that line is a software boundary; the node boundary is an AWS one.</p></div>
+
+<h2 id="allowlist">Deny by default — and the one place it is switched off</h2>
+<p><code>JS__Expression__Allowlist</code> is <b>deny by default with exact matching</b>. An agent calling <code>evaluate</code> gets rejected until an operator has explicitly populated the allowlist with the expressions it may run. Nothing is permitted by omission, and there is no pattern syntax to get wrong.</p>
+<p>There is <b>one</b> bypass, <code>allow_all</code>, and it is set in exactly one place: the screenshot surface. The stated ground is that <em>“each call is an isolated session”</em> — which is true, given the per-request teardown above.</p>
+<div class="warnbox">
+  <p><b>It is probably the right call, and it should still be a written decision rather than a flag.</b> It is the single place a deny-by-default control is turned off in the whole platform, and the argument for it depends entirely on the per-request isolation continuing to hold. If that ever changes — a pooled browser, a reused context, a performance optimisation — this bypass changes meaning silently. <a href="../roadmap/index.html#loose">It is on the loose-ends list.</a></p>
+</div>
+
+<h2 id="tag">The trade-off: a per-node API key in an EC2 tag</h2>
+<p><code>EC2__Platform.create_node</code> mints a per-node key, writes it to SSM — the correct store — and then <em>also</em> writes it to an EC2 tag:</p>
+<pre class="shell">if node_info.instance_id:                          <span class="d"># tag so dashboard can read key without SSM</span>
+    EC2__Launch__Helper().add_tags(region, str(node_info.instance_id),
+                                   [{'Key': 'sg-compute:host-api-key', 'Value': api_key}])
+</pre>
+<p>And the codebase already documents the consequence, in a schema comment:</p>
+<blockquote class="challenge">“<b>Visible to anyone with <code>ec2:DescribeInstances</code>.</b>”</blockquote>
+
+<h3>The facts, stated fairly</h3>
+<ul>
+  <li><b>No live key is exposed in the repository.</b> This is a design trade-off, not a leak.</li>
+  <li>The key is <b>also</b> in SSM, which is where it belongs. The tag is a dashboard convenience, with a comment saying exactly that.</li>
+  <li>The blast radius is bounded: the key is <b>per-node and never reused</b>, and nodes <a href="../what-it-is/index.html#teardown">self-terminate on a default one-hour timer</a>.</li>
+  <li>A reader who can exploit it already holds <code>ec2:DescribeInstances</code> in the account — a meaningful IAM position, though a very commonly granted one.</li>
+</ul>
+
+<h3>The mitigation, named</h3>
+<p><b>Read the key from SSM in the dashboard and drop the tag</b>, accepting one extra API call per node on a page that is not latency-sensitive. That is the whole fix.</p>
+<p>Whether to take it is <a href="../roadmap/index.html#q6">Q6</a>, published unresolved: the trade is one API call against exposure to a widely-granted IAM permission. <b>A stated decision either way is fine. Silence is not</b> — which is why this section exists rather than not.</p>
+<div class="note"><p>This is published as an architecture note, not a vulnerability disclosure, and deliberately carries no exploitation path. The behaviour is visible in public source, the code comments on it itself, and omitting it would cost more credibility than the trade-off does.</p></div>
+
+<h2 id="clean">What was checked, and is clean</h2>
+<p>Stated because it was verified rather than assumed, and because a security page that only lists problems is as unbalanced as one that lists none.</p>
+<div class="tablewrap">
+  <table>
+    <thead><tr><th>Checked</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td><code>.env</code> files with real values</td><td class="verdict"><span class="opt-verdict opt-yes">none</span> — three <code>.env.example</code> only; <code>.gitignore</code> covers the rest</td></tr>
+      <tr><td>AWS access keys</td><td class="verdict"><span class="opt-verdict opt-yes">none</span> — every match is the AWS public documentation example or a synthetic fixture</td></tr>
+      <tr><td>Private keys</td><td class="verdict"><span class="opt-verdict opt-yes">none</span> — all synthetic, or generated at test runtime</td></tr>
+      <tr><td>GitHub / Slack / OpenAI / Anthropic tokens</td><td class="verdict"><span class="opt-verdict opt-yes">none</span> — zero matches</td></tr>
+      <tr><td>Public IP addresses in code</td><td class="verdict"><span class="opt-verdict opt-yes">none</span></td></tr>
+      <tr><td>CI credentials</td><td class="verdict"><span class="opt-verdict opt-yes">all</span> from <code>${{ secrets.* }}</code></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="redaction">What this site will not publish</h2>
+<p>The platform documented here is <b>live infrastructure</b>, so the editorial rule is <b>shapes, not addresses</b>: <code>&lt;stack-name&gt;.sg-compute.&lt;zone&gt;</code> is documentation; a live FQDN is a target.</p>
+<p>An AWS account id, ten internal hostnames, five named live stack FQDNs and sixteen real EC2 instance ids with three AMI ids were stripped from the source material before any of it was published here. <a href="../documents/index.html#redaction">Two of the source documents were the redaction list itself, and are published redacted under their own rule.</a></p>
+<div class="evbox">
+  <span class="evtag">enforced</span>
+  <p><b>The list is encoded in the release gate, so it cannot regress.</b> <code>admin/build/validate.js</code> fails the build if any file in the tree contains the account id, any of the hostnames, a stack-slug FQDN, an EC2 or AMI id shape, or a vault-key-shaped string. No tag, no publish. <a href="../admin/index.html#leak">How the tripwire works, including its one deliberate exception →</a></p>
+</div>
+
+<div class="pagenav">
+  <a href="../agents/index.html">← The machine surface</a>
+  <a href="../network/index.html">The network →</a>
+</div>
+</main>
+
+<footer class="site"><div class="cols">
+  <div>
+    <div class="brandline">sg-compute<span>.sgit.ai</span></div>
+    <p>An ephemeral compute platform with sixteen ready-to-launch workload specs — measured from the tree, audit and all. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. All site content CC BY 4.0; the platform's own source is Apache-2.0.</p>
+    <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a> — the parent project and the vault layer this provisions for · <a href="https://open-source.sgit.ai">↗ open-source.sgit.ai</a> · <a href="https://wardley-maps.sgit.ai">↗ wardley-maps.sgit.ai</a> · <a href="https://risks.sgit.ai">↗ risks.sgit.ai</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
+    <p class="domainnote"><b>sg-compute.sgit.ai</b> is documentation. <b>sg-compute.sgraph.ai</b> is a live Route 53 zone serving per-node DNS. Same label, different TLD, stated <a href="../network/index.html#domains" style="display:inline;padding:0">deliberately</a>.</p>
+    <p class="partnote">⚠ Participant disclosure: published by the sgit project, which builds the platform this site documents and audits. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
+    <p class="verline">site <a href="../admin/versions.html">v0.1.0</a> · <a href="../admin/index.html">engineering</a></p>
+  </div>
+  <div>
+    <h4>The platform</h4>
+    <a href="../what-it-is/index.html">What it is</a>
+    <a href="../specs/index.html">The spec catalogue</a>
+    <a href="../agents/index.html">The machine surface</a>
+    <a href="../security/index.html">Isolation &amp; trade-offs</a>
+  </div>
+  <div>
+    <h4>The argument</h4>
+    <a href="../why/index.html">Serverless for agents</a>
+    <a href="../numbers/index.html">The measured numbers</a>
+    <a href="../rename/index.html">The rename</a>
+  </div>
+  <div>
+    <h4>The audit</h4>
+    <a href="../shipped/index.html">&#8594; What ships, and what does not</a>
+    <a href="../roadmap/index.html">Build order &amp; open questions</a>
+    <a href="../documents/index.html">The documents</a>
+    <a href="../about/participant.html">Where we lose</a>
+  </div>
+  <div>
+    <h4>Site</h4>
+    <a href="../admin/comms.html">Comms: tasks &amp; requests</a>
+    <a href="../admin/versions.html">Release history</a>
+    <a href="../network/index.html">The network</a>
+    <a href="../llms.txt">llms.txt</a>
+    <a href="../llms-full.txt">llms-full.txt</a>
+  </div>
+</div></footer>
+
+</body>
+</html>
