@@ -1,6 +1,6 @@
 # sg-compute.sgit.ai — full text
 
-Site version: v0.1.0. Every page and every source document of https://sg-compute.sgit.ai/ in one
+Site version: v0.1.1. Every page and every source document of https://sg-compute.sgit.ai/ in one
 file, so an agent can read the whole argument in a single fetch.
 
 GENERATED — assembled by admin/build/gen_llms_full.py from llms.txt, index.md and
@@ -39,7 +39,7 @@ PART 1 — THE INDEX (source: /llms.txt)
 > 71.5% of the new codebase is not browser code. This site documents the platform AND audits
 > it: the maturity claim holds, and the four places it is overstated are published alongside.
 
-Site version: v0.1.0 (24 August 2026). Published by the sgit project, which builds the platform
+Site version: v0.1.1 (24 August 2026). Published by the sgit project, which builds the platform
 this site audits — participant disclosure at /about/participant.html. All content CC BY 4.0; the
 platform's own source is Apache-2.0.
 
@@ -168,7 +168,7 @@ PART 2 — THE FRONT PAGE (source: /index.md)
 > named after one of them, and the number that settles it is this: **71.5% of the new
 > codebase is not browser code**.
 
-*Source: <https://sg-compute.sgit.ai/index.html> · site v0.1.0 · markdown twin of the front page.
+*Source: <https://sg-compute.sgit.ai/index.html> · site v0.1.1 · markdown twin of the front page.
 Every number measured from the tree on 24 August 2026, at repo version v0.2.71. Code wins:
 where the README, `capabilities.json`, the reality document and the tree disagree, the tree
 is right.*

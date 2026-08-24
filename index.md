@@ -6,7 +6,7 @@
 > named after one of them, and the number that settles it is this: **71.5% of the new
 > codebase is not browser code**.
 
-*Source: <https://sg-compute.sgit.ai/index.html> · site v0.1.0 · markdown twin of the front page.
+*Source: <https://sg-compute.sgit.ai/index.html> · site v0.1.1 · markdown twin of the front page.
 Every number measured from the tree on 24 August 2026, at repo version v0.2.71. Code wins:
 where the README, `capabilities.json`, the reality document and the tree disagree, the tree
 is right.*

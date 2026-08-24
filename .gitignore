@@ -9,6 +9,10 @@ __pycache__/
 # Distribution / packaging
 .Python
 build/
+# ...but the site build tooling is versioned: it is what CI runs.
+# Without this, admin/build/ is silently untracked and the release gate
+# vanishes from the checkout while passing locally.
+!admin/build/
 develop-eggs/
 dist/
 downloads/

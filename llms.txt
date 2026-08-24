@@ -7,7 +7,7 @@
 > 71.5% of the new codebase is not browser code. This site documents the platform AND audits
 > it: the maturity claim holds, and the four places it is overstated are published alongside.
 
-Site version: v0.1.0 (24 August 2026). Published by the sgit project, which builds the platform
+Site version: v0.1.1 (24 August 2026). Published by the sgit project, which builds the platform
 this site audits — participant disclosure at /about/participant.html. All content CC BY 4.0; the
 platform's own source is Apache-2.0.
 

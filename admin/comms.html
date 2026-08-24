@@ -20,7 +20,7 @@
   <a class="brand" href="../index.html">sg-compute<span>.sgit.ai</span></a>
   <a class="parent" href="https://sgit.ai" title="sgit.ai — the parent project: the vault layer and the shipped CLI this compute platform provisions for">↗ part of <b>sgit.ai</b></a>
   <span class="stage-pill">audit draft</span>
-  <a class="ver" href="../admin/versions.html" title="Site release history">v0.1.0</a>
+  <a class="ver" href="../admin/versions.html" title="Site release history">v0.1.1</a>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
   <div class="nav-items">
     <div class="ni ni-has">
@@ -112,6 +112,7 @@
 
 <h2 id="notes">Notes from the build</h2>
 <ul>
+  <li><b>The first release shipped without its own release gate.</b> This repository was created from a Python <code>.gitignore</code>, whose <code>build/</code> rule silently swallowed <code>admin/build/</code> — every generator and <code>validate.js</code> passed locally and were simply absent from the checkout, so v0.1.0's validate job died on a missing file before it could check anything. The sibling repositories carry a <code>!admin/build/</code> negation for exactly this; this one did not. Fixed in v0.1.1, and worth noting because it is the same failure mode the whole site is about: a check that appears to be running and is not.</li>
   <li><b>The site's own rule caught something immediately.</b> The derived-total cross-check in <code>gen_specs.py</code> was written expecting to be redundant; it is what confirmed the family LOC totals, the browser share and the 9/7 split all reconcile — and it is what makes R2 a documentation error rather than a data error.</li>
   <li><b>Two source documents could not be published verbatim.</b> Documents 07 and 10 are the redaction list, so between them they named every live address the site was told to strip. <a href="../documents/index.html#redaction">They are published redacted under their own rule</a>, and the same list is now in the release gate.</li>
   <li><b>No word of this site was written from the platform's README.</b> Per the pack's instruction, and because <a href="../shipped/index.html#stale">the README describes a repository that does not exist</a>.</li>
@@ -130,7 +131,7 @@
     <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a> — the parent project and the vault layer this provisions for · <a href="https://open-source.sgit.ai">↗ open-source.sgit.ai</a> · <a href="https://wardley-maps.sgit.ai">↗ wardley-maps.sgit.ai</a> · <a href="https://risks.sgit.ai">↗ risks.sgit.ai</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
     <p class="domainnote"><b>sg-compute.sgit.ai</b> is documentation. <b>sg-compute.sgraph.ai</b> is a live Route 53 zone serving per-node DNS. Same label, different TLD, stated <a href="../network/index.html#domains" style="display:inline;padding:0">deliberately</a>.</p>
     <p class="partnote">⚠ Participant disclosure: published by the sgit project, which builds the platform this site documents and audits. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
-    <p class="verline">site <a href="../admin/versions.html">v0.1.0</a> · <a href="../admin/index.html">engineering</a></p>
+    <p class="verline">site <a href="../admin/versions.html">v0.1.1</a> · <a href="../admin/index.html">engineering</a></p>
   </div>
   <div>
     <h4>The platform</h4>
