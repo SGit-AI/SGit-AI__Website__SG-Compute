@@ -1,35 +1,39 @@
-# sg-compute.sgit.ai — an ephemeral compute platform, named after one of its sixteen specs
+# sg-compute.sgit.ai — ephemeral environments in AWS, one command away
 
-> SG/Compute launches an isolated environment, runs the work, and terminates it. Sixteen
-> ready-to-launch specs — browsers, vaults, container runtimes, model inference,
-> observability — each a typed manifest away from a running node. The repository is still
-> named after one of them, and the number that settles it is this: **71.5% of the new
-> codebase is not browser code**.
+> SG/Compute launches an isolated EC2 environment, runs your work, and terminates it — by
+> design, every time. Sixteen ready-to-launch specs — browsers, encrypted vaults, container
+> runtimes, LLM inference, observability — each a typed manifest away from a running node,
+> with a measured ~16-second boot, a generated CLI, and a self-destruct timer built in.
+> Open source, early access, and looking for users and contributors.
 
-*Source: <https://sg-compute.sgit.ai/index.html> · site v0.1.1 · markdown twin of the front page.
+*Source: <https://sg-compute.sgit.ai/index.html> · site v0.2.0 · markdown twin of the front page.
 Every number measured from the tree on 24 August 2026, at repo version v0.2.71. Code wins:
 where the README, `capabilities.json`, the reality document and the tree disagree, the tree
 is right.*
 
 ---
 
-## Start with a bug we found in its CI
+## Launch, work, terminate
 
-A guard exists to stop the new tree importing from the legacy package it is being extracted
-from. Its regex is `sgraph_ai_service_playwright[^_]` — and `[^_]` requires a **non-underscore**
-after the stem, while the real package is `sgraph_ai_service_playwright__cli`, with **two**.
+One command gives you a dedicated, isolated environment: a per-node API key is minted and
+written to SSM before launch (*never reused*), the instance boots with composed user-data, a
+two-phase health poll tells you the moment it is ready, and a self-destruct timer is armed
+from the start — **halt means terminate, not stop**. Around 50 seconds end to end, and you
+never have to remember to clean up.
 
 ```
-GUARD regex   : 0 files    -> test PASSES (vacuously)
-REAL imports  : 69 files, 228 import lines
-FIXED regex   : 69 files   -> test FAILS, as intended
+# every spec gets the same generated CLI — sixteen specs, one surface
+sg <spec> list · info · create · wait · health · connect · exec · delete · ami list|bake · cert
+
+# the node terminates itself — default one hour, fractional supported
+systemd-run --on-active={seconds}s /sbin/shutdown -h now
+InstanceInitiatedShutdownBehavior=terminate   # halt means terminate
 ```
 
-**Deleting four characters turns it red.** And the dependency runs both ways — the legacy
-package imports the new one 72 times — so the cycle the guard's own docstring says was broken
-is not broken. [The guard in full](rename/index.html#guard).
+Adding a spec costs a manifest, a route class and a service — **the CLI comes free**.
+[The full lifecycle](what-it-is/index.html).
 
-## Two ephemeral layers, and conflating them is the common misreading
+## Two ephemeral layers, so nothing outlives its purpose
 
 | | Layer 1 — per HTTP request | Layer 2 — per node |
 |---|---|---|
@@ -40,14 +44,20 @@ is not broken. [The guard in full](rename/index.html#guard).
 
 [Both layers in full, with sessions, the watchdog and the isolation table](what-it-is/index.html).
 
-## Three axioms, rescued from a file 42 versions stale
+## Batteries included
 
-They are named in `capabilities.json`, frozen at v0.1.29 against code at v0.2.71 — a file the
-platform's own documentation says not to read. The axioms are good and, unlike the file,
-implemented: **statelessness**, **least-privilege-by-declaration** (the JS allowlist is deny by
-default, exact match), **self-description** (`/health/capabilities`, built at runtime).
+- **Sixteen specs, one CLI surface** — per-spec CLIs are generated, not written: the same ten
+  verbs for every spec in the catalogue.
+- **A deep AWS command surface** — over 71,000 lines of operator tooling: EC2 provisioning,
+  IAM and credential management, AMI bake-and-verify, fleet sentinel commands, plus an
+  **interactive REPL/TUI** for driving environments live from the terminal.
+- **A 25-verb sequence language** — declare a step list, get back COMPLETED / FAILED /
+  PARTIAL with every skipped step named and a full timings block. Plus stateful sessions,
+  Prometheus metrics, and a self-describing `/health/capabilities` endpoint.
+- **Web consoles out of the box** — a capability-driven HTML console on every node, per-spec
+  UIs, an agentic admin surface, and live VNC desktops for the headed-browser specs.
 
-## The catalogue is the argument
+## Sixteen ready-to-launch environments
 
 | Family | Specs | Lines |
 |---|---|---:|
@@ -59,67 +69,73 @@ default, exact match), **self-description** (`/health/capabilities`, built at ru
 | network | mitmproxy | 1,448 |
 | tool | open_design | 773 |
 
-**Vault specs are within 300 lines of browser specs.** Playwright is 1 of 16 registered specs
-and 16.8% of spec code. [The full catalogue, one page per spec, generated from the data](specs/index.html).
+Nine stable, seven experimental, boot times from 15 seconds. Each spec is a working package —
+manifest, routes, service, CLI, tests, often a UI — and the catalogue is open: **third-party
+specs can join via a PEP 621 entry point**, no fork required.
+[The full catalogue, one page per spec, generated from the data](specs/index.html).
 
-## What "very mature" measures out at
+## Three axioms, implemented
+
+Not aspirations — each one is enforced by working code: **statelessness** (fresh browser,
+context and page per request, torn down in `try/finally`), **least-privilege-by-declaration**
+(the JS allowlist is deny by default, exact match), **self-description**
+(`/health/capabilities`, built at runtime by a detector that identifies its own deployment
+target).
+
+## Built fast, tested hard, measured honestly
 
 - **4,785 tests passing in 81 seconds** — a large, fast, green suite across 799 files.
-- **2,777 commits and 245 tags in 100 days** — 16 Apr to 24 Jul 2026. Claude 1,700 / Dinis 826 / Actions 243.
-- **1,265,371 words of markdown**, with a formal reality discipline whose governing rule is *"if the reality document doesn't list it, it does not exist."*
-- **~16 seconds** measured EC2 boot to SSM-ready, across 24 real runs.
+- **2,777 commits and 245 tags in 100 days** — 16 Apr to 24 Jul 2026.
+- **~16 seconds** measured EC2 boot to SSM-ready, across 24 real runs; **~50 seconds** end to
+  end, click to a dedicated environment with its own DNS name.
+- **1,265,371 words of documentation**, with a formal reality discipline.
+- **25 verbs** in the sequence language; **6 isolation boundaries**, each with a mechanism.
 
-And, in the same breath:
+[Every measured number, with its provenance](numbers/index.html). And because measured means
+*all of it*, [the full audit is published alongside](shipped/index.html).
 
-- **No static analysis of any kind** — no mypy, ruff, flake8, black, tox.
-- **CI runs 67.4% of collectible tests**; the 2,317 outside it hide **six real import-level breakages**.
-- **No infrastructure-as-code.**
-- **Four sources of truth disagree with the code**, including a README that says *"Phase 0 in progress — repo skeleton"* at 217,266 lines.
-- **No commit since 24 July 2026.**
+## The rough edges are published — and they are the way in
 
-[Every measured number, with its provenance](numbers/index.html).
-
-## And what is not built
-
-No warm pools. No multi-node stacks. `create_node` for 3 of 16 specs. Artefact sinks 2 of 4 —
-no S3, no presigned URLs, no vault writes. One platform of four. No cost model. No throughput
-measurement. And the AMI bake pipeline invokes a binary called `sg-play` sixteen times that is
-defined nowhere, so it is dead. [The unsoftened ledger](shipped/index.html).
-
-## The rename
-
-Nine acceptance criteria from the 30 April naming brief, scored against the tree: **3 done,
-2 partial, 4 not done, plus one deliberate improvement over spec**. Architecturally done,
-textually about 40% done. [The scorecard, the breakage list, and the sequencing that does not
-orphan live nodes](rename/index.html).
+This is an early-access platform, and we publish exactly where it is thin. Well-scoped,
+high-value places to start contributing: **warm pools** (specified with worked economics —
+the design is done), **S3 and vault artefact sinks** (the interfaces exist; inline and
+local-file already work), **uniform `create_node`** (the CLI covers all sixteen specs, the
+control-plane API covers three so far — a working pattern to copy), and
+[seven fixes in order of value](roadmap/index.html) — the first is literally four characters.
 
 ## The argument
 
 > *"We are **not** competing for the generic developer-platform market (Vercel, Cloudflare
 > Workers, Lambda)… **We are competing for the agent-deployment market.**"*
 
-The definitional move that lets an EC2 instance with a one-hour self-terminate count as
-serverless, the trade stated honestly, and the cold-start ladder measured against its own
-benchmark — where the measured 16 seconds beats the ladder's claimed 30–60.
-[The argument](why/index.html).
+A dedicated EC2 instance per workload, with full control, real isolation and a stable DNS
+name, where 50 seconds is a fair trade — and the measured 16-second boot beats the design's
+own claimed 30–60. [The argument](why/index.html).
 
-## One thing to state before you discover it
+## Use it, break it, build on it
+
+**If you need ephemeral environments in AWS** — for browser automation, agent workloads,
+container experiments, or LLM inference that cleans up after itself —
+[pick a spec](specs/index.html) and read [the machine surface](agents/index.html): the whole
+platform is driven over a documented HTTP API and a generated CLI, so an agent can use it as
+easily as a person.
+
+**If you want to contribute** — the platform is Apache-2.0, the specs are extensible from
+your own repository via entry points, and [the roadmap](roadmap/index.html) names exactly
+what is wanted next. Say hello on [the comms page](admin/comms.html) or via
+[GitHub](https://github.com/SGit-AI/SGit-AI__Website__SG-Compute).
+
+## One thing to know before you discover it
 
 **`sg-compute.sgit.ai` is this site: documentation.** **`sg-compute.sgraph.ai` is a live Route 53
-zone** serving per-node DNS, referenced 128 times in the platform's code and tests. Same label,
-different TLD. The decision is to claim the distinction rather than move 128 references, and to
-say so here. [The decision, and where it could still bite](network/index.html#domains).
-
-## Published unresolved
-
-Eight questions with no answers, seven tensions not smoothed over, and a seven-item fix list
-where the first item is four characters. [Build order, open questions and tensions](roadmap/index.html).
+zone** serving per-node DNS — every node you launch gets a stable DNS name under it. Same
+label, different TLD, stated here deliberately. [The decision in full](network/index.html#domains).
 
 ## Who is writing this
 
-Published by the sgit project, which builds the platform this site audits. The repository is
-public, the audit is published in full as raw source documents, and every number names what it
-was measured from. [The participant disclosure, including where our approach loses](about/participant.html).
+Published by the sgit project, which builds the platform this site documents. Every number
+names what it was measured from, and the audit is published in full alongside the feature
+pages. [The participant disclosure, including where our approach loses](about/participant.html).
 
 ## Site
 

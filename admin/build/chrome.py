@@ -48,9 +48,9 @@ NAV = [
         ("The measured numbers", "numbers/index.html"),
         ("The rename", "rename/index.html"),
     ], ("why/", "numbers/", "rename/")),
-    ("The audit", "shipped/index.html", [
-        ("What ships, and what does not", "shipped/index.html"),
-        ("Build order &amp; open questions", "roadmap/index.html"),
+    ("Shipped", "shipped/index.html", [
+        ("What ships today", "shipped/index.html"),
+        ("Roadmap &amp; how to help", "roadmap/index.html"),
     ], ("shipped/", "roadmap/")),
     ("Docs", "documents/index.html", [
         ("The documents", "documents/index.html"),
@@ -79,9 +79,9 @@ FOOTER = [
         ("The measured numbers", "numbers/index.html"),
         ("The rename", "rename/index.html"),
     ]),
-    ("The audit", [
-        ("&#8594; What ships, and what does not", "shipped/index.html"),
-        ("Build order &amp; open questions", "roadmap/index.html"),
+    ("Shipped", [
+        ("&#8594; What ships today", "shipped/index.html"),
+        ("Roadmap &amp; how to help", "roadmap/index.html"),
         ("The documents", "documents/index.html"),
         ("Where we lose", "about/participant.html"),
     ]),
@@ -94,8 +94,9 @@ FOOTER = [
     ]),
 ]
 
-BLURB = ("An ephemeral compute platform with sixteen ready-to-launch workload specs — "
-         "measured from the tree, audit and all. Part of the <a href=\"https://sgit.ai\" "
+BLURB = ("An ephemeral compute platform for AWS: sixteen ready-to-launch workload specs, "
+         "each launched, worked and terminated in an isolated environment — with every number "
+         "measured from the tree. Part of the <a href=\"https://sgit.ai\" "
          "style=\"display:inline;padding:0\"><b>sgit.ai</b></a> network. All site content "
          "CC BY 4.0; the platform's own source is Apache-2.0.")
 PARTNOTE = ('⚠ Participant disclosure: published by the sgit project, which builds the platform '
@@ -131,7 +132,7 @@ def nav_html(rel, up):
     return (f'<nav class="site"><div class="row">\n'
             f'  <a class="brand" href="{up}index.html">sg-compute<span>.sgit.ai</span></a>\n'
             f'  <a class="parent" href="{PARENT}" title="{PARENT_TITLE}">↗ part of <b>sgit.ai</b></a>\n'
-            f'  <span class="stage-pill">audit draft</span>\n'
+            f'  <span class="stage-pill">early access</span>\n'
             f'  <a class="ver" href="{up}admin/versions.html" title="Site release history">{VERSION}</a>\n'
             f'  <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>\n'
             f'  <div class="nav-items">\n{rows}\n  </div>\n'

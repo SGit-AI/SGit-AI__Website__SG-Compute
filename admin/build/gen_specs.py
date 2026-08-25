@@ -315,7 +315,7 @@ sg {sid} <span class="cy">delete</span>
 
 <div class="pagenav">
   <a href="index.html">← The catalogue</a>
-  <a href="../shipped/index.html">What ships, and what does not →</a>
+  <a href="../shipped/index.html">What ships today →</a>
 </div>
 </main>
 '''

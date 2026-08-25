@@ -1,17 +1,18 @@
-# sg-compute.sgit.ai — an ephemeral compute platform, named after one of its sixteen specs
+# sg-compute.sgit.ai — SG/Compute: ephemeral environments in AWS, one command away
 
-SG/Compute launches an isolated environment, runs the declared work, and terminates it.
-Sixteen ready-to-launch workload specs — browsers, vaults, container runtimes, model
-inference, observability — each a typed manifest away from a running node.
+SG/Compute launches an isolated EC2 environment, runs the declared work, and terminates it —
+by design, every time. Sixteen ready-to-launch workload specs — browsers, vaults, container
+runtimes, model inference, observability — each a typed manifest away from a running node,
+with a measured ~16-second boot, a generated ten-verb CLI per spec, a 71,000-line AWS
+operator toolkit with an interactive REPL/TUI, a 25-verb declarative sequence language, and
+built-in web consoles. Open source (Apache-2.0), early access, looking for users and
+contributors.
 
-Two claims were tested against the platform's code and both hold: **the repository needs
-renaming** (71.5% of the new codebase is not browser code; Playwright is 1 of 16 specs), and
-**it is a genuinely mature platform** (4,785 tests passing in 81 seconds, 2,777 commits and
-245 tags in 100 days, digest-first multi-arch CI, 1.27 million words of documentation).
-
-This site publishes both — and the four places the maturity claim is overstated, the eight
-things that are specified or argued and not built, and a four-character bug in the platform's
-own CI guard. That is the editorial policy, not a caveat.
+The site leads with what has been built and shipped (4,785 tests passing in 81 seconds,
+2,777 commits and 245 tags in 100 days, digest-first multi-arch CI, 1.27 million words of
+documentation) — and keeps the family's honesty policy: every number is measured from the
+tree, and the full audit, including what is not built yet, is published one click away as
+the contributor's map.
 
 Live site: https://sg-compute.sgit.ai (GitHub Pages, deployed from `dev`).
 

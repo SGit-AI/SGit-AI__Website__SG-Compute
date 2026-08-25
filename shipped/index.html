@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>What ships, and what does not · sg-compute.sgit.ai</title>
-<meta name="description" content="The honest ledger: no warm pools, no multi-node stacks, create_node for 3 of 16 specs, artefact sinks 2 of 4, one platform of four, no cost model, no throughput measurement, and an AMI pipeline that invokes a binary defined nowhere. Plus the four sources of truth that disagree with the code.">
+<title>What ships today · sg-compute.sgit.ai</title>
+<meta name="description" content="What SG/Compute ships today: sixteen ready-to-launch specs, two FastAPI apps, a 25-verb sequence language, generated CLIs, 4,785 tests passing in 81 seconds — and the honest ledger of what is not built yet, published so contributors know exactly where to start.">
 <link rel="canonical" href="https://sg-compute.sgit.ai/shipped/index.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="sg-compute.sgit.ai">
 <meta property="og:url" content="https://sg-compute.sgit.ai/shipped/index.html">
-<meta property="og:title" content="What ships, and what does not — the unsoftened ledger">
-<meta property="og:description" content="The platform's own governing rule is “briefs are aspirations, not facts.” This page applies it: eight things that are specified, argued or assumed, and not built.">
+<meta property="og:title" content="What ships today — and the honest ledger of what does not yet">
+<meta property="og:description" content="A large working surface — sixteen specs, generated CLIs, a sequence language, measured boots — plus eight gaps published unsoftened, each one a well-scoped place for a contributor to start.">
 <meta name="twitter:card" content="summary">
 <link rel="stylesheet" href="../assets/site.css">
 </head>
@@ -19,8 +19,8 @@
 <nav class="site"><div class="row">
   <a class="brand" href="../index.html">sg-compute<span>.sgit.ai</span></a>
   <a class="parent" href="https://sgit.ai" title="sgit.ai — the parent project: the vault layer and the shipped CLI this compute platform provisions for">↗ part of <b>sgit.ai</b></a>
-  <span class="stage-pill">audit draft</span>
-  <a class="ver" href="../admin/versions.html" title="Site release history">v0.1.1</a>
+  <span class="stage-pill">early access</span>
+  <a class="ver" href="../admin/versions.html" title="Site release history">v0.2.0</a>
   <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Menu">Menu</button>
   <div class="nav-items">
     <div class="ni ni-has">
@@ -41,10 +41,10 @@
       </div>
     </div>
     <div class="ni ni-has">
-      <a class="nl here" href="../shipped/index.html">The audit<span class="caret">&#9662;</span></a>
+      <a class="nl here" href="../shipped/index.html">Shipped<span class="caret">&#9662;</span></a>
       <div class="sub">
-      <a class="sl here" href="../shipped/index.html">What ships, and what does not</a>
-      <a class="sl" href="../roadmap/index.html">Build order &amp; open questions</a>
+      <a class="sl here" href="../shipped/index.html">What ships today</a>
+      <a class="sl" href="../roadmap/index.html">Roadmap &amp; how to help</a>
       </div>
     </div>
     <div class="ni ni-has">
@@ -73,16 +73,33 @@
 
 <main class="doc">
 <div class="crumb"><a href="../index.html">sg-compute.sgit.ai</a> / shipped</div>
-<h1>What ships, and what does not</h1>
-<p class="lead">The platform's own documentation carries a governing rule: <b>“If the reality document doesn't list it, it does not exist. … Briefs are aspirations, not facts.”</b> That is an unusually disciplined honesty mechanism, and this page is what happens when you apply it to the platform itself.</p>
+<h1>What ships today</h1>
+<p class="lead">A lot ships. This page lists the working surface first, then applies the platform's own governing rule — <b>“briefs are aspirations, not facts”</b> — to name what is not built yet. Both halves matter: the first tells you what you can use today, the second tells you exactly where a contribution lands.</p>
 
 <div class="evbox ev-warn">
   <span class="evtag">policy</span>
-  <p><b>Code wins.</b> Where the README, <code>capabilities.json</code>, the reality document and the tree disagree, <b>the tree is right</b>. Every claim on this page was measured from the tree on <b>24 August 2026</b> at repo version <b>v0.2.71</b>, not read from documentation. Four of those sources are knowingly stale and <a href="#stale">they are named at the bottom of this page</a>.</p>
+  <p><b>Code wins.</b> Where the README, <code>capabilities.json</code>, the reality document and the tree disagree, <b>the tree is right</b>. Every claim on this page was measured from the tree on <b>24 August 2026</b> at repo version <b>v0.2.71</b>, not read from documentation.</p>
 </div>
 
-<h2 id="ledger">The ledger</h2>
-<p>Eight things this platform is described as having, or is assumed to have, and does not.</p>
+<h2 id="ships">The working surface</h2>
+<p>What you can drive today, all of it in the tree and under test:</p>
+<div class="tablewrap">
+  <table>
+    <thead><tr><th>Area</th><th>Shipped</th></tr></thead>
+    <tbody>
+      <tr><td><b>Specs</b></td><td><a href="../specs/index.html">Sixteen registered specs</a> across seven families — browsers, vaults, container runtimes, LLM inference, observability, network, tools — each a working package with a typed manifest, routes, a service, tests and often a UI. Nine stable, seven experimental, boot times from 15 seconds.</td></tr>
+      <tr><td><b>Lifecycle</b></td><td>One-command node launch with a per-node API key minted to SSM before boot, composed user-data, a two-phase health poll, and guaranteed teardown — <code>systemd-run</code> self-destruct plus <code>InstanceInitiatedShutdownBehavior=terminate</code>. <a href="../numbers/index.html">Measured ~16s EC2 boot to SSM-ready</a>; ~50s end to end.</td></tr>
+      <tr><td><b>CLI</b></td><td>A generated, uniform ten-verb CLI for every spec (<code>list · info · create · wait · health · connect · exec · delete · ami · cert</code>), plus a 71,000-line operator toolkit — AWS provisioning, IAM and credentials, fleet sentinel commands, and an interactive REPL/TUI.</td></tr>
+      <tr><td><b>API</b></td><td><a href="../agents/index.html">Two FastAPI applications</a>: a browser-automation data plane (navigate, click, fill, screenshot, inspect, a 25-verb declarative sequence language, stateful sessions) and an SG/Compute control plane (specs, nodes, pods, logs, stats) with per-spec routes discovered by convention.</td></tr>
+      <tr><td><b>Isolation</b></td><td><a href="../security/index.html">Six boundaries, each with a mechanism</a>: fresh browser per request, dedicated thread per session, per-node keys never reused, a deny-by-default JS allowlist, sidecar-only networking, per-request cookie scope.</td></tr>
+      <tr><td><b>Observability</b></td><td>Prometheus metrics on every node, per-call timing blocks, a capability-driven HTML console, an agentic admin surface, and <code>GET /health/capabilities</code> built live at runtime.</td></tr>
+      <tr><td><b>Quality</b></td><td><b>4,785 tests passing in 81 seconds</b>, digest-first multi-arch CI, an AMI bake-and-verify design, and 1.27 million words of documentation under a formal reality discipline.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="ledger">The ledger: not built yet — and where you come in</h2>
+<p>Eight things this platform is described as having, or is assumed to have, and does not have yet. Published unsoftened, because a contributor deserves a precise map — every item below is a well-scoped piece of work with the design already argued for.</p>
 
 <h3 id="warm">1. There are no warm pools</h3>
 <p>Warm pools are central to the serverless pitch — they are the rung of the <a href="../why/index.html#ladder">cold-start ladder</a> that takes a node from 30–60 seconds to 5–15. They are specified in a <b>1,729-word brief with worked economics</b> (<em>“a pool of 3–5 t3.small instances at ~$0.02/hour each is roughly $1–3/day”</em>).</p>
@@ -174,11 +191,11 @@
 <footer class="site"><div class="cols">
   <div>
     <div class="brandline">sg-compute<span>.sgit.ai</span></div>
-    <p>An ephemeral compute platform with sixteen ready-to-launch workload specs — measured from the tree, audit and all. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. All site content CC BY 4.0; the platform's own source is Apache-2.0.</p>
+    <p>An ephemeral compute platform for AWS: sixteen ready-to-launch workload specs, each launched, worked and terminated in an isolated environment — with every number measured from the tree. Part of the <a href="https://sgit.ai" style="display:inline;padding:0"><b>sgit.ai</b></a> network. All site content CC BY 4.0; the platform's own source is Apache-2.0.</p>
     <p class="netline"><a href="https://sgit.ai"><b>↗ sgit.ai</b></a> — the parent project and the vault layer this provisions for · <a href="https://open-source.sgit.ai">↗ open-source.sgit.ai</a> · <a href="https://wardley-maps.sgit.ai">↗ wardley-maps.sgit.ai</a> · <a href="https://risks.sgit.ai">↗ risks.sgit.ai</a> · <a href="https://sgit.ai/network/index.html">↗ the network</a></p>
     <p class="domainnote"><b>sg-compute.sgit.ai</b> is documentation. <b>sg-compute.sgraph.ai</b> is a live Route 53 zone serving per-node DNS. Same label, different TLD, stated <a href="../network/index.html#domains" style="display:inline;padding:0">deliberately</a>.</p>
     <p class="partnote">⚠ Participant disclosure: published by the sgit project, which builds the platform this site documents and audits. <a href="../about/participant.html" style="display:inline;padding:0">Read the disclosure</a>.</p>
-    <p class="verline">site <a href="../admin/versions.html">v0.1.1</a> · <a href="../admin/index.html">engineering</a></p>
+    <p class="verline">site <a href="../admin/versions.html">v0.2.0</a> · <a href="../admin/index.html">engineering</a></p>
   </div>
   <div>
     <h4>The platform</h4>
@@ -194,9 +211,9 @@
     <a href="../rename/index.html">The rename</a>
   </div>
   <div>
-    <h4>The audit</h4>
-    <a href="../shipped/index.html">&#8594; What ships, and what does not</a>
-    <a href="../roadmap/index.html">Build order &amp; open questions</a>
+    <h4>Shipped</h4>
+    <a href="../shipped/index.html">&#8594; What ships today</a>
+    <a href="../roadmap/index.html">Roadmap &amp; how to help</a>
     <a href="../documents/index.html">The documents</a>
     <a href="../about/participant.html">Where we lose</a>
   </div>
